@@ -1,0 +1,60 @@
+\documentclass[12pt, letterpaper]{article}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{float}
+\graphicspath{{images/}}
+\title{Closed Form formula sor simple linear regression}
+\author{Evert Jan Karman}
+\date{January 1900}
+\begin{document}
+\maketitle
+
+Documenting the closed form formula for simple linear regression
+
+\section{The gradient formula for RSS}
+\[
+\nabla RSS(w_0,w_1) = \left( \frac{\partial RSS}{\partial w_0}, \frac{\partial RSS}{\partial w_1} \right)
+\]
+Where
+\[
+\frac{\partial RSS}{\partial w_0} = -2 \cdot \sum_{i=0}^{N-1} \left( y_i - (w_0 + w_1 x_i) \right)
+\]
+And
+\[
+\frac{\partial RSS}{\partial w_1} = -2 \cdot \sum_{i=0}^{N-1} \left( (y_i - (w_0 + w_1 x_i)) \cdot x_i \right)
+\]
+
+\section{Solving for gradient eq zero}
+When we solve for gradient = zero, we get
+\[
+w_0 \cdot N = \sum_{i=0}^{N-1} y_i - w_1 \cdot \sum_{i=0}^{N-1} x_i
+\]
+and
+\[
+w_0 \cdot \sum_{i=0}^{N-1} x_i = \sum_{i=0}^{N-1} y_i \cdot x_i - w_1 \cdot \sum_{i=0}^{N-1} x_i^2
+\]
+We are looking at a system of two equations:
+\begin{align*}
+w_0 \cdot N &= A - w_1 \cdot B \\
+w_0 \cdot B &= C - w_1 \cdot D
+\end{align*}
+
+With A, B, C, D expressions not dependent on $w_0$ or $w_1$
+\begin{align*}
+A &= \sum_{i=0}^{N-1} y_i \\
+B &= \sum_{i=0}^{N-1} x_i \\
+C &= \sum_{i=0}^{N-1} x_i \cdot y_i \\
+D &= \sum_{i=0}^{N-1} x_i^2
+\end{align*}
+
+So that
+\[
+w_1 = \frac{C - \frac{A \cdot B}{N}}{D - \frac{B \cdot B}{N}}
+\]
+And then
+\[
+w_0 = \frac{A}{N} - w_1 \cdot \frac{B}{N}
+\]
+
+\end{document}
