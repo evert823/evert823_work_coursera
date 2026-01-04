@@ -1,0 +1,25 @@
+\documentclass[12pt, letterpaper]{article}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{float}
+\graphicspath{{images/}}
+\title{RSS and the Gradient in Matrix form}
+\author{Evert Jan Karman}
+\date{January 1900}
+\begin{document}
+\maketitle
+
+Recap: The RSS and the Gradient in matrix form
+
+\section{The formula for RSS}
+\[
+\mathrm{RSS(w)} = \left(y - H w\right)^{\top} \left(y - H w\right)
+\]
+
+\section{The formula for the Gradient}
+\[
+\nabla\, \mathrm{RSS(w)} = -2 H^{\top} \left(y - H w\right)
+\]
+
+\end{document}
