@@ -20,8 +20,8 @@ def read_house_data(path=".\\", file_name="data.csv", dtype_dict=None):
 def assess_dataframe(df):
     print(f"rowcount {df.shape[0]} colcount {df.shape[1]}")
     print(f"dtypes {dict(df.dtypes)}")
-    print("First 5 rows:")
-    print(df.head())
+    #print("First 5 rows:")
+    #print(df.head())
 
 def add_terms_of_polynomial(df, feature_name, degree):
     #Add columns polynomial terms as columns to dataframe till/including degree
@@ -64,14 +64,17 @@ house_data_set_4_df = read_house_data(path=path, file_name=file_name_set_4, dtyp
 house_data_set_4_df.sort_values(['sqft_living', 'price'])
 
 #define degree, x_feature_names and y_feature_names
-degree = 1
+degree = 7
 x_feature_names = ['sqft_living']
 for i in range(2, degree + 1):
     x_feature_names.append(f'sqft_living_pwr_{i}')
 y_feature_names = ['price']
 
 #Create the dataframe with terms of polynomial of given degree
-polynomial_df = add_terms_of_polynomial(df=house_data_all_df, feature_name='sqft_living', degree=degree)
+polynomial_df = add_terms_of_polynomial(df=house_data_train_df, feature_name='sqft_living', degree=degree)
+
+#Sorting is important to make the plot to image working!!
+polynomial_df = polynomial_df.sort_values(['sqft_living', 'price'])
 
 #Create and fit a model
 y = polynomial_df[y_feature_names].values
