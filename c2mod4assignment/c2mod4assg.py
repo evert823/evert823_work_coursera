@@ -33,6 +33,37 @@ def add_terms_of_polynomial(df, feature_name, degree):
 
     return df_out
 
+def validate_polynomial_degree(par_degree):
+    #define degree, x_feature_names and y_feature_names
+    degree = par_degree
+    x_feature_names = ['sqft_living']
+    for i in range(2, degree + 1):
+        x_feature_names.append(f'sqft_living_pwr_{i}')
+    y_feature_names = ['price']
+
+    #Create the dataframe with terms of polynomial of given degree
+    polynomial_df = add_terms_of_polynomial(df=house_data_train_df, feature_name='sqft_living', degree=degree)
+
+    #Sorting is important to make the plot to image working!!
+    polynomial_df = polynomial_df.sort_values(['sqft_living', 'price'])
+
+    #Create and fit a model
+    y = polynomial_df[y_feature_names].values
+    X = polynomial_df[x_feature_names].values
+    mylinreg = LinearRegression()
+    mylinreg.fit(X, y)
+
+    w = np.hstack((mylinreg.intercept_.reshape(1, 1), mylinreg.coef_))
+    #print(f"w : {w} shape : {w.shape}")
+
+    #Now compute rss on validation data
+    polynomial_valid_df = add_terms_of_polynomial(df=house_data_valid_df, feature_name='sqft_living', degree=degree)
+    X = polynomial_valid_df[x_feature_names].values
+    y = polynomial_valid_df[y_feature_names].values
+    y_pred = mylinreg.predict(X=X)
+    rs = (y - y_pred) * (y - y_pred)
+    rss = rs.sum()
+    return rss
 
 path = r"C:\Users\Evert Jan\courseradatascience\course02\module04\data\\"
 file_name_mock = "mockdata.csv"
@@ -64,7 +95,7 @@ house_data_set_4_df = read_house_data(path=path, file_name=file_name_set_4, dtyp
 house_data_set_4_df.sort_values(['sqft_living', 'price'])
 
 #define degree, x_feature_names and y_feature_names
-degree = 7
+degree = 6
 x_feature_names = ['sqft_living']
 for i in range(2, degree + 1):
     x_feature_names.append(f'sqft_living_pwr_{i}')
@@ -90,3 +121,36 @@ plt.figure(figsize=(16, 9), dpi=100)
 plt.plot(polynomial_df['sqft_living'],polynomial_df['price'],'.',
          polynomial_df['sqft_living'], y_pred,'-')
 plt.savefig('.\\images\\house_price_vs_sqft_living.png')
+
+#Now compute rss on validation data
+polynomial_valid_df = add_terms_of_polynomial(df=house_data_valid_df, feature_name='sqft_living', degree=degree)
+X = polynomial_valid_df[x_feature_names].values
+y = polynomial_valid_df[y_feature_names].values
+y_pred = mylinreg.predict(X=X)
+rs = (y - y_pred) * (y - y_pred)
+rss = rs.sum()
+print(f"degree {degree} rss on validation set {rss}")
+
+
+#Now compute rss on testdata
+polynomial_test_df = add_terms_of_polynomial(df=house_data_test_df, feature_name='sqft_living', degree=degree)
+X = polynomial_test_df[x_feature_names].values
+y = polynomial_test_df[y_feature_names].values
+y_pred = mylinreg.predict(X=X)
+rs = (y - y_pred) * (y - y_pred)
+rss = rs.sum()
+print(f"degree {degree} rss on test set {rss}")
+
+
+
+print("Below we do it for all degrees 1 - 15")
+optimal_degree = -1
+optimal_rss = -1
+for i in range(1, 16):
+    rss = validate_polynomial_degree(par_degree=i)
+    if optimal_rss < 0.0 or optimal_rss > rss:
+        optimal_rss = rss
+        optimal_degree = i
+    print(f"degree {i} rss on validation set {rss}")
+
+print(f"optimal_degree {optimal_degree} optimal_rss {optimal_rss}")
