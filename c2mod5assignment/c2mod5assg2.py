@@ -39,16 +39,20 @@ def RSS(feature_matrix, y, weights):
     rss = np.sum(error ** 2)
     return rss
 
-def gradient_val(feature_matrix, y, weights):
+def gradient_val(feature_matrix, y, weights, l2_penalty):
     y_pred = predict_outcome(feature_matrix=feature_matrix, weights=weights)
     error = y - y_pred
     H_t = feature_matrix.T
     result = np.matmul(H_t, error) * -2
+    #result.shape == (2,1)
+    for j in range(result.shape[0]):
+        if j > 0:
+            result[j][0] += 2 * l2_penalty * weights[j][0]
     return result
 
-def gradient_descent_1iter(feature_matrix, y, weights, tolerance, step_size):
+def gradient_descent_1iter(feature_matrix, y, weights, tolerance, step_size, l2_penalty):
     #Calculate the value of the gradient of the RSS for these weights
-    G_RSS = gradient_val(feature_matrix=feature_matrix, y=y, weights=weights)
+    G_RSS = gradient_val(feature_matrix=feature_matrix, y=y, weights=weights, l2_penalty=l2_penalty)
 
     #Check the magnitude (norm)
     magnitude = np.linalg.norm(G_RSS)
@@ -64,31 +68,76 @@ def gradient_descent_1iter(feature_matrix, y, weights, tolerance, step_size):
     
     return new_weights, converged, magnitude, G_RSS
 
-def gradient_descent(feature_matrix, y, init_weights, tolerance, step_size, max_iter):
+def gradient_descent(feature_matrix, y, init_weights, tolerance, step_size, max_iter, l2_penalty):
     itercount = 0
     new_weights, converged, magnitude, G_RSS = gradient_descent_1iter(feature_matrix=feature_matrix,
                                                     y=y,
                                                     weights=init_weights,
                                                     tolerance=tolerance,
-                                                    step_size=step_size)
+                                                    step_size=step_size,
+                                                    l2_penalty=l2_penalty)
     
     while converged == False and (itercount < max_iter or max_iter == -1):
         itercount += 1
-        if itercount % 10000 == 0:
+        if itercount % 1000000 == 0:
             print (f"new weights during gradient descent {new_weights.T} magnitude {magnitude} gradient of RSS {G_RSS.T}")
         new_weights, converged, magnitude, G_RSS = gradient_descent_1iter(feature_matrix=feature_matrix,
                                                         y=y,
                                                         weights=new_weights,
                                                         tolerance=tolerance,
-                                                        step_size=step_size)
+                                                        step_size=step_size,
+                                                        l2_penalty=l2_penalty)
 
     print(f"new_weights after gradient descent {new_weights.T} itercount {itercount}")
 
     return new_weights
 
 
+
 np.set_printoptions(suppress=True, formatter={'float_kind': '{:f}'.format}, linewidth=120)
 
 path = r"C:\Users\Evert Jan\courseradatascience\course02\module05\data\\"
+
+mockdata_df = read_house_data(path=path, file_name="mockdata.csv", dtype_dict=house_data_dtype_dict())
+assess_dataframe(mockdata_df)
+
+x_feature_names = ['sqft_living']
+y_feature_names = ['price']
+H, y = get_numpy_data(df=mockdata_df, x_feature_names=x_feature_names, y_feature_names=y_feature_names)
+
+init_weights = np.array([[99999.0], [99.0]])
+print(f"Start processing mockdata")
+new_weights = gradient_descent(feature_matrix=H,
+                                y=y,
+                                init_weights=init_weights,
+                                tolerance=1e-1,
+                                step_size=3e-10,
+                                max_iter=100000,
+                                l2_penalty=0.0)
+
+
 house_data_train_df = read_house_data(path=path, file_name="kc_house_train_data.csv", dtype_dict=house_data_dtype_dict())
 assess_dataframe(house_data_train_df)
+x_feature_names = ['sqft_living']
+y_feature_names = ['price']
+H, y = get_numpy_data(df=house_data_train_df, x_feature_names=x_feature_names, y_feature_names=y_feature_names)
+
+init_weights = np.array([[0.0], [0.0]])
+print(f"Start processing training data")
+new_weights = gradient_descent(feature_matrix=H,
+                                y=y,
+                                init_weights=init_weights,
+                                tolerance=1e-1,
+                                step_size=1e-12,
+                                max_iter=1000,
+                                l2_penalty=0.0)
+
+init_weights = np.array([[0.0], [0.0]])
+print(f"Start processing training data and high l2_penalty")
+new_weights = gradient_descent(feature_matrix=H,
+                                y=y,
+                                init_weights=init_weights,
+                                tolerance=1e-1,
+                                step_size=1e-12,
+                                max_iter=1000,
+                                l2_penalty=1e11)
