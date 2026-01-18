@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-from sklearn.linear_model import LinearRegression
 
 def house_data_dtype_dict():
     dtype_dict = {'bathrooms':float, 'waterfront':int, 'sqft_above':int,
