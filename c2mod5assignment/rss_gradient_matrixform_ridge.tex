@@ -1,0 +1,65 @@
+\documentclass[12pt, letterpaper]{article}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{float}
+\graphicspath{{images/}}
+\title{RSS and the Gradient in Matrix form - with Ridge}
+\author{Evert Jan Karman}
+\date{January 1900}
+\begin{document}
+\maketitle
+
+Recap: The RSS and the Gradient in matrix form - with Ridge
+
+\section{The formula for RSS}
+\[
+\mathrm{RSS(w)} = \left(y - H w\right)^{\top} \left(y - H w\right) + \lambda w^{\top} w
+\]
+
+\section{The formula for the Gradient}
+\[
+\nabla\, \mathrm{RSS(w)} = -2 H^{\top} \left(y - H w\right) + 2 \lambda w
+\]
+
+\section{The formula for RSS with NO penalty for intercept (w0)}
+\[
+\mathrm{RSS(w)} = \left(y - H w\right)^{\top} \left(y - H w\right) + \lambda \sum_{j=1}^{D-1} w_{j}^{2}
+\]
+(that is assuming that we have D features and w0 is our intercept)
+
+If we wanted to write this in matrix form, let
+\[
+P=
+\begin{pmatrix}
+0 & 0 & 0 & \cdots & 0 \\
+0 & 1 & 0 & \cdots & 0 \\
+0 & 0 & 1 & \cdots & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & 0 & 0 & \cdots & 1
+\end{pmatrix}
+\]
+and
+\[
+\mathrm{RSS(w)} = \left(y - H w\right)^{\top} \left(y - H w\right) + \lambda w^{\top} P w
+\]
+
+
+\section{The formula for the Gradient with NO penalty for intercept (w0)}
+\[
+\nabla\, \mathrm{RSS(w)} = -2 H^{\top} \left(y - H w\right) + 2 \lambda
+\begin{pmatrix}
+0\\[4pt]
+w_1\\[4pt]
+\vdots\\[4pt]
+w_{D-1}
+\end{pmatrix}
+\]
+
+or in matrix form
+\[
+\nabla\, \mathrm{RSS(w)} = -2 H^{\top} \left(y - H w\right) + 2 \lambda P w
+\]
+
+
+\end{document}

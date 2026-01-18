@@ -100,14 +100,18 @@ do_ridge(file_name="wk3_kc_house_set_4_data.csv",
 #For question 10:
 do_ridge(file_name="wk3_kc_house_set_1_data.csv",
          l2_penalty=1.23e2,
-         degree=15)
+         degree=15,
+         skip=False)
 do_ridge(file_name="wk3_kc_house_set_2_data.csv",
          l2_penalty=1.23e2,
-         degree=15)
+         degree=15,
+         skip=False)
 do_ridge(file_name="wk3_kc_house_set_3_data.csv",
          l2_penalty=1.23e2,
-         degree=15)
+         degree=15,
+         skip=False)
 do_ridge(file_name="wk3_kc_house_set_4_data.csv",
          l2_penalty=1.23e2,
-         degree=15)
+         degree=15,
+         skip=False)
 
