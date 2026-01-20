@@ -161,5 +161,35 @@ rss_test_0p = RSS(feature_matrix=H_test, y=y_test, weights=simple_weights_0_pena
 rss_test_hp = RSS(feature_matrix=H_test, y=y_test, weights=simple_weights_high_penalty)
 print(f"rss_test_0w {rss_test_0w} rss_test_0p {rss_test_0p} rss_test_hp {rss_test_hp}")
 
+#For question 19 we extend the list of features
+x_feature_names = ['sqft_living', 'sqft_living15']
+y_feature_names = ['price']
+#then rebuild the numpy matrices
+H, y = get_numpy_data(df=house_data_train_df, x_feature_names=x_feature_names, y_feature_names=y_feature_names)
+H_test, y_test = get_numpy_data(df=house_data_test_df, x_feature_names=x_feature_names, y_feature_names=y_feature_names)
 
+init_weights = np.array([[0.0], [0.0], [0.0]])
+multiple_weights_0_penalty = gradient_descent(feature_matrix=H,
+                                y=y,
+                                init_weights=init_weights,
+                                tolerance=1e-1,
+                                step_size=1e-12,
+                                max_iter=1000,
+                                l2_penalty=0.0)
 
+init_weights = np.array([[0.0], [0.0], [0.0]])
+multiple_weights_high_penalty = gradient_descent(feature_matrix=H,
+                                y=y,
+                                init_weights=init_weights,
+                                tolerance=1e-1,
+                                step_size=1e-12,
+                                max_iter=1000,
+                                l2_penalty=1e11)
+
+print(f"multiple_weights_0_penalty \n {multiple_weights_0_penalty}")
+print(f"multiple_weights_high_penalty \n {multiple_weights_high_penalty}")
+
+rss_test_0w = RSS(feature_matrix=H_test, y=y_test, weights=init_weights)
+rss_test_0p = RSS(feature_matrix=H_test, y=y_test, weights=multiple_weights_0_penalty)
+rss_test_hp = RSS(feature_matrix=H_test, y=y_test, weights=multiple_weights_high_penalty)
+print(f"rss_test_0w {rss_test_0w} rss_test_0p {rss_test_0p} rss_test_hp {rss_test_hp}")
