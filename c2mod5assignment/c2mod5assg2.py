@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 def house_data_dtype_dict():
     dtype_dict = {'bathrooms':float, 'waterfront':int, 'sqft_above':int,
@@ -117,6 +118,8 @@ new_weights = gradient_descent(feature_matrix=H,
 
 
 house_data_train_df = read_house_data(path=path, file_name="kc_house_train_data.csv", dtype_dict=house_data_dtype_dict())
+house_data_train_df = house_data_train_df.sort_values(by=['sqft_living', 'price']).reset_index(drop=True)
+
 assess_dataframe(house_data_train_df)
 x_feature_names = ['sqft_living']
 y_feature_names = ['price']
@@ -124,7 +127,7 @@ H, y = get_numpy_data(df=house_data_train_df, x_feature_names=x_feature_names, y
 
 init_weights = np.array([[0.0], [0.0]])
 print(f"Start processing training data")
-new_weights = gradient_descent(feature_matrix=H,
+simple_weights_0_penalty = gradient_descent(feature_matrix=H,
                                 y=y,
                                 init_weights=init_weights,
                                 tolerance=1e-1,
@@ -134,10 +137,16 @@ new_weights = gradient_descent(feature_matrix=H,
 
 init_weights = np.array([[0.0], [0.0]])
 print(f"Start processing training data and high l2_penalty")
-new_weights = gradient_descent(feature_matrix=H,
+simple_weights_high_penalty = gradient_descent(feature_matrix=H,
                                 y=y,
                                 init_weights=init_weights,
                                 tolerance=1e-1,
                                 step_size=1e-12,
                                 max_iter=1000,
                                 l2_penalty=1e11)
+
+y_0p = predict_outcome(H, simple_weights_0_penalty)
+y_hp = predict_outcome(H, simple_weights_high_penalty)
+plt.figure(figsize=(20, 12), dpi=120)
+plt.plot(H,y,'k.', H,y_0p,'b-', H,y_hp,'r-')
+plt.savefig('.\\images\\assignment2_14.png')
