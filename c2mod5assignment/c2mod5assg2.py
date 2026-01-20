@@ -150,3 +150,16 @@ y_hp = predict_outcome(H, simple_weights_high_penalty)
 plt.figure(figsize=(20, 12), dpi=120)
 plt.plot(H,y,'k.', H,y_0p,'b-', H,y_hp,'r-')
 plt.savefig('.\\images\\assignment2_14.png')
+
+
+house_data_test_df = read_house_data(path=path, file_name="kc_house_test_data.csv", dtype_dict=house_data_dtype_dict())
+house_data_test_df = house_data_test_df.sort_values(by=['sqft_living', 'price']).reset_index(drop=True)
+assess_dataframe(house_data_test_df)
+H_test, y_test = get_numpy_data(df=house_data_test_df, x_feature_names=x_feature_names, y_feature_names=y_feature_names)
+rss_test_0w = RSS(feature_matrix=H_test, y=y_test, weights=init_weights)
+rss_test_0p = RSS(feature_matrix=H_test, y=y_test, weights=simple_weights_0_penalty)
+rss_test_hp = RSS(feature_matrix=H_test, y=y_test, weights=simple_weights_high_penalty)
+print(f"rss_test_0w {rss_test_0w} rss_test_0p {rss_test_0p} rss_test_hp {rss_test_hp}")
+
+
+
