@@ -193,3 +193,12 @@ rss_test_0w = RSS(feature_matrix=H_test, y=y_test, weights=init_weights)
 rss_test_0p = RSS(feature_matrix=H_test, y=y_test, weights=multiple_weights_0_penalty)
 rss_test_hp = RSS(feature_matrix=H_test, y=y_test, weights=multiple_weights_high_penalty)
 print(f"rss_test_0w {rss_test_0w} rss_test_0p {rss_test_0p} rss_test_hp {rss_test_hp}")
+
+#For question 25 we need to UNDO the sorting that we did earlier
+house_data_test_df = read_house_data(path=path, file_name="kc_house_test_data.csv", dtype_dict=house_data_dtype_dict())
+first_row_df = house_data_test_df.iloc[[0]]
+H_test, y_test = get_numpy_data(df=first_row_df, x_feature_names=x_feature_names, y_feature_names=y_feature_names)
+y_0p = predict_outcome(H_test, multiple_weights_0_penalty)
+y_hp = predict_outcome(H_test, multiple_weights_high_penalty)
+print(f"Question 25 y_0p {y_0p} y_hp {y_hp}")
+print(y_test)
