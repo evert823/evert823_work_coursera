@@ -29,12 +29,19 @@ def add_columns(df):
     df['floors_square'] = df['floors']*df['floors']
     return df
 
-def normalize_features(df, feature_names: list[str]):
+def normalize_features(df, feature_names: list[str], mean_center=False):
     df2 = df.copy()
     for fn in feature_names:
-        sum_squares = (df[fn] ** 2).sum()
+
+        #GHCP suggests to mean-center the data before doing the L2 scaling
+        if mean_center == False:
+            cols = df[fn]
+        else:
+            mymean = df[fn].mean()
+            cols = df[fn] - mymean
+        sum_squares = (cols ** 2).sum()
         Zj = sqrt(sum_squares)
-        df2[fn] = df[fn] / Zj
+        df2[fn] = cols / Zj
     return df2
 
 
