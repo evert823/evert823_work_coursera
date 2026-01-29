@@ -1,0 +1,30 @@
+\documentclass[12pt, letterpaper]{article}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{float}
+\graphicspath{{images/}}
+\title{Normalizing features}
+\author{Evert Jan Karman}
+\date{January 1900}
+\begin{document}
+\maketitle
+
+Normalizing features
+
+\section{Normalizing features}
+In this course, normalizing features specifically indicates: scaling each feature column by the L2 norm of the feature column.
+So for each feature $h_{j}$ calculate:
+\[
+Z_{j} = \sqrt{\sum_{i=0}^{N-1} h_{j}(x_{i})^{2}}
+\]
+
+And then:
+\[
+\forall k \quad \underbar{h}_{j}(x_{k}) = \frac{h_{j}(x_{k})}{Z_{j}}
+\]
+
+Note that this happens on the \underline{training data}.
+Later, the \underline{test data} must be scaled by the same factor $Z_{j}$, that was obtained using the training data.
+
+\end{document}
