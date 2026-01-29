@@ -29,12 +29,22 @@ def add_columns(df):
     df['floors_square'] = df['floors']*df['floors']
     return df
 
-path = r"C:\Users\Evert Jan\courseradatascience\course02\module06\data\\"
+def normalize_features(df, feature_names: list[str]):
+    df2 = df.copy()
+    for fn in feature_names:
+        sum_squares = (df[fn] ** 2).sum()
+        Zj = sqrt(sum_squares)
+        df2[fn] = df[fn] / Zj
+    return df2
 
-house_data_mock_df = read_house_data(path=path, file_name="mockdata.csv", dtype_dict=house_data_dtype_dict())
-house_data_mock_df = add_columns(df=house_data_mock_df)
-assess_dataframe(df=house_data_mock_df)
+
+path = r"C:\Users\Evert Jan\courseradatascience\course02\module06\data\\"
 
 house_data_all_df = read_house_data(path=path, file_name="kc_house_data.csv", dtype_dict=house_data_dtype_dict())
 house_data_all_df = add_columns(df=house_data_all_df)
+assess_dataframe(df=house_data_all_df)
+
+features_to_normalize = ['sqft_living', 'sqft_lot', 'bedrooms', 'floors',
+                         'sqft_living_sqrt', 'sqft_lot_sqrt', 'bedrooms_square', 'floors_square']
+house_data_all_df = normalize_features(df=house_data_all_df, feature_names=features_to_normalize)
 assess_dataframe(df=house_data_all_df)
