@@ -1,5 +1,7 @@
 import pandas as pd
+import numpy as np
 from math import log, sqrt
+from sklearn import linear_model
 
 def house_data_dtype_dict():
     dtype_dict = {'bathrooms':float, 'waterfront':int, 'sqft_above':int,
@@ -49,9 +51,27 @@ path = r"C:\Users\Evert Jan\courseradatascience\course02\module06\data\\"
 
 house_data_all_df = read_house_data(path=path, file_name="kc_house_data.csv", dtype_dict=house_data_dtype_dict())
 house_data_all_df = add_columns(df=house_data_all_df)
-assess_dataframe(df=house_data_all_df)
+#assess_dataframe(df=house_data_all_df)
 
-features_to_normalize = ['sqft_living', 'sqft_lot', 'bedrooms', 'floors',
-                         'sqft_living_sqrt', 'sqft_lot_sqrt', 'bedrooms_square', 'floors_square']
-house_data_all_df = normalize_features(df=house_data_all_df, feature_names=features_to_normalize)
-assess_dataframe(df=house_data_all_df)
+all_features = ['bedrooms', 'bedrooms_square',
+            'bathrooms',
+            'sqft_living', 'sqft_living_sqrt',
+            'sqft_lot', 'sqft_lot_sqrt',
+            'floors', 'floors_square',
+            'waterfront', 'view', 'condition', 'grade',
+            'sqft_above',
+            'sqft_basement',
+            'yr_built', 'yr_renovated']
+
+house_data_all_df = normalize_features(df=house_data_all_df, feature_names=all_features)
+#assess_dataframe(df=house_data_all_df)
+
+mymodel = linear_model.Lasso(alpha=5e2)
+mymodel.fit(house_data_all_df[all_features], house_data_all_df['price'])
+a = np.array([mymodel.intercept_])
+print(a)
+print(a.shape)
+print(mymodel.coef_)
+print(mymodel.coef_.shape)
+w = np.hstack((a, mymodel.coef_))
+print(w)
