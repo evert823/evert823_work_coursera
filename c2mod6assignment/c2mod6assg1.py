@@ -46,12 +46,19 @@ def normalize_features(df, feature_names: list[str], mean_center=False):
         df2[fn] = cols / Zj
     return df2
 
+def mean_center_features(df, feature_names: list[str]):
+    df2 = df.copy()
+    for fn in feature_names:
+        mymean = df[fn].mean()
+        df2[fn] = df[fn] - mymean
+    return df2
+
 
 path = r"C:\Users\Evert Jan\courseradatascience\course02\module06\data\\"
 
 house_data_all_df = read_house_data(path=path, file_name="kc_house_data.csv", dtype_dict=house_data_dtype_dict())
 house_data_all_df = add_columns(df=house_data_all_df)
-#assess_dataframe(df=house_data_all_df)
+assess_dataframe(df=house_data_all_df)
 
 all_features = ['bedrooms', 'bedrooms_square',
             'bathrooms',
@@ -63,15 +70,12 @@ all_features = ['bedrooms', 'bedrooms_square',
             'sqft_basement',
             'yr_built', 'yr_renovated']
 
-house_data_all_df = normalize_features(df=house_data_all_df, feature_names=all_features)
+#house_data_all_df = normalize_features(df=house_data_all_df, feature_names=all_features, mean_center=True)
+#house_data_all_df = mean_center_features(df=house_data_all_df, feature_names=['price'])
 #assess_dataframe(df=house_data_all_df)
 
 mymodel = linear_model.Lasso(alpha=5e2)
 mymodel.fit(house_data_all_df[all_features], house_data_all_df['price'])
 a = np.array([mymodel.intercept_])
-print(a)
-print(a.shape)
-print(mymodel.coef_)
-print(mymodel.coef_.shape)
 w = np.hstack((a, mymodel.coef_))
 print(w)
