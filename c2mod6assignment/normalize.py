@@ -31,29 +31,29 @@ def add_columns(df):
     df['floors_square'] = df['floors']*df['floors']
     return df
 
-def read_fit(df, l1_penalty=5e2):
-    print(f"read_fit with l1_penalty = {l1_penalty}")
-    df = add_columns(df=df)
-    mymodel = linear_model.Lasso(alpha=l1_penalty)
-    mymodel.fit(df[all_features], df['price'])
-    a = np.array([mymodel.intercept_])
-    w = np.hstack((a, mymodel.coef_))
-    print(w)
-    return mymodel
+def normalize_features(df, feature_names: list[str], mean_center=False):
+    df2 = df.copy()
+    for fn in feature_names:
 
-def compute_rss(df, model):
-    df = add_columns(df=df)
-    y_pred = model.predict(df[all_features])
-    rs = (df['price'] - y_pred) * (df['price'] - y_pred)
-    rss = rs.sum()
-    return rss
+        #GHCP suggests to mean-center the data before doing the L2 scaling
+        if mean_center == False:
+            cols = df[fn]
+        else:
+            mymean = df[fn].mean()
+            cols = df[fn] - mymean
+        sum_squares = (cols ** 2).sum()
+        Zj = sqrt(sum_squares)
+        df2[fn] = cols / Zj
+    return df2
+
+def mean_center_features(df, feature_names: list[str]):
+    df2 = df.copy()
+    for fn in feature_names:
+        mymean = df[fn].mean()
+        df2[fn] = df[fn] - mymean
+    return df2
 
 path = r"C:\Users\Evert Jan\courseradatascience\course02\module06\data\\"
-
-#house_data_all_df = read_house_data(path=path, file_name="kc_house_data.csv", dtype_dict=house_data_dtype_dict())
-house_data_train_df = read_house_data(path=path, file_name="wk3_kc_house_train_data.csv", dtype_dict=house_data_dtype_dict())
-house_data_test_df = read_house_data(path=path, file_name="wk3_kc_house_test_data.csv", dtype_dict=house_data_dtype_dict())
-house_data_valid_df = read_house_data(path=path, file_name="wk3_kc_house_valid_data.csv", dtype_dict=house_data_dtype_dict())
 
 all_features = ['bedrooms', 'bedrooms_square',
             'bathrooms',
@@ -65,18 +65,10 @@ all_features = ['bedrooms', 'bedrooms_square',
             'sqft_basement',
             'yr_built', 'yr_renovated']
 
-allpenalties = np.logspace(1, 7, num=13)
-rss_list = []
-for l1_penalty in allpenalties:
-    mymodel = read_fit(df=house_data_train_df, l1_penalty=l1_penalty)
-    rss = compute_rss(df=house_data_valid_df, model=mymodel)
-    rss_list.append(rss)
+house_data_all_df = read_house_data(path=path, file_name="kc_house_data.csv", dtype_dict=house_data_dtype_dict())
+assess_dataframe(df=house_data_all_df)
 
-for i in range(len(rss_list)):
-    print(f"l1_penalty {allpenalties[i]} rss {rss_list[i]}")
-
-best_penalty = 10
-mymodel = read_fit(df=house_data_train_df, l1_penalty=best_penalty)
-rss = compute_rss(df=house_data_test_df, model=mymodel)
-print(f"l1_penalty {best_penalty} rss on testdata {rss}")
-
+house_data_all_df = add_columns(df=house_data_all_df)
+house_data_all_df = normalize_features(df=house_data_all_df, feature_names=all_features, mean_center=True)
+house_data_all_df = mean_center_features(df=house_data_all_df, feature_names=['price'])
+assess_dataframe(df=house_data_all_df)
