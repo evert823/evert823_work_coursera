@@ -39,7 +39,9 @@ def read_fit(df, l1_penalty=5e2):
     a = np.array([mymodel.intercept_])
     w = np.hstack((a, mymodel.coef_))
     print(w)
-    return mymodel
+    nz = np.count_nonzero(w)
+    print(f"#nonzero coefficients {nz} - this includes the intercept")
+    return mymodel, nz
 
 def compute_rss(df, model):
     df = add_columns(df=df)
@@ -68,7 +70,7 @@ all_features = ['bedrooms', 'bedrooms_square',
 allpenalties = np.logspace(1, 7, num=13)
 rss_list = []
 for l1_penalty in allpenalties:
-    mymodel = read_fit(df=house_data_train_df, l1_penalty=l1_penalty)
+    mymodel, nz = read_fit(df=house_data_train_df, l1_penalty=l1_penalty)
     rss = compute_rss(df=house_data_valid_df, model=mymodel)
     rss_list.append(rss)
 
@@ -76,7 +78,36 @@ for i in range(len(rss_list)):
     print(f"l1_penalty {allpenalties[i]} rss {rss_list[i]}")
 
 best_penalty = 10
-mymodel = read_fit(df=house_data_train_df, l1_penalty=best_penalty)
+mymodel, nz = read_fit(df=house_data_train_df, l1_penalty=best_penalty)
 rss = compute_rss(df=house_data_test_df, model=mymodel)
 print(f"l1_penalty {best_penalty} rss on testdata {rss}")
 
+#From here we answer q9 and further
+allpenalties2 = np.logspace(1, 4, num=20)
+nz_list = []
+for l1_penalty in allpenalties2:
+    mymodel, nz = read_fit(df=house_data_train_df, l1_penalty=l1_penalty)
+    nz_list.append(nz)
+for i in range(len(nz_list)):
+    print(f"l1_penalty {allpenalties2[i]} nz {nz_list[i]}")
+
+l1_penalty_min = allpenalties2[7]
+l1_penalty_max = allpenalties2[9]
+
+allpenalties3 = np.linspace(l1_penalty_min,l1_penalty_max,20)
+rss_list = []
+nz_list = []
+for l1_penalty in allpenalties3:
+    mymodel, nz = read_fit(df=house_data_train_df, l1_penalty=l1_penalty)
+    nz_list.append(nz)
+    rss = compute_rss(df=house_data_valid_df, model=mymodel)
+    rss_list.append(rss)
+
+for i in range(len(rss_list)):
+    print(f"l1_penalty {allpenalties3[i]} rss {rss_list[i]} nz {nz_list[i]}")
+
+#Last question 16
+final_penalty = allpenalties3[4]
+mymodel, nz = read_fit(df=house_data_train_df, l1_penalty=final_penalty)
+rss = compute_rss(df=house_data_test_df, model=mymodel)
+print(f"final penalty {final_penalty} rss on testdata {rss}")
