@@ -1,0 +1,66 @@
+\documentclass[12pt, letterpaper]{article}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{float}
+\graphicspath{{images/}}
+\title{Coordinate descent Lasso}
+\author{Evert Jan Karman}
+\date{January 1900}
+\begin{document}
+\maketitle
+
+Coordinate descent Lasso
+
+\section{Cost function}
+With Lasso, the cost function is
+\[
+RSS(w) + \lambda \lVert w \rVert_1
+\]
+
+\section{Coordinate descent Lasso for normalized features}
+Pls note
+$\hat{w}_{-j}$ = the weights without $w_j$\\
+$\underbar{h}_{j}$ = the normalized jth feature\\
+
+We need to compute $\rho_j$:
+\[
+\rho_j = \sum_{i=0}^{N-1} \underbar{h}_{j}(x_{i}) (y_i - \hat{y}_i (\hat{w}_{-j}))
+\]
+
+We set $\hat{w}_j$ as
+\[
+\hat{w}_j =
+\begin{cases}
+\rho_j + \dfrac{\lambda}{2} & \text{if } \rho_j < -\dfrac{\lambda}{2},\\
+0 & \text{if } -\dfrac{\lambda}{2} \le \rho_j \le \dfrac{\lambda}{2},\\
+\rho_j - \dfrac{\lambda}{2} & \text{if } \rho_j > \dfrac{\lambda}{2}.
+\end{cases}
+\]
+
+\section{Coordinate descent Lasso for unnormalized features}
+For each feature $h_{j}$ calculate:
+\[
+Z_{j} = \sqrt{\sum_{i=0}^{N-1} h_{j}(x_{i})^{2}}
+\]
+We need to compute $\rho_j$:
+\[
+\rho_j = \sum_{i=0}^{N-1} h_{j}(x_{i}) (y_i - \hat{y}_i (\hat{w}_{-j}))
+\]
+We set $\hat{w}_j$ as
+\[
+\hat{w}_j =
+\begin{cases}
+(\rho_j + \dfrac{\lambda}{2}) / Z_{j} & \text{if } \rho_j < -\dfrac{\lambda}{2},\\
+0 & \text{if } -\dfrac{\lambda}{2} \le \rho_j \le \dfrac{\lambda}{2},\\
+(\rho_j - \dfrac{\lambda}{2}) / Z_{j} & \text{if } \rho_j > \dfrac{\lambda}{2}.
+\end{cases}
+\]
+
+Please not that computation of $\rho_j$ is different between these two situations.
+In the second situation it uses unnormalized features,
+and it uses $\hat{y}_i$ calculated with the unnormalized features.
+
+
+
+\end{document}
