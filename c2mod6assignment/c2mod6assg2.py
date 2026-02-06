@@ -32,6 +32,12 @@ def predict_outcome(feature_matrix, weights):
     y_pred = np.matmul(feature_matrix, weights)
     return(y_pred)
 
+def RSS(feature_matrix, y, weights):
+    y_pred = predict_outcome(feature_matrix=feature_matrix, weights=weights)
+    error = y - y_pred
+    rss = np.sum(error ** 2)
+    return rss
+
 def normalize_features(feature_matrix: np.ndarray):
     squares = np.square(feature_matrix)
     sum_of_squares = np.sum(squares, axis=0)
@@ -90,7 +96,8 @@ def do_coordinate_descent_lasso_norm(init_weights: np.ndarray,
                                                feature_matrix_norm=H_norm,
                                                y=y,
                                                weights=new_weights)
-            
+            #if done_iterations < 1:
+            #    print(f"j {j} rho_j {rho_j}")
             w_prev = new_weights[j, 0]
             if j == 0:
                 new_weights[j, 0] = rho_j
@@ -104,33 +111,36 @@ def do_coordinate_descent_lasso_norm(init_weights: np.ndarray,
             if update_step > max_update_step:
                 max_update_step = update_step
         done_iterations += 1
-        s = f"new_weights.T {new_weights.T} done_iterations {done_iterations}"
-        print(s)
+        print(f"new_weights.T {new_weights.T} done_iterations {done_iterations}")
 
-    return new_weights
+    return new_weights, Z
 
 
 
 path = r"C:\Users\Evert Jan\courseradatascience\course02\module06\data2\\"
 
 house_data_all_df = read_house_data(path=path, file_name="kc_house_data.csv", dtype_dict=house_data_dtype_dict())
-#house_data_train_df = read_house_data(path=path, file_name="kc_house_train_data.csv", dtype_dict=house_data_dtype_dict())
-#house_data_test_df = read_house_data(path=path, file_name="kc_house_test_data.csv", dtype_dict=house_data_dtype_dict())
+house_data_train_df = read_house_data(path=path, file_name="kc_house_train_data.csv", dtype_dict=house_data_dtype_dict())
+house_data_test_df = read_house_data(path=path, file_name="kc_house_test_data.csv", dtype_dict=house_data_dtype_dict())
 
-x_feature_names = ['bedrooms', 'bathrooms', 'sqft_living', 'sqft_lot']
+x_feature_names = ['sqft_living', 'bedrooms']
 y_feature_names = ['price']
 H, y = get_numpy_data(df=house_data_all_df, x_feature_names=x_feature_names, y_feature_names=y_feature_names)
 
-init_weights=np.array([[10.0], [1.0], [2.0], [1.0], [2.0]])
-l1_penalty = 100.0
+init_weights=np.array([[0.0], [0.0], [0.0]])
+l1_penalty = 1e7
 max_iterations = 1000
 epsilon = 1.0
 
-new_weights = do_coordinate_descent_lasso_norm(init_weights=init_weights,
-                                               l1_penalty=l1_penalty,
-                                               feature_matrix=H,
-                                               y=y,
-                                               epsilon=epsilon,
-                                               max_iterations=max_iterations)
-print(f"new_weights \n{new_weights}")
+new_weights, Z = do_coordinate_descent_lasso_norm(init_weights=init_weights,
+                                                  l1_penalty=l1_penalty,
+                                                  feature_matrix=H,
+                                                  y=y,
+                                                  epsilon=epsilon,
+                                                  max_iterations=max_iterations)
+print(f"new_weights \n{new_weights}\nZ {Z}")
 
+#For question 15:
+H_norm, Z = normalize_features(feature_matrix=H)
+rss = RSS(feature_matrix=H_norm, y=y, weights=new_weights)
+print (f"rss question 15 {rss}")
