@@ -38,6 +38,12 @@ We set $\hat{w}_j$ as
 \end{cases}
 \]
 
+But: our convention is that the 0th coefficient (intercept) is not subject to Lasso penalty.
+To account for this convention, the update to $\hat{w}_0$ is simply:
+\[
+\hat{w}_0 = \rho_0
+\]
+
 \section{Coordinate descent Lasso for unnormalized features}
 For each feature $h_{j}$ calculate:
 \[
@@ -57,10 +63,15 @@ We set $\hat{w}_j$ as
 \end{cases}
 \]
 
+But for 0th coefficient (intercept):
+\[
+\hat{w}_0 = \rho_0
+\]
+
+
 Please not that computation of $\rho_j$ is different between these two situations.
 In the second situation it uses unnormalized features,
 and it uses $\hat{y}_i$ calculated with the unnormalized features.
-
 
 
 \end{document}
