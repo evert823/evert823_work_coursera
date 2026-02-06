@@ -52,6 +52,64 @@ def lasso_rho_normalized_input(j: int,
     result1 = np.matmul(h_j.T, y - y_pred_xj)
     return result1[0, 0]
 
+def do_coordinate_descent_lasso_norm(init_weights: np.ndarray,
+                                     l1_penalty: float,
+                                     feature_matrix: np.ndarray,
+                                     y: np.ndarray,
+                                     epsilon: float,
+                                     max_iterations: int):
+    '''
+    This implementation first normalizes the features to L2 norm
+    This implementation expects the feature matrix as numpy array
+    This implementation expects a dummy ones column
+    that can be mapped to the increment as 0th coefficient
+
+    '''
+
+    if not isinstance(feature_matrix, np.ndarray):
+        raise TypeError("feature_matrix must be a numpy.ndarray")
+    if feature_matrix.ndim != 2:
+        raise ValueError("feature_matrix must be 2-dimensional")
+    if feature_matrix.shape[0] == 0:
+        raise ValueError("feature_matrix must have at least one row")
+    first_col = feature_matrix[:, 0]
+    if not np.allclose(first_col, 1.0, rtol=1e-8, atol=1e-12):
+        raise ValueError("Expected first column to be a dummy column of ones")
+
+    H_norm, Z = normalize_features(feature_matrix=feature_matrix)
+
+    max_update_step = epsilon + 1
+    done_iterations = 0
+    D = H_norm.shape[1]
+    new_weights = init_weights.copy()
+
+    while max_update_step > epsilon and done_iterations < max_iterations:
+        max_update_step = 0
+        for j in range(D):
+            rho_j = lasso_rho_normalized_input(j=j,
+                                               feature_matrix_norm=H_norm,
+                                               y=y,
+                                               weights=new_weights)
+            
+            w_prev = new_weights[j, 0]
+            if j == 0:
+                new_weights[j, 0] = rho_j
+            elif rho_j < -1 * l1_penalty / 2:
+                new_weights[j, 0] = rho_j + (l1_penalty / 2)
+            elif rho_j > l1_penalty / 2:
+                new_weights[j, 0] = rho_j - (l1_penalty / 2)
+            else:
+                new_weights[j, 0] = 0.0
+            update_step = np.abs(w_prev - new_weights[j, 0])
+            if update_step > max_update_step:
+                max_update_step = update_step
+        done_iterations += 1
+        s = f"new_weights.T {new_weights.T} done_iterations {done_iterations}"
+        print(s)
+
+    return new_weights
+
+
 
 path = r"C:\Users\Evert Jan\courseradatascience\course02\module06\data2\\"
 
@@ -64,8 +122,15 @@ y_feature_names = ['price']
 H, y = get_numpy_data(df=house_data_all_df, x_feature_names=x_feature_names, y_feature_names=y_feature_names)
 
 init_weights=np.array([[10.0], [1.0], [2.0], [1.0], [2.0]])
-H_norm, Z = normalize_features(feature_matrix=H)
-myrho = lasso_rho_normalized_input(j = 1,
-                                   feature_matrix_norm=H_norm,
-                                   y=y,
-                                   weights=init_weights)
+l1_penalty = 100.0
+max_iterations = 1000
+epsilon = 1.0
+
+new_weights = do_coordinate_descent_lasso_norm(init_weights=init_weights,
+                                               l1_penalty=l1_penalty,
+                                               feature_matrix=H,
+                                               y=y,
+                                               epsilon=epsilon,
+                                               max_iterations=max_iterations)
+print(f"new_weights \n{new_weights}")
+
