@@ -43,10 +43,15 @@ def RSS(feature_matrix, y, weights):
     rss = np.sum(error ** 2)
     return rss
 
-def normalize_features(feature_matrix: np.ndarray):
+def normalize_features(feature_matrix: np.ndarray,
+                       normalize_dummy_ones: bool):
     squares = np.square(feature_matrix)
     sum_of_squares = np.sum(squares, axis=0)
     Z = np.sqrt(sum_of_squares)
+    if normalize_dummy_ones == False:
+        Z[0] = 1.0
+    tiny_threshold = 1e-12
+    Z[Z < tiny_threshold] = 1.0
     feature_matrix_norm = feature_matrix / Z
     return feature_matrix_norm, Z
 
@@ -68,7 +73,9 @@ def do_coordinate_descent_lasso_norm(init_weights: np.ndarray,
                                      feature_matrix: np.ndarray,
                                      y: np.ndarray,
                                      epsilon: float,
-                                     max_iterations: int):
+                                     max_iterations: int,
+                                     normalize_dummy_ones: bool,
+                                     print_init_rho=False):
     '''
     This implementation first normalizes the features to L2 norm
     This implementation expects the feature matrix as numpy array
@@ -87,7 +94,8 @@ def do_coordinate_descent_lasso_norm(init_weights: np.ndarray,
     if not np.allclose(first_col, 1.0, rtol=1e-8, atol=1e-12):
         raise ValueError("Expected first column to be a dummy column of ones")
 
-    H_norm, Z = normalize_features(feature_matrix=feature_matrix)
+    H_norm, Z = normalize_features(feature_matrix=feature_matrix,
+                                   normalize_dummy_ones=normalize_dummy_ones)
 
     max_update_step = epsilon + 1
     done_iterations = 0
@@ -101,8 +109,8 @@ def do_coordinate_descent_lasso_norm(init_weights: np.ndarray,
                                                feature_matrix_norm=H_norm,
                                                y=y,
                                                weights=new_weights)
-            #if done_iterations < 1:
-            #    print(f"j {j} rho_j {rho_j}")
+            if done_iterations < 1 and print_init_rho == True:
+                print(f"j {j} rho_j {rho_j}")
             w_prev = new_weights[j, 0]
             if j == 0:
                 new_weights[j, 0] = rho_j
@@ -135,6 +143,25 @@ x_feature_names = ['sqft_living', 'bedrooms']
 y_feature_names = ['price']
 H, y = get_numpy_data(df=house_data_all_df, x_feature_names=x_feature_names, y_feature_names=y_feature_names)
 
+print("Starting with question 10")
+
+init_weights = np.array([[1.0], [4.0], [1.0]])
+l1_penalty = 1e7
+max_iterations = 1000
+epsilon = 1.0
+
+new_weights, Z = do_coordinate_descent_lasso_norm(init_weights=init_weights,
+                                                  l1_penalty=l1_penalty,
+                                                  feature_matrix=H,
+                                                  y=y,
+                                                  epsilon=epsilon,
+                                                  max_iterations=max_iterations,
+                                                  normalize_dummy_ones=True,
+                                                  print_init_rho=True)
+print(f"new_weights \n{new_weights}\nZ {Z}")
+
+#For question 15:
+print("Starting with question 15")
 init_weights = np.zeros((H.shape[1], 1), dtype=float)
 l1_penalty = 1e7
 max_iterations = 1000
@@ -145,15 +172,18 @@ new_weights, Z = do_coordinate_descent_lasso_norm(init_weights=init_weights,
                                                   feature_matrix=H,
                                                   y=y,
                                                   epsilon=epsilon,
-                                                  max_iterations=max_iterations)
+                                                  max_iterations=max_iterations,
+                                                  normalize_dummy_ones=True)
 print(f"new_weights \n{new_weights}\nZ {Z}")
 
-#For question 15:
-H_norm, Z = normalize_features(feature_matrix=H)
+H_norm, Z = normalize_features(feature_matrix=H,
+                               normalize_dummy_ones=True)
 rss = RSS(feature_matrix=H_norm, y=y, weights=new_weights)
 print (f"rss question 15 {rss}")
 
 #Question 17 and further
+print("Starting with question 17 and further")
+
 x_feature_names_2 = ['bedrooms', 'bathrooms', 'sqft_living', 'sqft_lot', 'floors', 'waterfront', 'view', 'condition',
                      'grade', 'sqft_above', 'sqft_basement', 'yr_built', 'yr_renovated']
 H, y = get_numpy_data(df=house_data_train_df, x_feature_names=x_feature_names_2, y_feature_names=y_feature_names)
@@ -168,7 +198,8 @@ weights_1e7, Z = do_coordinate_descent_lasso_norm(init_weights=init_weights,
                                                   feature_matrix=H,
                                                   y=y,
                                                   epsilon=epsilon,
-                                                  max_iterations=max_iterations)
+                                                  max_iterations=max_iterations,
+                                                  normalize_dummy_ones=True)
 print(f"weights_1e7.T \n{weights_1e7.T}\nZ {Z}")
 
 l1_penalty = 1e8
@@ -177,7 +208,8 @@ weights_1e8, Z = do_coordinate_descent_lasso_norm(init_weights=init_weights,
                                                   feature_matrix=H,
                                                   y=y,
                                                   epsilon=epsilon,
-                                                  max_iterations=max_iterations)
+                                                  max_iterations=max_iterations,
+                                                  normalize_dummy_ones=True)
 print(f"weights_1e8.T \n{weights_1e8.T}\nZ {Z}")
 
 l1_penalty = 1e4
@@ -187,11 +219,14 @@ weights_1e4, Z = do_coordinate_descent_lasso_norm(init_weights=init_weights,
                                                   feature_matrix=H,
                                                   y=y,
                                                   epsilon=epsilon,
-                                                  max_iterations=max_iterations)
+                                                  max_iterations=max_iterations,
+                                                  normalize_dummy_ones=True)
 print(f"weights_1e4.T \n{weights_1e4.T}\nZ {Z}")
 
 #After rescaling weights you can use these for predictions on testdata
 #without normalizing the testdata
+#so we multiply by the scaling factor Z because we had learnt the model based on division of features
+#by the scaling factor Z
 rescaled_weights = weights_1e4 * Z.reshape(-1, 1)
 print(rescaled_weights)
 
