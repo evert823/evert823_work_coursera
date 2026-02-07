@@ -223,11 +223,12 @@ weights_1e4, Z = do_coordinate_descent_lasso_norm(init_weights=init_weights,
                                                   normalize_dummy_ones=True)
 print(f"weights_1e4.T \n{weights_1e4.T}\nZ {Z}")
 
-#After rescaling weights you can use these for predictions on testdata
-#without normalizing the testdata
-#so we multiply by the scaling factor Z because we had learnt the model based on division of features
-#by the scaling factor Z
-rescaled_weights = weights_1e4 * Z.reshape(-1, 1)
+#We can rescale weights so that we can use them for making predictions on testdata, if
+# we don't want to normalize the testdata
+#The impact of normalizing was that we divided Xj by Zj while keeping y the same
+# so that wj INCREASED by factor Zj
+#So for this purpose we must DIVIDE the weights by the scaling factor Z
+rescaled_weights = weights_1e4 / Z.reshape(-1, 1)
 print(rescaled_weights)
 
 

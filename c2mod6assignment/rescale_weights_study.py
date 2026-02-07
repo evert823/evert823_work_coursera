@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from sklearn import linear_model
 
 def house_data_dtype_dict():
     dtype_dict = {'bathrooms':float, 'waterfront':int, 'sqft_above':int,
@@ -44,7 +45,7 @@ def RSS(feature_matrix, y, weights):
     return rss
 
 def normalize_features(feature_matrix: np.ndarray,
-                       skip_intercept=False,
+                       normalize_dummy_ones=True,
                        do_normalize=False):
     squares = np.square(feature_matrix)
     sum_of_squares = np.sum(squares, axis=0)
@@ -54,7 +55,7 @@ def normalize_features(feature_matrix: np.ndarray,
     else:
         Z = np.ones((H.shape[1],), dtype=float)
 
-    if skip_intercept == True:
+    if normalize_dummy_ones == False:
         Z[0] = 1.0
 
     feature_matrix_norm = feature_matrix / Z
@@ -68,15 +69,26 @@ x_feature_names = ['sqft_living']
 y_feature_names = ['price']
 H, y = get_numpy_data(df=house_data_mock_df, x_feature_names=x_feature_names, y_feature_names=y_feature_names)
 
+print("\nwithout normalization")
 H_norm, Z = normalize_features(feature_matrix=H,
-                               skip_intercept=True,
-                               do_normalize=True)
-print(H_norm)
-print(Z)
-
-H_norm, Z = normalize_features(feature_matrix=H,
-                               skip_intercept=True,
+                               normalize_dummy_ones=True,
                                do_normalize=False)
-print(H_norm)
-print(Z)
+print(f"H_norm {H_norm}")
+print(f"Z {Z}")
+mymodel = linear_model.LinearRegression()
+mymodel.fit(H_norm, y)
+a = np.array([mymodel.intercept_])
+w = np.hstack((a, mymodel.coef_))
+print(w)
 
+print("\nWITH normalization")
+H_norm, Z = normalize_features(feature_matrix=H,
+                               normalize_dummy_ones=True,
+                               do_normalize=True)
+print(f"H_norm {H_norm}")
+print(f"Z {Z}")
+mymodel = linear_model.LinearRegression()
+mymodel.fit(H_norm, y)
+a = np.array([mymodel.intercept_])
+w = np.hstack((a, mymodel.coef_))
+print(w)
