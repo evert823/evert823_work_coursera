@@ -189,3 +189,10 @@ weights_1e4, Z = do_coordinate_descent_lasso_norm(init_weights=init_weights,
                                                   epsilon=epsilon,
                                                   max_iterations=max_iterations)
 print(f"weights_1e4.T \n{weights_1e4.T}\nZ {Z}")
+
+#After rescaling weights you can use these for predictions on testdata
+#without normalizing the testdata
+rescaled_weights = weights_1e4 * Z.reshape(-1, 1)
+print(rescaled_weights)
+
+
