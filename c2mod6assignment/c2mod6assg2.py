@@ -189,46 +189,54 @@ x_feature_names_2 = ['bedrooms', 'bathrooms', 'sqft_living', 'sqft_lot', 'floors
 H, y = get_numpy_data(df=house_data_train_df, x_feature_names=x_feature_names_2, y_feature_names=y_feature_names)
 
 init_weights = np.zeros((H.shape[1], 1), dtype=float)
-l1_penalty = 1e7
 max_iterations = 1000
 epsilon = 1.0
 
-weights_1e7, Z = do_coordinate_descent_lasso_norm(init_weights=init_weights,
+l1_penalty = 1e7
+weights_1e7, Z_1e7 = do_coordinate_descent_lasso_norm(init_weights=init_weights,
                                                   l1_penalty=l1_penalty,
                                                   feature_matrix=H,
                                                   y=y,
                                                   epsilon=epsilon,
                                                   max_iterations=max_iterations,
                                                   normalize_dummy_ones=True)
-print(f"weights_1e7.T \n{weights_1e7.T}\nZ {Z}")
+print(f"weights_1e7.T \n{weights_1e7.T}\nZ {Z_1e7}")
 
 l1_penalty = 1e8
-weights_1e8, Z = do_coordinate_descent_lasso_norm(init_weights=init_weights,
+weights_1e8, Z_1e8 = do_coordinate_descent_lasso_norm(init_weights=init_weights,
                                                   l1_penalty=l1_penalty,
                                                   feature_matrix=H,
                                                   y=y,
                                                   epsilon=epsilon,
                                                   max_iterations=max_iterations,
                                                   normalize_dummy_ones=True)
-print(f"weights_1e8.T \n{weights_1e8.T}\nZ {Z}")
+print(f"weights_1e8.T \n{weights_1e8.T}\nZ {Z_1e8}")
 
 l1_penalty = 1e4
 epsilon = 5e5
-weights_1e4, Z = do_coordinate_descent_lasso_norm(init_weights=init_weights,
+weights_1e4, Z_1e4 = do_coordinate_descent_lasso_norm(init_weights=init_weights,
                                                   l1_penalty=l1_penalty,
                                                   feature_matrix=H,
                                                   y=y,
                                                   epsilon=epsilon,
                                                   max_iterations=max_iterations,
                                                   normalize_dummy_ones=True)
-print(f"weights_1e4.T \n{weights_1e4.T}\nZ {Z}")
+print(f"weights_1e4.T \n{weights_1e4.T}\nZ {Z_1e4}")
 
 #We can rescale weights so that we can use them for making predictions on testdata, if
 # we don't want to normalize the testdata
 #The impact of normalizing was that we divided Xj by Zj while keeping y the same
 # so that wj INCREASED by factor Zj
 #So for this purpose we must DIVIDE the weights by the scaling factor Z
-rescaled_weights = weights_1e4 / Z.reshape(-1, 1)
-print(rescaled_weights)
+rescaled_weights_1e7 = weights_1e7 / Z_1e7.reshape(-1, 1)
+rescaled_weights_1e8 = weights_1e8 / Z_1e8.reshape(-1, 1)
+rescaled_weights_1e4 = weights_1e4 / Z_1e4.reshape(-1, 1)
 
+print(f"check question 26 rescaled_weights_1e7[3] {rescaled_weights_1e7[3]}")
 
+#house_data_test_df
+H, y = get_numpy_data(df=house_data_test_df, x_feature_names=x_feature_names_2, y_feature_names=y_feature_names)
+rss_1e7 = RSS(feature_matrix=H, y=y, weights=rescaled_weights_1e7)
+rss_1e8 = RSS(feature_matrix=H, y=y, weights=rescaled_weights_1e8)
+rss_1e4 = RSS(feature_matrix=H, y=y, weights=rescaled_weights_1e4)
+print(f"rss_1e7 {rss_1e7} rss_1e8 {rss_1e8} rss_1e4 {rss_1e4}")
