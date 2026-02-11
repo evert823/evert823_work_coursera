@@ -38,12 +38,63 @@ def normalize_features(feature_matrix: np.ndarray):
     return feature_matrix_norm, Z
 
 def distances(feature_matrix: np.ndarray, input_observation: np.ndarray):
-    print(f"feature_matrix.shape {feature_matrix.shape} input_observation.shape {input_observation.shape}")
     diff = feature_matrix - input_observation
     squares = np.square(diff)
     sum_of_squares = np.sum(squares, axis=1)
-    mydistance = np.sqrt(sum_of_squares)
-    return mydistance
+    result = np.sqrt(sum_of_squares)
+    return result
+
+def k_nearest_datapoints(feature_matrix: np.ndarray,
+                         input_observation: np.ndarray,
+                         k: int):
+    '''
+    Find the k nearest datapoints from feature_matrix
+    given input_observation
+    return a list of tuples (index in feature_matrix, distance)
+    sorted by distance asc
+    '''
+    N = feature_matrix.shape[0]
+    assert k > 0
+    assert k <= N
+    mydistances = distances(feature_matrix=feature_matrix,
+                            input_observation=input_observation)
+    
+    '''
+    In queue we will store tuples of
+    - index i in feature_matrix
+    - distance from row[i] in feature_matrix to input_observation
+    '''
+    queue: list[tuple[int, float]] = [(i, mydistances[i]) for i in range(k)]
+    queue.sort(key=lambda x: x[1])
+
+    for i in range(k,N):
+        d = mydistances[i]
+        j = k
+        while j > 0 and queue[j - 1][1] > d:
+            j = j - 1
+        if j < k:
+            queue.insert(j, (i, d))
+            queue.pop()
+    
+    return queue
+
+def predict_knn(feature_matrix: np.ndarray,
+                y: np.ndarray,
+                input_observation: np.ndarray,
+                k: int):
+    try:
+        kn_queue = k_nearest_datapoints(feature_matrix=feature_matrix,
+                                        input_observation=input_observation,
+                                        k=k)
+    except:
+        print("Not able to find k nearest neighbours")
+    
+    total_price: float = 0.0
+    for j in range(k):
+        i = kn_queue[j][0]
+        price = y[i][0]
+        total_price += price
+    return total_price / k
 
 path = r"C:\Users\Evert Jan\courseradatascience\course02\module07\data\\"
 
@@ -56,12 +107,12 @@ house_data_train_df = read_house_data(path=path, file_name="kc_house_data_small_
 house_data_test_df = read_house_data(path=path, file_name="kc_house_data_small_test.csv", dtype_dict=house_data_dtype_dict())
 house_data_valid_df = read_house_data(path=path, file_name="kc_house_data_validation.csv", dtype_dict=house_data_dtype_dict())
 
-H, y = get_numpy_data(df=house_data_all_df, x_feature_names=x_feature_names, y_feature_names=y_feature_names)
-H, y = get_numpy_data(df=house_data_train_df, x_feature_names=x_feature_names, y_feature_names=y_feature_names)
+H, y_all = get_numpy_data(df=house_data_all_df, x_feature_names=x_feature_names, y_feature_names=y_feature_names)
+H, y_train = get_numpy_data(df=house_data_train_df, x_feature_names=x_feature_names, y_feature_names=y_feature_names)
 H_norm_train, Z_train = normalize_features(feature_matrix=H)
-H, y = get_numpy_data(df=house_data_test_df, x_feature_names=x_feature_names, y_feature_names=y_feature_names)
+H, y_test = get_numpy_data(df=house_data_test_df, x_feature_names=x_feature_names, y_feature_names=y_feature_names)
 H_norm_test = H / Z_train
-H, y = get_numpy_data(df=house_data_valid_df, x_feature_names=x_feature_names, y_feature_names=y_feature_names)
+H, y_valid = get_numpy_data(df=house_data_valid_df, x_feature_names=x_feature_names, y_feature_names=y_feature_names)
 H_norm_valid = H / Z_train
 
 #Question 7
@@ -82,3 +133,30 @@ for i in range(10):
 #Question 14
 print("For question 14 : ")
 print(b[100])
+
+
+#Question 16
+print("For question 16 : ")
+k = 4
+i = 2
+kn_queue = k_nearest_datapoints(feature_matrix=H_norm_train,
+                                input_observation=H_norm_test[i],
+                                k=k)
+print(f"k {k} testrow {i} kn_queue {kn_queue}")
+
+#Question 17
+print("For question 17 : ")
+i = kn_queue[0][0]
+print(i)
+print(house_data_train_df.iloc[i])
+
+#Question 21
+print("For question 21 : ")
+k = 4
+i = 2
+predicted_price = predict_knn(feature_matrix=H_norm_train,
+                              y=y_train,
+                              input_observation=H_norm_test[i],
+                              k=k)
+print(predicted_price)
+
