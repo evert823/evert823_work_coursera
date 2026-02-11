@@ -37,6 +37,14 @@ def normalize_features(feature_matrix: np.ndarray):
     feature_matrix_norm = feature_matrix / Z
     return feature_matrix_norm, Z
 
+def distances(feature_matrix: np.ndarray, input_observation: np.ndarray):
+    print(f"feature_matrix.shape {feature_matrix.shape} input_observation.shape {input_observation.shape}")
+    diff = feature_matrix - input_observation
+    squares = np.square(diff)
+    sum_of_squares = np.sum(squares, axis=1)
+    mydistance = np.sqrt(sum_of_squares)
+    return mydistance
+
 path = r"C:\Users\Evert Jan\courseradatascience\course02\module07\data\\"
 
 x_feature_names = [c for c in list(house_data_dtype_dict().keys()) if c not in ['id', 'date', 'price']]
@@ -58,5 +66,19 @@ H_norm_valid = H / Z_train
 
 #Question 7
 print("For question 7 : ")
-print(H_norm_test[0])
 print(H_norm_train[9])
+print(H_norm_test[0])
+a = np.linalg.norm(H_norm_train[9] - H_norm_test[0])
+print(a)
+
+b = distances(feature_matrix=H_norm_train, input_observation=H_norm_test[0])
+print(b[9])
+
+#Question 10
+print("For question 10 : ")
+for i in range(10):
+    print(b[i])
+
+#Question 14
+print("For question 14 : ")
+print(b[100])
