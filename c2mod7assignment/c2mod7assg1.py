@@ -111,6 +111,11 @@ def predict_knn_all(feature_matrix: np.ndarray,
     y_pred = np.array(list_predicted_prices).reshape(-1, 1)
     return y_pred
 
+def RSS(y_pred: np.ndarray, y: np.ndarray):
+    error = y - y_pred
+    rss = np.sum(error ** 2)
+    return rss
+
 path = r"C:\Users\Evert Jan\courseradatascience\course02\module07\data\\"
 
 x_feature_names = [c for c in list(house_data_dtype_dict().keys()) if c not in ['id', 'date', 'price']]
@@ -185,3 +190,24 @@ y_pred = predict_knn_all(feature_matrix=H_norm_train,
 
 print(y_pred)
 
+#Question 24
+print("For question 24 : ")
+
+for k in range(1, 16):
+    y_pred = predict_knn_all(feature_matrix=H_norm_train,
+                             y=y_train,
+                             input_obs_matrix=H_norm_valid,
+                             k=k)
+    rss = RSS(y_pred=y_pred, y=y_valid)
+    print(f"k {k} rss {rss}")
+
+
+#Question 25
+print("For question 25 : ")
+k = 8
+y_pred = predict_knn_all(feature_matrix=H_norm_train,
+                         y=y_train,
+                         input_obs_matrix=H_norm_test,
+                         k=k)
+rss = RSS(y_pred=y_pred, y=y_test)
+print(f"k {k} rss {rss} on test")
