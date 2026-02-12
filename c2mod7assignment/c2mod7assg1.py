@@ -96,6 +96,21 @@ def predict_knn(feature_matrix: np.ndarray,
         total_price += price
     return total_price / k
 
+def predict_knn_all(feature_matrix: np.ndarray,
+                    y: np.ndarray,
+                    input_obs_matrix: np.ndarray,
+                    k: int):
+    n_input = input_obs_matrix.shape[0]
+    list_predicted_prices = []
+    for i in range(n_input):
+        predicted_price = predict_knn(feature_matrix=feature_matrix,
+                                      y=y,
+                                      input_observation=input_obs_matrix[i],
+                                      k=k)
+        list_predicted_prices.append(predicted_price)
+    y_pred = np.array(list_predicted_prices).reshape(-1, 1)
+    return y_pred
+
 path = r"C:\Users\Evert Jan\courseradatascience\course02\module07\data\\"
 
 x_feature_names = [c for c in list(house_data_dtype_dict().keys()) if c not in ['id', 'date', 'price']]
@@ -159,4 +174,14 @@ predicted_price = predict_knn(feature_matrix=H_norm_train,
                               input_observation=H_norm_test[i],
                               k=k)
 print(predicted_price)
+
+#Question 23
+print("For question 23 : ")
+k = 10
+y_pred = predict_knn_all(feature_matrix=H_norm_train,
+                         y=y_train,
+                         input_obs_matrix=H_norm_test[:10, :],
+                         k=k)
+
+print(y_pred)
 
