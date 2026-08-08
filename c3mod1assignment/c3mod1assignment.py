@@ -85,3 +85,15 @@ logreg.fit(train_matrix, train_df['sentiment'])
 print("Done train logreg")
 
 point_8(logreg)
+
+
+#till including point 11:
+sample_df = test_df.iloc[10:13]
+print(sample_df.iloc[0]['review'])
+print(sample_df.iloc[1]['review'])
+sample_matrix = vectorizer.transform(sample_df['review_clean'])
+#sample_df['score'] = logreg.decision_function(sample_matrix)
+#sample_df['predicted_sentiment'] = sample_df['score'].apply(lambda score : +1 if score > 0 else -1)
+sample_df['predicted_sentiment'] = logreg.predict(sample_matrix)
+for i in range(len(sample_df)):
+    print(sample_df.iloc[i])
