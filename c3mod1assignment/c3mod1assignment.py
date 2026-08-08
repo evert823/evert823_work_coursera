@@ -2,6 +2,7 @@ import pandas as pd
 import os
 import string
 import json
+import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
 
@@ -24,6 +25,10 @@ def remove_punctuation(text):
         return text
     translator = str.maketrans('', '', string.punctuation)
     return text.translate(translator)
+
+def probability_from_score(z: float):
+    score = 1 / (1 + (np.e ** (-z)))
+    return score
 
 def point_8(logreg: LogisticRegression):
     print(logreg.coef_.shape)
@@ -92,8 +97,26 @@ sample_df = test_df.iloc[10:13]
 print(sample_df.iloc[0]['review'])
 print(sample_df.iloc[1]['review'])
 sample_matrix = vectorizer.transform(sample_df['review_clean'])
-#sample_df['score'] = logreg.decision_function(sample_matrix)
+sample_df['score'] = logreg.decision_function(sample_matrix)
+sample_df['p_1'] = sample_df['score'].apply(probability_from_score)
+
 #sample_df['predicted_sentiment'] = sample_df['score'].apply(lambda score : +1 if score > 0 else -1)
 sample_df['predicted_sentiment'] = logreg.predict(sample_matrix)
+
 for i in range(len(sample_df)):
     print(sample_df.iloc[i])
+
+#For point 13:
+print("Going to point 13")
+test_df['score'] = logreg.decision_function(test_matrix)
+test_df['p_1'] = test_df['score'].apply(probability_from_score)
+test_df['predicted_sentiment'] = logreg.predict(test_matrix)
+top20_from_test_df = test_df.sort_values(['score', 'p_1'], ascending=False).iloc[:20]
+for i in range(len(top20_from_test_df)):
+    print(top20_from_test_df.iloc[i]['name'])
+
+#For point 14:
+print("Going to point 14")
+bottom20_from_test_df = test_df.sort_values(['score', 'p_1'], ascending=True).iloc[:20]
+for i in range(len(bottom20_from_test_df)):
+    print(bottom20_from_test_df.iloc[i]['name'])
