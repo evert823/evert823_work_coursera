@@ -69,6 +69,19 @@ def cross_check_word_count(df, word):
         print(f"mycount_1 {mycount_1} mycount_2 {mycount_2}")
         assert mycount_1 == mycount_2
 
+def point_7(df, word):
+    filtered_df = df[all_data_df[word] > 0].copy()
+    print(f"{len(filtered_df)} reviews contained the word {word}")
+
+def create_np_matrix(df, columnnames):
+    '''
+    Convert df, columns indicated by parameter columnnames, to numpy array (2D matrix)
+    If there are N data points and D features then return a NxD matrix
+    '''
+    feature_matrix = df[columnnames].values
+    print_with_tms(f"Created feature matrix with shape {feature_matrix.shape}")
+    return feature_matrix
+
 path = os.path.join("C:\\", "Users", "Evert Jan", "courseradatascience",
                        "course03", "module03", "data")
 file_name_inp = "amazon_baby_subset.csv"
@@ -78,3 +91,10 @@ assess_dataframe(all_data_df)
 
 significant_words = get_significant_words(path=path)
 all_data_df = add_wordcounts_to_df(df=all_data_df, significant_words=significant_words)
+
+point_7(df=all_data_df, word='perfect')
+
+all_data_df['ones'] = 1
+columnnames = ['ones'] + significant_words
+H = create_np_matrix(df=all_data_df, columnnames=columnnames)
+Y = create_np_matrix(df=all_data_df, columnnames=['sentiment'])
