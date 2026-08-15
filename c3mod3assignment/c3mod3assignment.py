@@ -1,0 +1,80 @@
+import os
+import numpy as np
+import pandas as pd
+import string
+import json
+from datetime import datetime
+
+def print_with_tms(message):
+    mytimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"{mytimestamp}|{message}")
+
+def amazon_baby_dtype_dict():
+    dtype_dict = {'name':str, 'review':str, 'rating':int, 'sentiment':int}
+    return dtype_dict
+
+def read_data(path=".\\", file_name="data.csv", dtype_dict=None):
+    mydata = pd.read_csv(os.path.join(path, file_name), dtype=dtype_dict)
+    return mydata
+
+def assess_dataframe(df):
+    print(f"rowcount {df.shape[0]} colcount {df.shape[1]}")
+    print(f"dtypes {dict(df.dtypes)}")
+    print("First 5 rows:")
+    print(df.head())
+
+def remove_punctuation(text):
+    if pd.isna(text):  # Handle NaN values
+        return text
+    translator = str.maketrans('', '', string.punctuation)
+    return text.translate(translator)
+
+def get_significant_words(path):
+    with open(os.path.join(path, "important_words.json")) as f:
+        significant_words = json.load(f)
+    return significant_words
+
+def add_wordcounts_to_df(df, significant_words):
+    new_columns = {}
+    for i in range(len(significant_words)):
+        word = significant_words[i]
+        new_columns[word] = df['review_clean'].apply(lambda text: wordcount_in_text(word=word, text=text))
+        if i % 20 == 0:
+            print_with_tms(f"word no. {i} {word} finished wordcount all data points for this word")
+
+    df = pd.concat([df, pd.DataFrame(new_columns)], axis=1)
+    print_with_tms(f"finished pd.concat")
+    #cross_check_word_count(df=df, word="found")
+    return df
+
+def wordcount_in_text(word: str, text: str) -> int:
+    '''
+    How often does the word appear in the text?
+    E.g. word nice text "The soup was nice but the pasta was not so nice" result 2
+    '''
+    if pd.isna(text):  # Handle NaN values
+        return 0
+    # Convert to lowercase for case-insensitive matching
+    text_lower = text.lower()
+    word_lower = word.lower()
+    # Split text into words and count occurrences
+    words = text_lower.split()
+    return words.count(word_lower)
+
+def cross_check_word_count(df, word):
+    for i in range(len(df)):
+        mytext = df.iloc[i]['review_clean']
+        mycount_1 = df.iloc[i][word]
+        mycount_2 = wordcount_in_text(text=mytext, word=word)
+        print(f"mycount_1 {mycount_1} mycount_2 {mycount_2}")
+        assert mycount_1 == mycount_2
+
+path = os.path.join("C:\\", "Users", "Evert Jan", "courseradatascience",
+                       "course03", "module03", "data")
+file_name_inp = "amazon_baby_subset.csv"
+all_data_df = read_data(path=path, file_name=file_name_inp, dtype_dict=amazon_baby_dtype_dict())
+all_data_df['review_clean'] = all_data_df['review'].apply(remove_punctuation)
+assess_dataframe(all_data_df)
+
+significant_words = get_significant_words(path=path)
+all_data_df = add_wordcounts_to_df(df=all_data_df, significant_words=significant_words)
