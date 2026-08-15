@@ -16,25 +16,42 @@ Logistic regression model
 
 We obtain n data points with d features.
 \newline
-We convert the output to values -1 and 1. That will be stored in n x 1 matrix Y.
+We convert the output to values -1 and 1. That will be stored in n x 1 matrix \(Y\).
 \newline
 We may remove the reviews labeled neutral from our dataset (the data with known sentiment)
 \newline
-In module 2 d features means how often d-th word appears in the original review text
+In module 2, d features means how often d-th word appears in the original review text
 \newline
 We insert a dummy column with ones as 0-th column which we'll map to the intercept \(w_0\)
 \newline
-So we put the features in n x d matrix H
+So we put the features in n x (d+1) matrix \(H\)
 \newline
-We also have d + 1 coefficients which we put in a (d+1) x 1 matrix w where \(w_0\) is the intercept
+We also have d + 1 coefficients which we put in a (d+1) x 1 matrix \(w\) where \(w_0\) is the intercept
 \newline
-The scores per data point is obtained by multiplying H with w:
+The scores per data point are obtained by multiplying \(H\) with \(w\):
 \newline
-Hw = score will be a n x 1 matrix
+\(H \times w\) = score will be a n x 1 matrix
 \newline
 After that we convert each single score to a probability using sigmoid function:
 \[
 P = \frac{1}{1 + e^{-score}}
+\]
+
+
+\section{Side note}
+So far a data point was a row in an n x (d+1) matrix. But alternatively sometimes a row \(x_i\) is denoted as:
+\[
+\begin{bmatrix}
+h_0(x_i)\\
+h_1(x_i)\\
+\vdots\\
+h_d(x_i)
+\end{bmatrix}
+\]
+
+Then the score of the i-th data point is subsequently written as \underline{dot product}
+\[
+score = w^\top h(x_i)
 \]
 
 \end{document}

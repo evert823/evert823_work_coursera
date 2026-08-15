@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.10.11)  15 AUG 2026 09:13
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.10.11)  15 AUG 2026 11:18
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -193,6 +193,12 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1
 
 {C:/Users/Evert Jan/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
+Overfull \hbox (3.62091pt too wide) in paragraph at lines 52--53
+[]\OT1/cmr/m/n/12 Then the score of the i-th data point is sub-se-quently writ-
+ten as $[]$ 
+ []
+
+[2]
 (C:\Users\Evert Jan\Documents\GitHub\evert823_work_coursera\c3mod2assignment\pd
 f\logistic_regression_model.aux)
  ***********
@@ -201,23 +207,25 @@ L3 programming layer <2024-01-04>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 2605 strings out of 474486
- 37838 string characters out of 5753555
- 1928542 words of memory out of 5000000
- 24889 multiletter control sequences out of 15000+600000
+ 2607 strings out of 474486
+ 37896 string characters out of 5753555
+ 1929542 words of memory out of 5000000
+ 24891 multiletter control sequences out of 15000+600000
  566218 words of font info for 68 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 57i,6n,65p,243b,213s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 57i,8n,65p,243b,213s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Progra
-m Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Program Files/MiKT
-eX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Program Files/MiKTeX/fonts/type
-1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsf
-onts/cm/cmr17.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.
-pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
+m Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Program Files/MiKT
+eX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Program Files/MiKTeX/fonts/typ
+e1/public/amsfonts/cm/cmmi8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/ams
+fonts/cm/cmr12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr1
+7.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Prog
+ram Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files/Mi
+KTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
 Output written on "C:\Users\Evert Jan\Documents\GitHub\evert823_work_coursera\c
-3mod2assignment\pdf\logistic_regression_model.pdf" (1 page, 76208 bytes).
+3mod2assignment\pdf\logistic_regression_model.pdf" (2 pages, 98206 bytes).
 PDF statistics:
- 41 PDF objects out of 1000 (max. 8388607)
+ 54 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
