@@ -82,6 +82,13 @@ def create_np_matrix(df, columnnames):
     print_with_tms(f"Created feature matrix with shape {feature_matrix.shape}")
     return feature_matrix
 
+def probability_from_score(z: float):
+    score = 1 / (1 + (np.e ** (-z)))
+    return score
+
+def probabilities_from_score_matrix(score_matrix):
+    return 1.0 / (1.0 + np.exp(-score_matrix))
+
 path = os.path.join("C:\\", "Users", "Evert Jan", "courseradatascience",
                        "course03", "module03", "data")
 file_name_inp = "amazon_baby_subset.csv"
@@ -98,3 +105,7 @@ all_data_df['ones'] = 1
 columnnames = ['ones'] + significant_words
 H = create_np_matrix(df=all_data_df, columnnames=columnnames)
 Y = create_np_matrix(df=all_data_df, columnnames=['sentiment'])
+w_init = np.zeros(H.shape[1], dtype=float)
+score_matrix = np.matmul(H, w_init)
+P_class_1_by_data_point = probabilities_from_score_matrix(score_matrix=score_matrix)
+print(f"P_class_1_by_data_point shape {P_class_1_by_data_point.shape}")

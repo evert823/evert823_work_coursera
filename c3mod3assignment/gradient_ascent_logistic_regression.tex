@@ -2,6 +2,7 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{dsfont}
 \usepackage{float}
 \graphicspath{{images/}}
 \title{Gradient ascent for logistic regression}
@@ -17,6 +18,12 @@ Gradient ascent for logistic regression
 \[
 \ell(w)
 = \prod_{i=0}^{n-1} P(y_i | x_i, w),
+\]
+
+Derivative of likelyhood function (or rather the log of the likelyhood funciton)
+
+\[
+\frac{\partial \ell(w)}{\partial w_j} = \sum_{i=0}^{n-1} h_j(x_i) ( \mathds{1}[y_i=+1] - P(y_i=+1 | x_i,w))
 \]
 
 
