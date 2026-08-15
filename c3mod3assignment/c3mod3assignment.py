@@ -89,6 +89,17 @@ def probability_from_score(z: float):
 def probabilities_from_score_matrix(score_matrix):
     return 1.0 / (1.0 + np.exp(-score_matrix))
 
+def compute_error(Y, P):
+    '''
+    Y has shape (N, 1, )
+    P has shape (N,)
+    Here we need Indicator[y_i = +1] - P[i]
+    Result must be of shape (N,)
+    '''
+    y_flat = np.asarray(Y).reshape(-1)
+    p_flat = np.asarray(P).reshape(-1)
+    return (y_flat == 1).astype(float) - p_flat
+
 path = os.path.join("C:\\", "Users", "Evert Jan", "courseradatascience",
                        "course03", "module03", "data")
 file_name_inp = "amazon_baby_subset.csv"
@@ -109,3 +120,10 @@ w_init = np.zeros(H.shape[1], dtype=float)
 score_matrix = np.matmul(H, w_init)
 P_class_1_by_data_point = probabilities_from_score_matrix(score_matrix=score_matrix)
 print(f"P_class_1_by_data_point shape {P_class_1_by_data_point.shape}")
+
+error = compute_error(Y=Y, P=P_class_1_by_data_point)
+print(f"error shape {error.shape}")
+
+j = 3 #for any given j
+h_j = H[:, j]
+partial_j = np.dot(h_j, error)
