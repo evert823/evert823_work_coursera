@@ -20,7 +20,14 @@ Gradient ascent for logistic regression
 = \prod_{i=0}^{n-1} P(y_i | x_i, w),
 \]
 
-Derivative of likelyhood function (or rather the log of the likelyhood funciton)
+\section{Log likelyhood function}
+\[
+\ell\ell(w)
+= \sum_{i=0}^{n-1} ( ( \mathds{1}[y_i=+1] - 1) w^\top h(x_i) - \ln ( 1 + \mathrm{e}^{-w^\top h(x_i)} ) )
+\]
+
+
+\section{Derivative of log of the likelyhood funciton}
 
 \[
 \frac{\partial \ell(w)}{\partial w_j} = \sum_{i=0}^{n-1} h_j(x_i) ( \mathds{1}[y_i=+1] - P(y_i=+1 | x_i,w))

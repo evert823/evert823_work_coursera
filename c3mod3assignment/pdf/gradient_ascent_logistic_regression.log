@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.10.11)  15 AUG 2026 15:25
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.10.11)  15 AUG 2026 17:24
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -212,7 +212,7 @@ L3 programming layer <2024-01-04>
 Here is how much of TeX's memory you used:
  2643 strings out of 474486
  38820 string characters out of 5753555
- 1927542 words of memory out of 5000000
+ 1928542 words of memory out of 5000000
  24918 multiletter control sequences out of 15000+600000
  566506 words of font info for 71 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -221,16 +221,18 @@ Here is how much of TeX's memory you used:
 /dpi600\dsrom12.pk><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx
 12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/P
 rogram Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Program Files
-/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Program Files/MiKTeX/fonts
-/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX/fonts/type1/public
-/amsfonts/cm/cmr17.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/
-cmr8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:
-/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
+/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Program Files/MiKTeX/fonts
+/type1/public/amsfonts/cm/cmmi8.pfb><C:/Program Files/MiKTeX/fonts/type1/public
+/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/
+cmr17.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/
+Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program File
+s/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Program Files/MiKTeX/font
+s/type1/public/amsfonts/cm/cmsy8.pfb>
 Output written on "C:\Users\Evert Jan\Documents\GitHub\evert823_work_coursera\c
-3mod3assignment\pdf\gradient_ascent_logistic_regression.pdf" (1 page, 93999 byt
-es).
+3mod3assignment\pdf\gradient_ascent_logistic_regression.pdf" (1 page, 113404 by
+tes).
 PDF statistics:
- 56 PDF objects out of 1000 (max. 8388607)
+ 66 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
