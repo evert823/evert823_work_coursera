@@ -120,6 +120,11 @@ def compute_log_likelyhood_term(i, Y, score_matrix):
     result = ( (my_indicator - 1) * myscore ) + term_l
     return result
 
+def print_stuff(iteration_nr, gradient_norm, log_l):
+    s = f"iteration_nr {iteration_nr} gradient_norm {gradient_norm}"
+    s += f" log_likelyhood {log_l}"
+    print(s)
+
 def gradient_ascent_algorithm(w_init,
                               H, Y,
                               epsilon, stepsize,
@@ -135,17 +140,17 @@ def gradient_ascent_algorithm(w_init,
         gradient = np.matmul(H.T, error)
         gradient_norm = np.linalg.norm(gradient)
         log_l = compute_log_likelyhood(Y=Y, score_matrix=score_matrix)
-        print(f"iteration_nr {iteration_nr} gradient_norm {gradient_norm} log_likelyhood {log_l}")
-
-        w_new = gradient_ascent_upd_w(D=D, iteration_nr=iteration_nr,
-                            gradient=gradient, w_current=w_current,
+        if iteration_nr % 10 == 0:
+            print_stuff(iteration_nr, gradient_norm, log_l)
+        w_new = gradient_ascent_upd_w(D=D, gradient=gradient,
+                            w_current=w_current,
                             stepsize=stepsize)
         w_current = np.copy(w_new)
         iteration_nr += 1
+    return w_current
 
-def gradient_ascent_upd_w(D, iteration_nr,
-                              gradient, w_current,
-                              stepsize):
+def gradient_ascent_upd_w(D, gradient,
+                          w_current, stepsize):
     w_new = np.copy(w_current)
     for j in range(D):
         partial_j = gradient[j]
@@ -171,8 +176,9 @@ H = create_np_matrix(df=all_data_df, columnnames=columnnames)
 Y = create_np_matrix(df=all_data_df, columnnames=['sentiment'])
 
 w_init = np.zeros(H.shape[1], dtype=float)
-gradient_ascent_algorithm(w_init=w_init,
-                          H=H, Y=Y,
-                          epsilon=1e-7, stepsize=1e-7,
-                          max_iter = 30)
+w_optimized = gradient_ascent_algorithm(w_init=w_init,
+                        H=H, Y=Y,
+                        epsilon=1e-7, stepsize=1e-7,
+                        max_iter = 301)
 
+print(f"w_optimized {w_optimized}")
