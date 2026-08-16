@@ -100,6 +100,15 @@ def compute_error(Y, P):
     p_flat = np.asarray(P).reshape(-1)
     return (y_flat == 1).astype(float) - p_flat
 
+def compute_log_likelyhood_term(i, Y, score_matrix):
+    my_y = Y[i, 0]
+    my_indicator = 1.0 if my_y == 1 else 0
+    myscore = score_matrix[i]
+    term_l = np.log(1 + np.exp(myscore * -1)) * -1
+
+    result = ( (my_indicator - 1) * myscore ) + term_l
+    return result
+
 path = os.path.join("C:\\", "Users", "Evert Jan", "courseradatascience",
                        "course03", "module03", "data")
 file_name_inp = "amazon_baby_subset.csv"
@@ -118,6 +127,7 @@ H = create_np_matrix(df=all_data_df, columnnames=columnnames)
 Y = create_np_matrix(df=all_data_df, columnnames=['sentiment'])
 w_init = np.zeros(H.shape[1], dtype=float)
 score_matrix = np.matmul(H, w_init)
+print(f"score_matrix shape {score_matrix.shape}")
 P_class_1_by_data_point = probabilities_from_score_matrix(score_matrix=score_matrix)
 print(f"P_class_1_by_data_point shape {P_class_1_by_data_point.shape}")
 
@@ -127,3 +137,7 @@ print(f"error shape {error.shape}")
 j = 3 #for any given j
 h_j = H[:, j]
 partial_j = np.dot(h_j, error)
+
+i = 20 #for any given i
+log_likelyhood_term = compute_log_likelyhood_term(i=i, Y=Y, score_matrix=score_matrix)
+print(f"i {i} log_likelyhood_term {log_likelyhood_term}")
