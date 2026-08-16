@@ -70,7 +70,7 @@ def cross_check_word_count(df, word):
         assert mycount_1 == mycount_2
 
 def point_7(df, word):
-    filtered_df = df[all_data_df[word] > 0].copy()
+    filtered_df = df[df[word] > 0].copy()
     print(f"{len(filtered_df)} reviews contained the word {word}")
 
 def create_np_matrix(df, columnnames):
