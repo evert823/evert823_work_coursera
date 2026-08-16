@@ -100,6 +100,17 @@ def compute_error(Y, P):
     p_flat = np.asarray(P).reshape(-1)
     return (y_flat == 1).astype(float) - p_flat
 
+
+def compute_log_likelyhood(Y, score_matrix):
+    N = Y.shape[0]
+    total = 0.0
+    for i in range(N):
+        term = compute_log_likelyhood_term(i=i,
+                                           Y=Y,
+                                           score_matrix=score_matrix)
+        total += term
+    return total
+
 def compute_log_likelyhood_term(i, Y, score_matrix):
     my_y = Y[i, 0]
     my_indicator = 1.0 if my_y == 1 else 0
@@ -108,6 +119,39 @@ def compute_log_likelyhood_term(i, Y, score_matrix):
 
     result = ( (my_indicator - 1) * myscore ) + term_l
     return result
+
+def gradient_ascent_algorithm(w_init,
+                              H, Y,
+                              epsilon, stepsize,
+                              max_iter):
+    D = H.shape[1]
+    iteration_nr = 0
+    w_current = np.copy(w_init)
+    gradient_norm = 100.0 #dummy large value to have it defined 1st iteration
+    while iteration_nr < max_iter and gradient_norm > epsilon:
+        score_matrix = np.matmul(H, w_current)
+        P_class_1_by_data_point = probabilities_from_score_matrix(score_matrix=score_matrix)
+        error = compute_error(Y=Y, P=P_class_1_by_data_point)
+        gradient = np.matmul(H.T, error)
+        gradient_norm = np.linalg.norm(gradient)
+        log_l = compute_log_likelyhood(Y=Y, score_matrix=score_matrix)
+        print(f"iteration_nr {iteration_nr} gradient_norm {gradient_norm} log_likelyhood {log_l}")
+
+        w_new = gradient_ascent_upd_w(D=D, iteration_nr=iteration_nr,
+                            gradient=gradient, w_current=w_current,
+                            stepsize=stepsize)
+        w_current = np.copy(w_new)
+        iteration_nr += 1
+
+def gradient_ascent_upd_w(D, iteration_nr,
+                              gradient, w_current,
+                              stepsize):
+    w_new = np.copy(w_current)
+    for j in range(D):
+        partial_j = gradient[j]
+        w_new[j] = w_new[j] + ( partial_j * stepsize )
+
+    return w_new
 
 path = os.path.join("C:\\", "Users", "Evert Jan", "courseradatascience",
                        "course03", "module03", "data")
@@ -125,19 +169,10 @@ all_data_df['ones'] = 1
 columnnames = ['ones'] + significant_words
 H = create_np_matrix(df=all_data_df, columnnames=columnnames)
 Y = create_np_matrix(df=all_data_df, columnnames=['sentiment'])
+
 w_init = np.zeros(H.shape[1], dtype=float)
-score_matrix = np.matmul(H, w_init)
-print(f"score_matrix shape {score_matrix.shape}")
-P_class_1_by_data_point = probabilities_from_score_matrix(score_matrix=score_matrix)
-print(f"P_class_1_by_data_point shape {P_class_1_by_data_point.shape}")
+gradient_ascent_algorithm(w_init=w_init,
+                          H=H, Y=Y,
+                          epsilon=1e-7, stepsize=1e-7,
+                          max_iter = 30)
 
-error = compute_error(Y=Y, P=P_class_1_by_data_point)
-print(f"error shape {error.shape}")
-
-j = 3 #for any given j
-h_j = H[:, j]
-partial_j = np.dot(h_j, error)
-
-i = 20 #for any given i
-log_likelyhood_term = compute_log_likelyhood_term(i=i, Y=Y, score_matrix=score_matrix)
-print(f"i {i} log_likelyhood_term {log_likelyhood_term}")
