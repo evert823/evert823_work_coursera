@@ -158,6 +158,49 @@ def gradient_ascent_upd_w(D, gradient,
 
     return w_new
 
+def predict_class(H, w):
+    score_matrix = np.matmul(H, w)
+    Y_predicted = np.where(score_matrix > 0, 1, -1)
+    return Y_predicted
+
+def compute_accuracy(Y, Y_predicted):
+    y_flat = np.asarray(Y).reshape(-1)
+    y_predicted_flat = np.asarray(Y_predicted).reshape(-1)
+    N = len(y_flat)
+    assert N == len(y_predicted_flat)
+
+    correctcount = 0
+    for i in range(N):
+        iscorrect = False
+        if y_flat[i] == 1 and y_predicted_flat[i] == 1:
+            iscorrect = True
+        if y_flat[i] == 1.0 and y_predicted_flat[i] == 1.0:
+            iscorrect = True
+        if y_flat[i] <= 0 and y_predicted_flat[i] <= 0:
+            iscorrect = True
+        if iscorrect == True:
+            correctcount += 1
+
+    return correctcount / N
+
+def point_15(Y_predicted):
+    count1 = 0
+    countm1 = 0
+    for i in range(Y_predicted.shape[0]):
+        if Y_predicted[i] == 1:
+            count1 += 1
+        else:
+            countm1 += 1
+    print(f"Positive {count1} negative {countm1}")
+
+def assess_relevance_of_words(w, significant_words):
+    a = [(z, word) for z, word in zip(w[1:], significant_words)]
+    a = sorted(a, key=lambda x:x[0], reverse=True)
+    print(f"Ten most positive words {a[:10]}")
+    print(f"Ten most negative words {a[-10:]}")
+
+
+
 path = os.path.join("C:\\", "Users", "Evert Jan", "courseradatascience",
                        "course03", "module03", "data")
 file_name_inp = "amazon_baby_subset.csv"
@@ -182,3 +225,13 @@ w_optimized = gradient_ascent_algorithm(w_init=w_init,
                         max_iter = 301)
 
 print(f"w_optimized {w_optimized}")
+
+Y_predicted = predict_class(H=H, w=w_optimized)
+print(f"Y_predicted {Y_predicted.shape}")
+
+point_15(Y_predicted=Y_predicted)
+accuracy = compute_accuracy(Y=Y, Y_predicted=Y_predicted)
+print(f"accuracy {accuracy}")
+
+assess_relevance_of_words(w=w_optimized, significant_words=significant_words)
+
