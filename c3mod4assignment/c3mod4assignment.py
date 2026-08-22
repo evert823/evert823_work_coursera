@@ -229,7 +229,7 @@ def assess_relevance_of_words(w, significant_words):
 
 
 path = os.path.join("C:\\", "Users", "Evert Jan", "courseradatascience",
-                       "course03", "module03", "data")
+                       "course03", "module04", "data")
 file_name_inp = "amazon_baby_subset.csv"
 all_data_df = read_data(path=path, file_name=file_name_inp, dtype_dict=amazon_baby_dtype_dict())
 all_data_df['review_clean'] = all_data_df['review'].apply(remove_punctuation)
@@ -238,26 +238,42 @@ assess_dataframe(all_data_df)
 significant_words = get_significant_words(path=path)
 all_data_df = add_wordcounts_to_df(df=all_data_df, significant_words=significant_words)
 
-point_7(df=all_data_df, word='perfect')
-
 all_data_df['ones'] = 1
 columnnames = ['ones'] + significant_words
-H = create_np_matrix(df=all_data_df, columnnames=columnnames)
-Y = create_np_matrix(df=all_data_df, columnnames=['sentiment'])
 
-w_init = np.zeros(H.shape[1], dtype=float)
+#Use index files for train and validation split (to reproduce a particular split)
+with open(os.path.join(path, "module-4-assignment-train-idx.json")) as f:
+    train_idx = json.load(f)
+print(len(train_idx))
+train_data_df = all_data_df.iloc[train_idx]
+with open(os.path.join(path, "module-4-assignment-validation-idx.json")) as f:
+    val_idx = json.load(f)
+print(len(val_idx))
+val_data_df = all_data_df.iloc[val_idx]
+
+#For point 6:
+H_train = create_np_matrix(df=train_data_df, columnnames=columnnames)
+Y_train = create_np_matrix(df=train_data_df, columnnames=['sentiment'])
+H_val = create_np_matrix(df=val_data_df, columnnames=columnnames)
+Y_val = create_np_matrix(df=val_data_df, columnnames=['sentiment'])
+
+#For point 12
+
+#Below I just left the code from previous module and used H_train instead of H
+
+w_init = np.zeros(H_train.shape[1], dtype=float)
 w_optimized = gradient_ascent_algorithm(w_init=w_init,
-                        H=H, Y=Y,
+                        H=H_train, Y=Y_train,
                         epsilon=1e-7, stepsize=1e-7,
                         max_iter = 301, l2penalty=1e-3)
 
 print(f"w_optimized {w_optimized}")
 
-Y_predicted = predict_class(H=H, w=w_optimized)
+Y_predicted = predict_class(H=H_train, w=w_optimized)
 print(f"Y_predicted {Y_predicted.shape}")
 
 point_15(Y_predicted=Y_predicted)
-accuracy = compute_accuracy(Y=Y, Y_predicted=Y_predicted)
+accuracy = compute_accuracy(Y=Y_train, Y_predicted=Y_predicted)
 print(f"accuracy {accuracy}")
 
 assess_relevance_of_words(w=w_optimized, significant_words=significant_words)
