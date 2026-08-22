@@ -128,10 +128,28 @@ def print_stuff(iteration_nr, gradient_norm, log_l):
     s += f" log_likelyhood {log_l}"
     print(s)
 
+def gradient_with_L2(gradient, w_current, l2penalty):
+    '''
+    for entries 1 - D-1 subtract 2 * l2penalty * w_current[j]
+    '''
+    gradient_l2 = np.copy(gradient)
+    gradient_l2[1:] -= 2 * l2penalty * w_current[1:]
+    return gradient_l2
+
+def l2term(w_current, l2penalty):
+    '''
+    sum of squares of coefficients w
+    0-th coefficient w[0] excluded
+    times l2penalty
+    '''
+    l2norm = np.sum(w_current[1:] ** 2)
+    result = l2penalty * l2norm
+    return result
+
 def gradient_ascent_algorithm(w_init,
                               H, Y,
                               epsilon, stepsize,
-                              max_iter):
+                              max_iter, l2penalty):
     D = H.shape[1]
     iteration_nr = 0
     w_current = np.copy(w_init)
@@ -141,11 +159,17 @@ def gradient_ascent_algorithm(w_init,
         P_class_1_by_data_point = probabilities_from_score_matrix(score_matrix=score_matrix)
         error = compute_error(Y=Y, P=P_class_1_by_data_point)
         gradient = np.matmul(H.T, error)
-        gradient_norm = np.linalg.norm(gradient)
+
+        gradient_l2 = gradient_with_L2(gradient=gradient,
+                                       w_current=w_current,
+                                       l2penalty=l2penalty)
+
+        gradient_norm = np.linalg.norm(gradient_l2)
         log_l = compute_log_likelyhood(Y=Y, score_matrix=score_matrix)
+        log_l -= l2term(w_current=w_current, l2penalty=l2penalty)
         if iteration_nr % 10 == 0:
             print_stuff(iteration_nr, gradient_norm, log_l)
-        w_new = gradient_ascent_upd_w(D=D, gradient=gradient,
+        w_new = gradient_ascent_upd_w(D=D, gradient=gradient_l2,
                             w_current=w_current,
                             stepsize=stepsize)
         w_current = np.copy(w_new)
@@ -225,7 +249,7 @@ w_init = np.zeros(H.shape[1], dtype=float)
 w_optimized = gradient_ascent_algorithm(w_init=w_init,
                         H=H, Y=Y,
                         epsilon=1e-7, stepsize=1e-7,
-                        max_iter = 301)
+                        max_iter = 301, l2penalty=1e-3)
 
 print(f"w_optimized {w_optimized}")
 
