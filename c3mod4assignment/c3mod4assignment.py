@@ -124,6 +124,8 @@ def compute_log_likelyhood_term(i, Y, score_matrix):
     return result
 
 def print_stuff(iteration_nr, gradient_norm, log_l):
+    if PRINTSTUFF == False:
+        return
     s = f"iteration_nr {iteration_nr} gradient_norm {gradient_norm}"
     s += f" log_likelyhood {log_l}"
     print(s)
@@ -220,14 +222,31 @@ def point_15(Y_predicted):
             countm1 += 1
     print(f"Positive {count1} negative {countm1}")
 
-def assess_relevance_of_words(w, significant_words):
-    a = [(z, word) for z, word in zip(w[1:], significant_words)]
-    a = sorted(a, key=lambda x:x[0], reverse=True)
-    print(f"Ten most positive words {a[:10]}")
-    print(f"Ten most negative words {a[-10:]}")
+def top_5_bottom_5(w, significant_words):
+    words_with_scores = [
+        (score, word, index)
+        for index, (score, word) in enumerate(zip(w[1:], significant_words))
+    ]
+
+    words_with_scores.sort(key=lambda item: item[0], reverse=True)
+
+    top5 = words_with_scores[:5]
+    bottom5 = words_with_scores[-5:]
+
+    return top5, bottom5
+
+class mymodelclass:
+    '''
+    Placeholder for encapsulate a few repetitive things
+    '''
+    def __init__(self, l2penalty=0.0, model_name = ""):
+        self.model_name = model_name
+        self.w_init = np.zeros(H_train.shape[1], dtype=float)
+        self.w_optimized = None
+        self.l2penalty = l2penalty
 
 
-
+PRINTSTUFF = False
 path = os.path.join("C:\\", "Users", "Evert Jan", "courseradatascience",
                        "course03", "module04", "data")
 file_name_inp = "amazon_baby_subset.csv"
@@ -261,20 +280,67 @@ Y_val = create_np_matrix(df=val_data_df, columnnames=['sentiment'])
 
 #Below I just left the code from previous module and used H_train instead of H
 
-w_init = np.zeros(H_train.shape[1], dtype=float)
-w_optimized = gradient_ascent_algorithm(w_init=w_init,
-                        H=H_train, Y=Y_train,
-                        epsilon=1e-7, stepsize=1e-7,
-                        max_iter = 301, l2penalty=1e-3)
+class_0 = mymodelclass(l2penalty=0.0, model_name="class_0")
+class_4 = mymodelclass(l2penalty=4.0, model_name="class_4")
+class_10 = mymodelclass(l2penalty=10.0, model_name="class_10")
+class_1e2 = mymodelclass(l2penalty=1e2, model_name="class_1e2")
+class_1e3 = mymodelclass(l2penalty=1e3, model_name="class_1e3")
+class_1e5 = mymodelclass(l2penalty=1e5, model_name="class_1e5")
 
-print(f"w_optimized {w_optimized}")
+allclasses = [class_0, class_4, class_10, class_1e2, class_1e3, class_1e5]
 
-Y_predicted = predict_class(H=H_train, w=w_optimized)
-print(f"Y_predicted {Y_predicted.shape}")
+for cl in allclasses:
+    cl.w_optimized = gradient_ascent_algorithm(w_init=cl.w_init,
+                            H=H_train, Y=Y_train,
+                            epsilon=1e-7, stepsize=5e-6,
+                            max_iter = 501, l2penalty=cl.l2penalty)
+    #print(f"{cl.model_name} w_optimized {cl.w_optimized}")
+    Y_predicted = predict_class(H=H_train, w=cl.w_optimized)
+    accuracy = compute_accuracy(Y=Y_train, Y_predicted=Y_predicted)
+    print_with_tms(f"{cl.model_name} accuracy {accuracy}")
 
-point_15(Y_predicted=Y_predicted)
-accuracy = compute_accuracy(Y=Y_train, Y_predicted=Y_predicted)
-print(f"accuracy {accuracy}")
+#For point 13
+print(f"Going to point 13")
+top_5_0, bottom_5_0 = top_5_bottom_5(w=class_0.w_optimized, significant_words=significant_words)
+print(f"top 5 penalty 0 {top_5_0}")
+print(f"bottom 5 penalty 0 {bottom_5_0}")
 
-assess_relevance_of_words(w=w_optimized, significant_words=significant_words)
 
+#For point 14
+print(f"Going to point 14")
+extreme_5_0 = top_5_0 + bottom_5_0
+for item in extreme_5_0:
+    for cl in allclasses:
+        i = item[2]
+        w1 = item[1]
+        w2 = significant_words[i]
+        assert w1 == w2
+        z = cl.w_optimized[i + 1]
+        z0 = item[0]
+        if cl.model_name == "class_0":
+            assert(z == z0)
+        print(f"{i} {w1} {z}")
+
+#For point 14 2nd quiz question
+print(f"Going to point 14 2nd quiz question")
+for cl in allclasses:
+    for item in extreme_5_0:
+        i = item[2]
+        w1 = item[1]
+        w2 = significant_words[i]
+        assert w1 == w2
+        z = cl.w_optimized[i + 1]
+        z0 = item[0]
+        if cl.model_name == "class_0":
+            assert(z == z0)
+        print(f"{i} {w1} {z}")
+
+#For point 15
+print(f"Going to point 15")
+for cl in allclasses:
+    Y_predicted = predict_class(H=H_train, w=cl.w_optimized)
+    accuracy = compute_accuracy(Y=Y_train, Y_predicted=Y_predicted)
+    print_with_tms(f"{cl.model_name} accuracy {accuracy}")
+    Y_predicted = predict_class(H=H_val, w=cl.w_optimized)
+    accuracy_on_val = compute_accuracy(Y=Y_val, Y_predicted=Y_predicted)
+    print_with_tms(f"{cl.model_name} accuracy_on_val {accuracy_on_val}")
