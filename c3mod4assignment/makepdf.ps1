@@ -1,0 +1,1 @@
+pdflatex -output-directory="pdf" -jobname=gradient_ascent_logistic_regression_L2 gradient_ascent_logistic_regression_L2.tex

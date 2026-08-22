@@ -16,13 +16,13 @@ Gradient ascent for logistic regression
 \section{Likelyhood function}
 
 \[
-\ell(w)
+L(w)
 = \prod_{i=0}^{n-1} P(y_i | x_i, w),
 \]
 
 \section{Log likelyhood function}
 \[
-\ell\ell(w)
+\ell(w)
 = \sum_{i=0}^{n-1} ( ( \mathds{1}[y_i=+1] - 1) w^\top h(x_i) - \ln ( 1 + \mathrm{e}^{-w^\top h(x_i)} ) )
 \]
 
