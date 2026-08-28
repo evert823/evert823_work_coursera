@@ -16,16 +16,33 @@ class TreeNode:
         self.Y = np.asarray(Y).view()
         self.X.flags.writeable = False
         self.Y.flags.writeable = False
+        self.majority_class = None
+        self.majority_probability = None
+        self.correctcount = None
+        self.errorcount = None
 
     def calculate_majority_class(self):
+        self.majority_class = None
+        self.majority_probability = None
+        self.correctcount = 0
+        self.errorcount = 0
+        if len(self.i) == 0:
+            return
+
         values, counts = np.unique(
             self.Y[self.i, 0],
             return_counts=True
         )
 
         majority_index = np.argmax(counts)
-        majority_class = values[majority_index]
-        majority_probability = counts[majority_index] / len(self.i)
+        self.majority_class = values[majority_index]
+        self.correctcount = int(counts[majority_index])
+        self.errorcount = len(self.i) - self.correctcount
+        self.majority_probability = self.correctcount / len(self.i)
 
-        return majority_class, majority_probability
-
+    def node_as_str(self):
+        s = f"majority_class {self.majority_class}"
+        s += f"\nmajority_probability {self.majority_probability}"
+        s += f"\ncorrectcount {self.correctcount}"
+        s += f"\nerrorcount {self.errorcount}"
+        return s
