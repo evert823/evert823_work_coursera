@@ -75,6 +75,15 @@ def apply_one_hot_encoding(df):
     df2 = pd.get_dummies(df, dtype=int)
     return df2
 
+def create_np_matrix(df, columnnames):
+    '''
+    Convert df, columns indicated by parameter columnnames, to numpy array (2D matrix)
+    If there are N data points and D features then return a NxD matrix
+    '''
+    feature_matrix = df[columnnames].values
+    print_with_tms(f"Created feature matrix with shape {feature_matrix.shape}")
+    return feature_matrix
+
 PRINTSTUFF = False
 
 print_with_tms("Start script")
@@ -101,3 +110,14 @@ with open(os.path.join(path, "module-5-assignment-2-test-idx.json")) as f:
 test_data_df = all_data_df.iloc[test_idx]
 if PRINTSTUFF == True:
     print_with_tms(f"total {len(all_data_df)} train {len(train_data_df)} test {len(test_data_df)}")
+
+X_train = create_np_matrix(df=train_data_df, columnnames=x_features_enc)
+Y_train = create_np_matrix(df=train_data_df, columnnames=y_features)
+
+N = X_train.shape[0]
+
+myroot = TreeNode(X=X_train, Y=Y_train)
+myroot.i = [0, 1, 37223, 37222, 3, 37221, 4, 37220, 37219, 37218]
+print(Y_train[myroot.i, :])
+majority_class, majority_probability = myroot.calculate_majority_class()
+print(f"majority_class {majority_class} majority_probability {majority_probability}")
