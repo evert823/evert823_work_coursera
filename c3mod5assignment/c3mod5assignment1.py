@@ -123,6 +123,26 @@ def visualize_treemodel(tree, class_names, feature_names):
         cleanup=True
     )
 
+def count_false_positives_false_negatives(tree, X, Y):
+    '''
+    Input: and ALREADY TRAINED tree decision model tree
+    '''
+    false_pos_count = 0
+    false_neg_count = 0
+    predictions = tree.predict(X=X)
+    p_flat = np.asarray(predictions).reshape(-1)
+    y_flat = np.asarray(Y).reshape(-1)
+    numberofpredictions = len(p_flat)
+    numberofknownvalues = len(y_flat)
+    assert numberofknownvalues == numberofpredictions
+    for i in range(numberofpredictions):
+        if p_flat[i] == -1 and y_flat[i] == 1:
+            false_neg_count += 1
+        if p_flat[i] == 1 and y_flat[i] == -1:
+            false_pos_count += 1
+
+    return false_pos_count, false_neg_count
+
 print_with_tms("Start script")
 path = os.path.join("C:\\", "Users", "Evert Jan", "courseradatascience",
                        "course03", "module05", "data")
@@ -145,10 +165,20 @@ val_data_df = all_data_df.iloc[val_idx]
 if PRINTSTUFF == True:
     print_with_tms(f"total {len(all_data_df)} train {len(train_data_df)} val {len(val_data_df)}")
 
+
+#Section to build the very small samples BEGIN
+sample_risky_df = val_data_df.loc[val_data_df["safe_loans"] == -1].head(2).copy()
+sample_safe_df = val_data_df.loc[val_data_df["safe_loans"] == 1].head(2).copy()
+sample_df = pd.concat([sample_risky_df, sample_safe_df], ignore_index=True)
+#Section to build the very small samples END
+
+
 X_train = create_np_matrix(df=train_data_df, columnnames=x_features_enc)
 Y_train = create_np_matrix(df=train_data_df, columnnames=y_features)
 X_val = create_np_matrix(df=val_data_df, columnnames=x_features_enc)
 Y_val = create_np_matrix(df=val_data_df, columnnames=y_features)
+X_sample = create_np_matrix(df=sample_df, columnnames=x_features_enc)
+Y_sample = create_np_matrix(df=sample_df, columnnames=y_features)
 print_with_tms("start tree.fit")
 
 tree_depth_6 = DecisionTreeClassifier(random_state=0, max_depth=6)
@@ -168,3 +198,36 @@ print(f"accuracy_train_depth_2 {accuracy_train_depth_2} accuracy_val_depth_2 {ac
 visualize_treemodel(tree=tree_depth_2,
                     class_names=["unsafe", "safe"],
                     feature_names=x_features_enc)
+
+predictions = tree_depth_6.predict(X=X_sample)
+print_with_tms(f"predictions\n{predictions}")
+print_with_tms(f"input\n{sample_df['safe_loans']}")
+accuracy_sample_depth_6 = tree_depth_6.score(X=X_sample, y=Y_sample)
+print(f"accuracy_sample_depth_6 {accuracy_sample_depth_6}")
+
+predictions_proba = tree_depth_6.predict_proba(X=X_sample)
+print(predictions_proba)
+
+#Point 14
+print_with_tms("Going to point 14")
+predictions_proba = tree_depth_2.predict_proba(X=X_sample)
+print(predictions_proba)
+
+#Point 14a
+print_with_tms("Going to point 14a")
+print(sample_df.iloc[1][['grade_A', 'total_rec_late_fee']])
+
+#Point 18
+print_with_tms("Going to point 18")
+tree_depth_10 = DecisionTreeClassifier(random_state=0, max_depth=10)
+tree_depth_10.fit(X=X_train, y=Y_train)
+print_with_tms("finished tree.fit")
+accuracy_train_depth_10 = tree_depth_10.score(X=X_train, y=Y_train)
+accuracy_val_depth_10 = tree_depth_10.score(X=X_val, y=Y_val)
+print(f"accuracy_train_depth_10 {accuracy_train_depth_10} accuracy_val_depth_10 {accuracy_val_depth_10}")
+
+#Point 20
+print_with_tms("Going to point 20")
+false_pos_count, false_neg_count = count_false_positives_false_negatives(tree=tree_depth_6, X=X_val, Y=Y_val)
+cost = ( false_neg_count * 10000 ) + ( false_pos_count * 20000 )
+print_with_tms(f"false_pos_count {false_pos_count} false_neg_count {false_neg_count} cost {cost}")
