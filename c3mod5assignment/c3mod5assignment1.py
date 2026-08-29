@@ -4,6 +4,9 @@ from sklearn.tree import DecisionTreeClassifier, export_graphviz
 from datetime import datetime
 import os
 import json
+graphviz_path = r"C:\Program Files\Graphviz\bin"
+if graphviz_path not in os.environ["PATH"]:
+    os.environ["PATH"] += os.pathsep + graphviz_path
 import graphviz
 
 def print_with_tms(message):

@@ -195,3 +195,43 @@ class TreeBinaryClassifier:
             if predictions[i, 0] == Y[i]:
                 correctcount += 1
         return correctcount / N
+
+    def to_graphviz_dot(self):
+        '''
+        Convert the tree to GraphViz DOT format for visualization
+        Returns a string in DOT language that can be used to generate a tree diagram
+        '''
+        dot_lines = ["digraph DecisionTree {"]
+        dot_lines.append("    node [shape=box];")
+        
+        # Add nodes
+        for idx, node in enumerate(self.nodes):
+            label = f"Node {idx}\n"
+            if node.is_leaf:
+                label += f"Class: {node.majority_class}\n"
+                if node.majority_probability is not None:
+                    label += f"Prob: {node.majority_probability:.2f}"
+                else:
+                    label += "Prob: N/A"
+            else:
+                label += f"Best feature j: {node.best_j_from_node}\n"
+                label += f"Samples: {len(node.i)}"
+            
+            dot_lines.append(f'    {idx} [label="{label}"];')
+        
+        # Add edges
+        for parent_idx, child_idx, feature_j, feature_value in self.relations:
+            label = f"X[{feature_j}]=={feature_value}"
+            dot_lines.append(f'    {parent_idx} -> {child_idx} [label="{label}"];')
+        
+        dot_lines.append("}")
+        return "\n".join(dot_lines)
+
+    def save_tree_as_dot(self, filename="tree.dot"):
+        '''
+        Save the tree as a GraphViz DOT file
+        '''
+        dot_content = self.to_graphviz_dot()
+        with open(filename, 'w') as f:
+            f.write(dot_content)
+        print(f"Tree saved to {filename}")

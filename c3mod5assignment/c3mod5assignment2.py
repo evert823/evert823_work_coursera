@@ -4,6 +4,10 @@ from datetime import datetime
 import os
 import json
 from tree_binary_classifier import TreeBinaryClassifier
+graphviz_path = r"C:\Program Files\Graphviz\bin"
+if graphviz_path not in os.environ["PATH"]:
+    os.environ["PATH"] += os.pathsep + graphviz_path
+import graphviz
 
 def print_with_tms(message):
     mytimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -140,3 +144,21 @@ print(f"Nog 1x de hierbij horende fieatures : {x_features_enc}")
 print("Now going to point 16 and 17")
 accuracy_test = tbc.accuracy_on_dataset(X=X_test, Y=Y_test)
 print_with_tms(f"accuracy_test {accuracy_test} classification error {1 - accuracy_test}")
+
+#Point 18
+print("Now going to point 18")
+output_dir = "output"
+os.makedirs(output_dir, exist_ok=True)
+output_file = os.path.join(output_dir, "lending_club_tree.dot")
+tbc.save_tree_as_dot(filename=output_file)
+print("Tree saved as lending_club_tree.dot")
+
+
+try:
+    with open(output_file, 'r') as f:
+        dot_content = f.read()
+    graph = graphviz.Source(dot_content)
+    graph.render(filename=os.path.join(output_dir, "lending_club_tree"), format='png', cleanup=True)
+    print("Tree rendered as lending_club_tree.png")
+except Exception as e:
+    print(f"Error rendering tree: {e}")
