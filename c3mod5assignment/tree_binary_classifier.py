@@ -141,3 +141,39 @@ class TreeBinaryClassifier:
                 if self.nodes[next_node_idx].is_leaf == False:
                     self.do_split(X=X, Y=Y, from_node_idx=next_node_idx,
                                 selected_j=self.nodes[next_node_idx].best_j_from_node)
+
+    def predict_at_node(self, X, i, node_idx):
+        '''
+        For given feature matrix X observation index i and node
+        we find and return predicted class and probability for it
+        '''
+        if self.nodes[node_idx].is_leaf == True:
+            return self.nodes[node_idx].majority_class, self.nodes[node_idx].majority_probability
+        else:
+            for ri in range(len(self.relations)):
+                if self.relations[ri][0] == node_idx:
+                    child_idx = self.relations[ri][1]
+                    j = self.relations[ri][2]
+                    fv = self.relations[ri][3]
+                    if X[i, j] == fv:
+                        cv, prob = self.predict_at_node(X=X, i=i, node_idx=child_idx)
+                        return cv, prob
+        raise Exception(f"Not able to traverse tree based on observation {i}")
+
+
+    def predict(self, X):
+        '''
+        Based on input features X we predict output values by traversing the tree
+        The tree must already be built using the fit method before calling predict
+        Returns an Nx2 matrix where:
+        - Column 0: predicted class for each row
+        - Column 1: probability of that prediction for each row
+        '''
+        N = X.shape[0]
+        predictions = np.zeros((N, 2))
+        root_idx = 0
+        for i in range(N):
+            cv, prob = self.predict_at_node(X=X, i=i, node_idx=root_idx)
+            predictions[i, 0] = cv
+            predictions[i, 1] = prob
+        return predictions
