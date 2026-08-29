@@ -20,13 +20,18 @@ class TreeNode:
         self.majority_probability = None
         self.correctcount = None
         self.errorcount = None
+        self.best_j_from_node = -1
+        self.is_leaf = False
+        self.used_features_current_path = []
+        self.current_depth = -1
 
-    def calculate_majority_class(self):
+    def calculate_node_values(self):
         self.majority_class = None
         self.majority_probability = None
         self.correctcount = 0
         self.errorcount = 0
         if len(self.i) == 0:
+            self.is_leaf = True
             return
 
         values, counts = np.unique(
@@ -38,6 +43,8 @@ class TreeNode:
         self.majority_class = values[majority_index]
         self.correctcount = int(counts[majority_index])
         self.errorcount = len(self.i) - self.correctcount
+        if self.errorcount == 0:
+            self.is_leaf = True
         self.majority_probability = self.correctcount / len(self.i)
 
     def node_as_str(self):

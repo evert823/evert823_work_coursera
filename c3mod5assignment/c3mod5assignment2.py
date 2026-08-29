@@ -4,6 +4,7 @@ from datetime import datetime
 import os
 import json
 from tree_node import TreeNode
+from tree_binary_classifier import TreeBinaryClassifier
 
 def print_with_tms(message):
     mytimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -72,6 +73,10 @@ def prepare_data(df, x_features, y_features):
     return df2[x_features + y_features]
 
 def apply_one_hot_encoding(df):
+    '''
+    The result of one-ho encoding is that multiclass categorical features are replaced with binary features
+    that contain only 0 or 1 as values
+    '''
     df2 = pd.get_dummies(df, dtype=int)
     return df2
 
@@ -84,55 +89,7 @@ def create_np_matrix(df, columnnames):
     print_with_tms(f"Created feature matrix with shape {feature_matrix.shape}")
     return feature_matrix
 
-def evaluate_split_by_feature_in_tree_node(X, Y, tn: TreeNode, j):
-    '''
-    - X NxD matrix (features)
-    - Y Nx1 matrix (target class known value from training data)
-    - tn TreeNode from which we split
-    - j index of feature that we evaluate - must be categorical/binary feature 1 or 0
-    '''
-    next_tn_0 = TreeNode(X=X, Y=Y)
-    next_tn_1 = TreeNode(X=X, Y=Y)
-    for idx in range(len(tn.i)):
-        binaryfeaturevalue = X[tn.i[idx], j]
-        if binaryfeaturevalue == 0:
-            next_tn_0.i.append(tn.i[idx])
-        elif binaryfeaturevalue == 1:
-            next_tn_1.i.append(tn.i[idx])
-        else:
-            raise Exception(f"binaryfeaturevalue {binaryfeaturevalue} expected to be 0 or 1")
-    next_tn_0.calculate_majority_class()
-    next_tn_1.calculate_majority_class()
-    agg_correctcount = next_tn_0.correctcount + next_tn_1.correctcount
-    agg_errorcount = next_tn_0.errorcount + next_tn_1.errorcount
-    agg_accuracy = agg_correctcount / (agg_correctcount + agg_errorcount)
-    return agg_accuracy, agg_correctcount, agg_errorcount
-
-def select_feature_for_split_from_tree_node(X, Y, tn: TreeNode):
-    '''
-    - X NxD matrix (features) can only contain binary/categorical features with values 0 or 1
-    - Y Nx1 matrix (target class known value from training data)
-    - tn TreeNode from which we split
-    '''
-    best_accuracy_so_far = 0.0
-    best_j_so_far = -1
-    D = X.shape[1]
-    for j in range(D):
-        agg_accuracy, agg_correctcount, agg_errorcount = evaluate_split_by_feature_in_tree_node(X=X,
-                                                                                                Y=Y,
-                                                                                                tn=tn,
-                                                                                                j=j)
-        if agg_accuracy > best_accuracy_so_far:
-            if PRINTSTUFF == True:
-                print(f"j {j} accuracy {agg_accuracy} --> this is the new best")
-            best_accuracy_so_far = agg_accuracy
-            best_j_so_far = j
-        else:
-            if PRINTSTUFF == True:
-                print(f"j {j} accuracy {agg_accuracy}")
-    return best_j_so_far
-
-PRINTSTUFF = False
+PRINTSTUFF = True
 
 print_with_tms("Start script")
 path = os.path.join("C:\\", "Users", "Evert Jan", "courseradatascience",
@@ -165,9 +122,8 @@ Y_train = create_np_matrix(df=train_data_df, columnnames=y_features)
 N = X_train.shape[0]
 
 #We can calculate majority class and probability given a node
-myroot = TreeNode(X=X_train, Y=Y_train)
-myroot.i = [i for i in range(N)]
-best_j = select_feature_for_split_from_tree_node(X=X_train,
-                                                 Y=Y_train,
-                                                 tn=myroot)
-print_with_tms(f"best_j {best_j}")
+tbc = TreeBinaryClassifier(X=X_train, Y=Y_train)
+tbc.max_depth = 10
+if PRINTSTUFF == True:
+    tbc.verbose = True
+tbc.fit()
