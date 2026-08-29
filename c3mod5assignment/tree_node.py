@@ -8,14 +8,10 @@ Expected:
 import numpy as np
 
 class TreeNode:
-    def __init__(self, X, Y):
+    def __init__(self):
         self.i = []
 
         #We enforce that we have read only access to X and Y from this class
-        self.X = np.asarray(X).view()
-        self.Y = np.asarray(Y).view()
-        self.X.flags.writeable = False
-        self.Y.flags.writeable = False
         self.majority_class = None
         self.majority_probability = None
         self.correctcount = None
@@ -25,7 +21,7 @@ class TreeNode:
         self.used_features_current_path = []
         self.current_depth = -1
 
-    def calculate_node_values(self):
+    def calculate_node_values(self, Y):
         self.majority_class = None
         self.majority_probability = None
         self.correctcount = 0
@@ -35,7 +31,7 @@ class TreeNode:
             return
 
         values, counts = np.unique(
-            self.Y[self.i, 0],
+            Y[self.i, 0],
             return_counts=True
         )
 

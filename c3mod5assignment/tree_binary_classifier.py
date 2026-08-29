@@ -8,13 +8,9 @@ import numpy as np
 from tree_node import TreeNode
 
 class TreeBinaryClassifier:
-    def __init__(self, X, Y):
+    def __init__(self):
         self.verbose = False
         #We enforce that we have read only access to X and Y from this class
-        self.X = np.asarray(X).view()
-        self.Y = np.asarray(Y).view()
-        self.X.flags.writeable = False
-        self.Y.flags.writeable = False
 
         self.nodes = []
         self.relations : list[tuple[int, int, int, int]] = []
@@ -23,25 +19,25 @@ class TreeBinaryClassifier:
         Relation will be stored as tuple
         - parent_node_idx (refers to self.nodes)
         - child_node_idx (refers to self.nodes)
-        - j (j in range(D) where D equals self.X.shape[1])
+        - j (j in range(D) where D equals X.shape[1])
         - feature_value (should be 0 or 1 and indicates the branch of the child_node)
         '''
 
-    def initialize_tree(self):
+    def initialize_tree(self, X, Y):
         '''
         We create the root node and calculate its values
         '''
         self.nodes.clear()
         self.relations.clear()
-        self.nodes.append(TreeNode(X=self.X, Y=self.Y))
-        N = self.X.shape[0]
+        self.nodes.append(TreeNode())
+        N = X.shape[0]
         self.nodes[0].i = [idx for idx in range(N)]
-        self.nodes[0].calculate_node_values()
+        self.nodes[0].calculate_node_values(Y=Y)
         self.nodes[0].current_depth = 0
 
-    def help_split(self, pn, cn1, cn2, j):
+    def help_split(self, X, pn, cn1, cn2, j):
         for row_idx in pn.i:
-            fv = self.X[row_idx, j]
+            fv = X[row_idx, j]
             if fv == 0:
                 cn1.i.append(row_idx)
             elif fv == 1:
@@ -49,7 +45,7 @@ class TreeBinaryClassifier:
             else:
                 raise Exception(f"fv {fv} expected to be 0 or 1")
 
-    def do_split(self, from_node_idx, selected_j):
+    def do_split(self, X, Y, from_node_idx, selected_j):
         '''
         Before calling this method, we have found the best j for next split
         Then we create two child nodes for branches for values 0 and 1
@@ -58,17 +54,17 @@ class TreeBinaryClassifier:
         '''
         child_1_idx = len(self.nodes)
         child_2_idx = child_1_idx + 1
-        self.nodes.append(TreeNode(X=self.X, Y=self.Y))
-        self.nodes.append(TreeNode(X=self.X, Y=self.Y))
+        self.nodes.append(TreeNode())
+        self.nodes.append(TreeNode())
 
         #Now in self.nodes[from_node_idx] we identify which i are mapped to feature value 0 and which to 1
         pn = self.nodes[from_node_idx]
         c1 = self.nodes[child_1_idx]
         c2 = self.nodes[child_2_idx]
-        self.help_split(pn=pn, cn1=c1, cn2=c2, j=selected_j)
+        self.help_split(X=X, pn=pn, cn1=c1, cn2=c2, j=selected_j)
 
-        c1.calculate_node_values()
-        c2.calculate_node_values()
+        c1.calculate_node_values(Y=Y)
+        c2.calculate_node_values(Y=Y)
         c1.used_features_current_path = pn.used_features_current_path.copy()
         c2.used_features_current_path = pn.used_features_current_path.copy()
         c1.used_features_current_path.append(selected_j)
@@ -86,24 +82,24 @@ class TreeBinaryClassifier:
         if self.verbose == True:
             print(f"parent {from_node_idx} used {pn.used_features_current_path} childs {child_1_idx} {child_2_idx} number of relations {len(self.relations)} depth {pn.current_depth}")
 
-    def evaluate_split_by_feature_in_tree_node(self, tn: TreeNode, j):
+    def evaluate_split_by_feature_in_tree_node(self, X, Y, tn: TreeNode, j):
         '''
         - tn TreeNode from which we split
         - j index of feature that we evaluate - must be categorical/binary feature 1 or 0
         '''
-        next_tn_0 = TreeNode(X=self.X, Y=self.Y)
-        next_tn_1 = TreeNode(X=self.X, Y=self.Y)
+        next_tn_0 = TreeNode()
+        next_tn_1 = TreeNode()
 
-        self.help_split(pn=tn, cn1=next_tn_0, cn2=next_tn_1, j=j)
+        self.help_split(X=X, pn=tn, cn1=next_tn_0, cn2=next_tn_1, j=j)
 
-        next_tn_0.calculate_node_values()
-        next_tn_1.calculate_node_values()
+        next_tn_0.calculate_node_values(Y=Y)
+        next_tn_1.calculate_node_values(Y=Y)
         agg_correctcount = next_tn_0.correctcount + next_tn_1.correctcount
         agg_errorcount = next_tn_0.errorcount + next_tn_1.errorcount
         agg_accuracy = agg_correctcount / (agg_correctcount + agg_errorcount)
         return agg_accuracy, agg_correctcount, agg_errorcount
 
-    def select_feature_for_split_from_tree_node(self, tn: TreeNode):
+    def select_feature_for_split_from_tree_node(self, X, Y, tn: TreeNode):
         '''
         - tn TreeNode from which we split
         '''
@@ -112,11 +108,13 @@ class TreeBinaryClassifier:
             return
         best_accuracy_so_far = 0.0
         best_j_so_far = -1
-        D = self.X.shape[1]
+        D = X.shape[1]
         for j in range(D):
             if j not in tn.used_features_current_path:
-                agg_accuracy, agg_correctcount, agg_errorcount = self.evaluate_split_by_feature_in_tree_node(tn=tn,
-                                                                                                    j=j)
+                agg_accuracy, agg_correctcount, agg_errorcount = self.evaluate_split_by_feature_in_tree_node(X=X,
+                                                Y=Y,
+                                                tn=tn,
+                                                j=j)
                 if agg_accuracy > best_accuracy_so_far:
                     best_accuracy_so_far = agg_accuracy
                     best_j_so_far = j
@@ -130,8 +128,8 @@ class TreeBinaryClassifier:
                 return idx
         return -1
 
-    def fit(self):
-        self.initialize_tree()
+    def fit(self, X, Y):
+        self.initialize_tree(X=X, Y=Y)
 
         fit_completed = False
         while fit_completed == False:
@@ -139,7 +137,7 @@ class TreeBinaryClassifier:
             if next_node_idx == -1:
                 fit_completed = True
             else:
-                self.select_feature_for_split_from_tree_node(tn=self.nodes[next_node_idx])
+                self.select_feature_for_split_from_tree_node(X=X, Y=Y, tn=self.nodes[next_node_idx])
                 if self.nodes[next_node_idx].is_leaf == False:
-                    self.do_split(from_node_idx=next_node_idx,
+                    self.do_split(X=X, Y=Y, from_node_idx=next_node_idx,
                                 selected_j=self.nodes[next_node_idx].best_j_from_node)

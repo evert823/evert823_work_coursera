@@ -122,8 +122,8 @@ Y_train = create_np_matrix(df=train_data_df, columnnames=y_features)
 N = X_train.shape[0]
 
 #We can calculate majority class and probability given a node
-tbc = TreeBinaryClassifier(X=X_train, Y=Y_train)
-tbc.max_depth = 10
+tbc = TreeBinaryClassifier()
+tbc.max_depth = 6
 if PRINTSTUFF == True:
     tbc.verbose = True
-tbc.fit()
+tbc.fit(X=X_train, Y=Y_train)
