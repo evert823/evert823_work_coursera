@@ -3,7 +3,6 @@ import pandas as pd
 from datetime import datetime
 import os
 import json
-from tree_node import TreeNode
 from tree_binary_classifier import TreeBinaryClassifier
 
 def print_with_tms(message):
@@ -127,3 +126,17 @@ tbc.max_depth = 6
 if PRINTSTUFF == True:
     tbc.verbose = True
 tbc.fit(X=X_train, Y=Y_train)
+
+X_test = create_np_matrix(df=test_data_df, columnnames=x_features_enc)
+Y_test_predicted = tbc.predict(X=X_test[:10])
+Y_test = create_np_matrix(df=test_data_df, columnnames=y_features)
+
+print(f"Y_test[:10]\n{Y_test[:10]}")
+print(f"Y_test_predicted\n{Y_test_predicted}")
+print(f"Nog 1x de hierbij horende fieatures : {x_features_enc}")
+
+
+#Point 16 & 17
+print("Now going to point 16 and 17")
+accuracy_test = tbc.accuracy_on_dataset(X=X_test, Y=Y_test)
+print_with_tms(f"accuracy_test {accuracy_test} classification error {1 - accuracy_test}")

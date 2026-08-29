@@ -142,13 +142,14 @@ class TreeBinaryClassifier:
                     self.do_split(X=X, Y=Y, from_node_idx=next_node_idx,
                                 selected_j=self.nodes[next_node_idx].best_j_from_node)
 
-    def predict_at_node(self, X, i, node_idx):
+    def predict_at_node(self, X, i, node_idx, preceding_path):
         '''
         For given feature matrix X observation index i and node
         we find and return predicted class and probability for it
         '''
         if self.nodes[node_idx].is_leaf == True:
-            return self.nodes[node_idx].majority_class, self.nodes[node_idx].majority_probability
+            outpath = f"{preceding_path}|leaf"
+            return self.nodes[node_idx].majority_class, self.nodes[node_idx].majority_probability, outpath
         else:
             for ri in range(len(self.relations)):
                 if self.relations[ri][0] == node_idx:
@@ -156,8 +157,10 @@ class TreeBinaryClassifier:
                     j = self.relations[ri][2]
                     fv = self.relations[ri][3]
                     if X[i, j] == fv:
-                        cv, prob = self.predict_at_node(X=X, i=i, node_idx=child_idx)
-                        return cv, prob
+                        cv, prob, recursionpath = self.predict_at_node(X=X, i=i, node_idx=child_idx, preceding_path="")
+                        pathpart = f"{j}.{fv}"
+                        outpath = f"{preceding_path}|{pathpart}|{recursionpath}"
+                        return cv, prob, outpath
         raise Exception(f"Not able to traverse tree based on observation {i}")
 
 
@@ -170,10 +173,25 @@ class TreeBinaryClassifier:
         - Column 1: probability of that prediction for each row
         '''
         N = X.shape[0]
-        predictions = np.zeros((N, 2))
+        predictions = np.zeros((N, 3), dtype=object)
         root_idx = 0
         for i in range(N):
-            cv, prob = self.predict_at_node(X=X, i=i, node_idx=root_idx)
+            cv, prob, path = self.predict_at_node(X=X, i=i, node_idx=root_idx, preceding_path="")
             predictions[i, 0] = cv
             predictions[i, 1] = prob
+            predictions[i, 2] = path
         return predictions
+
+    def accuracy_on_dataset(self, X, Y):
+        '''
+        Here we produce predictions based on X and then compare the predictions to know output values Y
+        '''
+        N = X.shape[0]
+        if N == 0:
+            return None
+        predictions = self.predict(X=X)
+        correctcount = 0
+        for i in range(N):
+            if predictions[i, 0] == Y[i]:
+                correctcount += 1
+        return correctcount / N
