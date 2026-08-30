@@ -121,6 +121,12 @@ class TreeBinaryClassifier:
         tn.best_j_from_node = best_j_so_far
         if best_j_so_far == -1:
             tn.is_leaf = True
+        '''
+        Here we could apply a threshold:
+        if accuracy already reached in this node is not improved significantly then let this node be a leaf
+        AND:
+        if this node as number of data points below another thresholds then let this node be a leaf
+        '''
 
     def find_next_node_idx(self):
         for idx in range(len(self.nodes)):
