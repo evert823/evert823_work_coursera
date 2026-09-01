@@ -43,6 +43,14 @@ class TreeNode:
             self.is_leaf = True
         self.majority_probability = self.correctcount / len(self.i)
 
+    def apply_stopping_conditions_1_2(self, max_depth, min_node_size):
+        #Stopping condition 1 For the deepest leafs current_depth eq. max_depth and we split no futher
+        if self.current_depth >= max_depth:
+            self.is_leaf = True
+        #Stopping condition 2 If <= min_node_size data points in this node then we split no futher
+        if len(self.i) <= min_node_size:
+            self.is_leaf = True
+
     def node_as_str(self):
         s = f"majority_class {self.majority_class}"
         s += f"\nmajority_probability {self.majority_probability}"

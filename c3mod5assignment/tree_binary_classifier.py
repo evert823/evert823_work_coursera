@@ -15,6 +15,8 @@ class TreeBinaryClassifier:
         self.nodes = []
         self.relations : list[tuple[int, int, int, int]] = []
         self.max_depth = 30
+        self.min_node_size = 10
+        self.error_reduction_threshold = 0.01
         '''
         Relation will be stored as tuple
         - parent_node_idx (refers to self.nodes)
@@ -70,13 +72,11 @@ class TreeBinaryClassifier:
         c1.used_features_current_path.append(selected_j)
         c2.used_features_current_path.append(selected_j)
 
-        #Stopping condition 1 For the deepest leafs current_depth eq. max_depth and we split no futher
+        #Stopping conditions 1 & 2
         c1.current_depth = pn.current_depth + 1
-        if c1.current_depth >= self.max_depth:
-            c1.is_leaf = True
         c2.current_depth = pn.current_depth + 1
-        if c2.current_depth >= self.max_depth:
-            c2.is_leaf = True
+        c1.apply_stopping_conditions_1_2(max_depth=self.max_depth, min_node_size=self.min_node_size)
+        c2.apply_stopping_conditions_1_2(max_depth=self.max_depth, min_node_size=self.min_node_size)
 
         #Now add the relations
         self.relations.append((from_node_idx, child_1_idx, selected_j, 0))
@@ -108,7 +108,7 @@ class TreeBinaryClassifier:
         if len(tn.i) == 0:
             tn.best_j_from_node = 0
             return
-        best_accuracy_so_far = 0.0
+        best_new_accuracy = 0.0
         best_j_so_far = -1
         D = X.shape[1]
         for j in range(D):
@@ -117,18 +117,25 @@ class TreeBinaryClassifier:
                                                 Y=Y,
                                                 tn=tn,
                                                 j=j)
-                if agg_accuracy > best_accuracy_so_far:
-                    best_accuracy_so_far = agg_accuracy
+                if agg_accuracy > best_new_accuracy:
+                    best_new_accuracy = agg_accuracy
                     best_j_so_far = j
         tn.best_j_from_node = best_j_so_far
+        #Stopping condition - no feature available
         if best_j_so_far == -1:
             tn.is_leaf = True
-        '''
-        Here we could apply a threshold:
-        if accuracy already reached in this node is not improved significantly then let this node be a leaf
-        AND:
-        if this node as number of data points below another thresholds then let this node be a leaf
-        '''
+        #Stopping condition 3 the difference between new and current accuracy must not drop below error_reduction_threshold
+        if tn.is_leaf == False:
+            current_error = tn.errorcount / (tn.correctcount + tn.errorcount)
+            new_error = 1 - best_new_accuracy
+            print(f"current_error {current_error} new_error {new_error}")
+
+            #Logically current_error >= new_error
+            #Only numerical issues can cause that current_error < new_error
+            assert current_error >= new_error - .0000001
+
+            if current_error - new_error < self.error_reduction_threshold:
+                tn.is_leaf = True
 
     def find_next_node_idx(self):
         for idx in range(len(self.nodes)):

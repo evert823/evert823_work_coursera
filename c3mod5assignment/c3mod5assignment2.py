@@ -127,6 +127,8 @@ N = X_train.shape[0]
 #We can calculate majority class and probability given a node
 tbc = TreeBinaryClassifier()
 tbc.max_depth = 6
+tbc.min_node_size = 10
+tbc.error_reduction_threshold = 0.01
 if PRINTSTUFF == True:
     tbc.verbose = True
 tbc.fit(X=X_train, Y=Y_train)
