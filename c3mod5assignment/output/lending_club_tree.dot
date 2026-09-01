@@ -148,189 +148,87 @@ Samples: 4701"];
 Class: None
 Prob: N/A"];
     49 [label="Node 49
-Best feature j: 10
-Samples: 1693"];
+Class: -1
+Prob: 0.74"];
     50 [label="Node 50
-Best feature j: 5
-Samples: 2133"];
+Class: -1
+Prob: 0.71"];
     51 [label="Node 51
-Best feature j: 5
-Samples: 2058"];
+Class: -1
+Prob: 0.65"];
     52 [label="Node 52
 Class: None
 Prob: N/A"];
     53 [label="Node 53
-Best feature j: 5
-Samples: 2190"];
+Class: -1
+Prob: 0.58"];
     54 [label="Node 54
 Class: None
 Prob: N/A"];
     55 [label="Node 55
-Best feature j: 4
-Samples: 969"];
+Class: -1
+Prob: 0.57"];
     56 [label="Node 56
 Class: None
 Prob: N/A"];
     57 [label="Node 57
-Best feature j: 3
-Samples: 34"];
+Class: 1
+Prob: 0.56"];
     58 [label="Node 58
 Class: None
 Prob: N/A"];
     59 [label="Node 59
-Best feature j: 3
-Samples: 45"];
+Class: -1
+Prob: 0.51"];
     60 [label="Node 60
 Class: None
 Prob: N/A"];
     61 [label="Node 61
-Best feature j: 4
-Samples: 90"];
+Class: 1
+Prob: 0.63"];
     62 [label="Node 62
 Class: None
 Prob: N/A"];
     63 [label="Node 63
-Best feature j: 4
-Samples: 11"];
+Class: -1
+Prob: 0.55"];
     64 [label="Node 64
 Class: None
 Prob: N/A"];
     65 [label="Node 65
-Best feature j: 0
-Samples: 14347"];
+Class: 1
+Prob: 0.65"];
     66 [label="Node 66
-Best feature j: 0
-Samples: 97"];
+Class: -1
+Prob: 0.73"];
     67 [label="Node 67
-Best feature j: 17
-Samples: 4303"];
+Class: -1
+Prob: 0.52"];
     68 [label="Node 68
-Best feature j: 15
-Samples: 2919"];
+Class: 1
+Prob: 0.53"];
     69 [label="Node 69
-Best feature j: 1
-Samples: 347"];
+Class: -1
+Prob: 0.71"];
     70 [label="Node 70
 Class: None
 Prob: N/A"];
     71 [label="Node 71
-Best feature j: 0
-Samples: 9"];
+Class: 1
+Prob: 0.78"];
     72 [label="Node 72
 Class: -1
 Prob: 1.00"];
     73 [label="Node 73
-Best feature j: 5
-Samples: 1276"];
+Class: -1
+Prob: 0.63"];
     74 [label="Node 74
 Class: None
 Prob: N/A"];
     75 [label="Node 75
-Best feature j: 5
-Samples: 4701"];
+Class: -1
+Prob: 0.58"];
     76 [label="Node 76
-Class: None
-Prob: N/A"];
-    77 [label="Node 77
-Class: -1
-Prob: 0.74"];
-    78 [label="Node 78
-Class: 1
-Prob: 1.00"];
-    79 [label="Node 79
-Class: -1
-Prob: 0.71"];
-    80 [label="Node 80
-Class: None
-Prob: N/A"];
-    81 [label="Node 81
-Class: -1
-Prob: 0.65"];
-    82 [label="Node 82
-Class: None
-Prob: N/A"];
-    83 [label="Node 83
-Class: -1
-Prob: 0.58"];
-    84 [label="Node 84
-Class: None
-Prob: N/A"];
-    85 [label="Node 85
-Class: -1
-Prob: 0.57"];
-    86 [label="Node 86
-Class: None
-Prob: N/A"];
-    87 [label="Node 87
-Class: 1
-Prob: 0.56"];
-    88 [label="Node 88
-Class: None
-Prob: N/A"];
-    89 [label="Node 89
-Class: -1
-Prob: 0.51"];
-    90 [label="Node 90
-Class: None
-Prob: N/A"];
-    91 [label="Node 91
-Class: 1
-Prob: 0.63"];
-    92 [label="Node 92
-Class: None
-Prob: N/A"];
-    93 [label="Node 93
-Class: -1
-Prob: 0.55"];
-    94 [label="Node 94
-Class: None
-Prob: N/A"];
-    95 [label="Node 95
-Class: 1
-Prob: 0.60"];
-    96 [label="Node 96
-Class: 1
-Prob: 0.76"];
-    97 [label="Node 97
-Class: -1
-Prob: 0.73"];
-    98 [label="Node 98
-Class: None
-Prob: N/A"];
-    99 [label="Node 99
-Class: -1
-Prob: 0.53"];
-    100 [label="Node 100
-Class: 1
-Prob: 0.54"];
-    101 [label="Node 101
-Class: 1
-Prob: 0.53"];
-    102 [label="Node 102
-Class: -1
-Prob: 0.50"];
-    103 [label="Node 103
-Class: -1
-Prob: 0.71"];
-    104 [label="Node 104
-Class: None
-Prob: N/A"];
-    105 [label="Node 105
-Class: 1
-Prob: 0.78"];
-    106 [label="Node 106
-Class: None
-Prob: N/A"];
-    107 [label="Node 107
-Class: -1
-Prob: 0.63"];
-    108 [label="Node 108
-Class: None
-Prob: N/A"];
-    109 [label="Node 109
-Class: -1
-Prob: 0.58"];
-    110 [label="Node 110
 Class: None
 Prob: N/A"];
     0 -> 1 [label="X[7]==0"];
@@ -409,38 +307,4 @@ Prob: N/A"];
     45 -> 74 [label="X[2]==1"];
     47 -> 75 [label="X[4]==0"];
     47 -> 76 [label="X[4]==1"];
-    49 -> 77 [label="X[10]==0"];
-    49 -> 78 [label="X[10]==1"];
-    50 -> 79 [label="X[5]==0"];
-    50 -> 80 [label="X[5]==1"];
-    51 -> 81 [label="X[5]==0"];
-    51 -> 82 [label="X[5]==1"];
-    53 -> 83 [label="X[5]==0"];
-    53 -> 84 [label="X[5]==1"];
-    55 -> 85 [label="X[4]==0"];
-    55 -> 86 [label="X[4]==1"];
-    57 -> 87 [label="X[3]==0"];
-    57 -> 88 [label="X[3]==1"];
-    59 -> 89 [label="X[3]==0"];
-    59 -> 90 [label="X[3]==1"];
-    61 -> 91 [label="X[4]==0"];
-    61 -> 92 [label="X[4]==1"];
-    63 -> 93 [label="X[4]==0"];
-    63 -> 94 [label="X[4]==1"];
-    65 -> 95 [label="X[0]==0"];
-    65 -> 96 [label="X[0]==1"];
-    66 -> 97 [label="X[0]==0"];
-    66 -> 98 [label="X[0]==1"];
-    67 -> 99 [label="X[17]==0"];
-    67 -> 100 [label="X[17]==1"];
-    68 -> 101 [label="X[15]==0"];
-    68 -> 102 [label="X[15]==1"];
-    69 -> 103 [label="X[1]==0"];
-    69 -> 104 [label="X[1]==1"];
-    71 -> 105 [label="X[0]==0"];
-    71 -> 106 [label="X[0]==1"];
-    73 -> 107 [label="X[5]==0"];
-    73 -> 108 [label="X[5]==1"];
-    75 -> 109 [label="X[5]==0"];
-    75 -> 110 [label="X[5]==1"];
 }

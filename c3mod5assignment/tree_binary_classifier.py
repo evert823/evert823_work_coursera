@@ -69,11 +69,13 @@ class TreeBinaryClassifier:
         c2.used_features_current_path = pn.used_features_current_path.copy()
         c1.used_features_current_path.append(selected_j)
         c2.used_features_current_path.append(selected_j)
+
+        #Stopping condition 1 For the deepest leafs current_depth eq. max_depth and we split no futher
         c1.current_depth = pn.current_depth + 1
-        if c1.current_depth > self.max_depth:
+        if c1.current_depth >= self.max_depth:
             c1.is_leaf = True
         c2.current_depth = pn.current_depth + 1
-        if c2.current_depth > self.max_depth:
+        if c2.current_depth >= self.max_depth:
             c2.is_leaf = True
 
         #Now add the relations
