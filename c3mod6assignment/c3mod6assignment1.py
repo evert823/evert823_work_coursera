@@ -90,7 +90,7 @@ def create_np_matrix(df, columnnames):
     print_with_tms(f"Created feature matrix with shape {feature_matrix.shape}")
     return feature_matrix
 
-PRINTSTUFF = True
+PRINTSTUFF = False
 print_with_tms("Start script")
 path = os.path.join("C:\\", "Users", "Evert Jan", "courseradatascience",
                        "course03", "module06", "data")
@@ -205,3 +205,53 @@ l2 = tbc_d2.number_of_leaves()
 l6 = tbc_d6.number_of_leaves()
 l14 = tbc_d14.number_of_leaves()
 print(f"l2 {l2} l6 {l6} l14 {l14}")
+
+#For point 27
+print("For point 27")
+
+tbc_model4 = TreeBinaryClassifier()
+tbc_model4.max_depth = 6
+tbc_model4.min_node_size = 0
+tbc_model4.error_reduction_threshold = -1.0
+
+if PRINTSTUFF == True:
+    tbc_model4.verbose = True
+tbc_model4.fit(X=X_train, Y=Y_train)
+
+tbc_model5 = TreeBinaryClassifier()
+tbc_model5.max_depth = 6
+tbc_model5.min_node_size = 0
+tbc_model5.error_reduction_threshold = 0.0
+
+if PRINTSTUFF == True:
+    tbc_model5.verbose = True
+tbc_model5.fit(X=X_train, Y=Y_train)
+
+tbc_model6 = TreeBinaryClassifier()
+tbc_model6.max_depth = 6
+tbc_model6.min_node_size = 0
+tbc_model6.error_reduction_threshold = 5.0
+
+if PRINTSTUFF == True:
+    tbc_model6.verbose = True
+tbc_model6.fit(X=X_train, Y=Y_train)
+
+accuracy_model4_train = tbc_model4.accuracy_on_dataset(X=X_train, Y=Y_train)
+print_with_tms(f"classification error train model4 {1 - accuracy_model4_train}")
+accuracy_model4_val = tbc_model4.accuracy_on_dataset(X=X_val, Y=Y_val)
+print_with_tms(f"classification error val model4 {1 - accuracy_model4_val}")
+accuracy_model5_train = tbc_model5.accuracy_on_dataset(X=X_train, Y=Y_train)
+print_with_tms(f"classification error train model5 {1 - accuracy_model5_train}")
+accuracy_model5_val = tbc_model5.accuracy_on_dataset(X=X_val, Y=Y_val)
+print_with_tms(f"classification error val model5 {1 - accuracy_model5_val}")
+accuracy_model6_train = tbc_model6.accuracy_on_dataset(X=X_train, Y=Y_train)
+print_with_tms(f"classification error train model6 {1 - accuracy_model6_train}")
+accuracy_model6_val = tbc_model6.accuracy_on_dataset(X=X_val, Y=Y_val)
+print_with_tms(f"classification error val model6 {1 - accuracy_model6_val}")
+
+#For point 29
+print("For point 29")
+lm4 = tbc_model4.number_of_leaves()
+lm5 = tbc_model5.number_of_leaves()
+lm6 = tbc_model6.number_of_leaves()
+print(f"lm4 {lm4} lm5 {lm5} lm6 {lm6}")
