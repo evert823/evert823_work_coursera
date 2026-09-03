@@ -255,3 +255,53 @@ lm4 = tbc_model4.number_of_leaves()
 lm5 = tbc_model5.number_of_leaves()
 lm6 = tbc_model6.number_of_leaves()
 print(f"lm4 {lm4} lm5 {lm5} lm6 {lm6}")
+
+#For point 30
+print("For point 30")
+
+tbc_model7 = TreeBinaryClassifier()
+tbc_model7.max_depth = 6
+tbc_model7.min_node_size = 0
+tbc_model7.error_reduction_threshold = -1.0
+
+if PRINTSTUFF == True:
+    tbc_model7.verbose = True
+tbc_model7.fit(X=X_train, Y=Y_train)
+
+tbc_model8 = TreeBinaryClassifier()
+tbc_model8.max_depth = 6
+tbc_model8.min_node_size = 2000
+tbc_model8.error_reduction_threshold = -1.0
+
+if PRINTSTUFF == True:
+    tbc_model8.verbose = True
+tbc_model8.fit(X=X_train, Y=Y_train)
+
+tbc_model9 = TreeBinaryClassifier()
+tbc_model9.max_depth = 6
+tbc_model9.min_node_size = 50000
+tbc_model9.error_reduction_threshold = -1.0
+
+if PRINTSTUFF == True:
+    tbc_model9.verbose = True
+tbc_model9.fit(X=X_train, Y=Y_train)
+
+accuracy_model7_train = tbc_model7.accuracy_on_dataset(X=X_train, Y=Y_train)
+print_with_tms(f"classification error train model7 {1 - accuracy_model7_train}")
+accuracy_model7_val = tbc_model7.accuracy_on_dataset(X=X_val, Y=Y_val)
+print_with_tms(f"classification error val model7 {1 - accuracy_model7_val}")
+accuracy_model8_train = tbc_model8.accuracy_on_dataset(X=X_train, Y=Y_train)
+print_with_tms(f"classification error train model8 {1 - accuracy_model8_train}")
+accuracy_model8_val = tbc_model8.accuracy_on_dataset(X=X_val, Y=Y_val)
+print_with_tms(f"classification error val model8 {1 - accuracy_model8_val}")
+accuracy_model9_train = tbc_model9.accuracy_on_dataset(X=X_train, Y=Y_train)
+print_with_tms(f"classification error train model9 {1 - accuracy_model9_train}")
+accuracy_model9_val = tbc_model9.accuracy_on_dataset(X=X_val, Y=Y_val)
+print_with_tms(f"classification error val model9 {1 - accuracy_model9_val}")
+
+#For point 32
+print("For point 32")
+lm7 = tbc_model7.number_of_leaves()
+lm8 = tbc_model8.number_of_leaves()
+lm9 = tbc_model9.number_of_leaves()
+print(f"lm7 {lm7} lm8 {lm8} lm9 {lm9}")
