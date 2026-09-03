@@ -211,6 +211,13 @@ class TreeBinaryClassifier:
                 correctcount += 1
         return correctcount / N
 
+    def number_of_leaves(self):
+        leafcount = 0
+        for tn in self.nodes:
+            if tn.is_leaf == True:
+                leafcount += 1
+        return leafcount
+
     def to_graphviz_dot(self):
         '''
         Convert the tree to GraphViz DOT format for visualization

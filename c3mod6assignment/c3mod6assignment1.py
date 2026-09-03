@@ -141,15 +141,67 @@ tbc_new.fit(X=X_train, Y=Y_train)
 
 X_val = create_np_matrix(df=val_data_df, columnnames=x_features_enc)
 Y_val = create_np_matrix(df=val_data_df, columnnames=y_features)
+
 Y_val_predicted_old = tbc_old.predict(X=X_val)
 accuracy_val_old = tbc_old.accuracy_on_dataset(X=X_val, Y=Y_val)
 print_with_tms(f"classification error tbc_old {1 - accuracy_val_old}")
-X_val = create_np_matrix(df=val_data_df, columnnames=x_features_enc)
-Y_val = create_np_matrix(df=val_data_df, columnnames=y_features)
+
+
 Y_val_predicted_new = tbc_new.predict(X=X_val)
 accuracy_val_new = tbc_new.accuracy_on_dataset(X=X_val, Y=Y_val)
 print_with_tms(f"classification error tbc_new {1 - accuracy_val_new}")
 
+#For point 16
+print("For point 16")
 print(f"Y_val_predicted_old[0]\n{Y_val_predicted_old[0]}")
 print(f"Y_val_predicted_new[0]\n{Y_val_predicted_new[0]}")
 print(f"Nog 1x de hierbij horende fieatures : {x_features_enc}")
+
+#For point 22
+print("For point 22")
+tbc_d2 = TreeBinaryClassifier()
+tbc_d2.max_depth = 2
+tbc_d2.min_node_size = 0
+tbc_d2.error_reduction_threshold = -1.0
+
+if PRINTSTUFF == True:
+    tbc_d2.verbose = True
+tbc_d2.fit(X=X_train, Y=Y_train)
+
+tbc_d6 = TreeBinaryClassifier()
+tbc_d6.max_depth = 6
+tbc_d6.min_node_size = 0
+tbc_d6.error_reduction_threshold = -1.0
+
+if PRINTSTUFF == True:
+    tbc_d6.verbose = True
+tbc_d6.fit(X=X_train, Y=Y_train)
+
+tbc_d14 = TreeBinaryClassifier()
+tbc_d14.max_depth = 14
+tbc_d14.min_node_size = 0
+tbc_d14.error_reduction_threshold = -1.0
+
+if PRINTSTUFF == True:
+    tbc_d14.verbose = True
+tbc_d14.fit(X=X_train, Y=Y_train)
+
+accuracy_d2_train = tbc_d2.accuracy_on_dataset(X=X_train, Y=Y_train)
+print_with_tms(f"classification error train d2 {1 - accuracy_d2_train}")
+accuracy_d2_val = tbc_d2.accuracy_on_dataset(X=X_val, Y=Y_val)
+print_with_tms(f"classification error val d2 {1 - accuracy_d2_val}")
+accuracy_d6_train = tbc_d6.accuracy_on_dataset(X=X_train, Y=Y_train)
+print_with_tms(f"classification error train d6 {1 - accuracy_d6_train}")
+accuracy_d6_val = tbc_d6.accuracy_on_dataset(X=X_val, Y=Y_val)
+print_with_tms(f"classification error val d6 {1 - accuracy_d6_val}")
+accuracy_d14_train = tbc_d14.accuracy_on_dataset(X=X_train, Y=Y_train)
+print_with_tms(f"classification error train d14 {1 - accuracy_d14_train}")
+accuracy_d14_val = tbc_d14.accuracy_on_dataset(X=X_val, Y=Y_val)
+print_with_tms(f"classification error val d14 {1 - accuracy_d14_val}")
+
+#For point 25 and 26
+print("For point 25 and 26")
+l2 = tbc_d2.number_of_leaves()
+l6 = tbc_d6.number_of_leaves()
+l14 = tbc_d14.number_of_leaves()
+print(f"l2 {l2} l6 {l6} l14 {l14}")
