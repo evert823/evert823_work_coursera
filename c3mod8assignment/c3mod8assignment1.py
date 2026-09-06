@@ -130,6 +130,20 @@ def false_positives_false_negatives(X, Y, model):
 
     return false_positives, false_negatives
 
+def iteration(X_train, Y_train, X_val, Y_val, n_estimators):
+    print_with_tms(f"Start training model with n_estimators={n_estimators}")
+    mymodel = GradientBoostingClassifier(max_depth=6,
+                                         n_estimators=n_estimators,
+                                         #learning_rate=0.3,
+                                         random_state=0
+                                         )
+    mymodel.fit(X=X_train,y=Y_train)
+    accuracy = mymodel.score(X=X_val,
+                             y=Y_val)
+    classification_error = 1 - accuracy
+    print_with_tms(f"Finished training model with n_estimators={n_estimators}")
+    return mymodel, accuracy, classification_error
+
 PRINTSTUFF = False
 print_with_tms("Start script")
 path = os.path.join("C:\\", "Users", "Evert Jan", "courseradatascience",
@@ -142,6 +156,8 @@ file_name_inp = "lending-club-data.csv"
 all_data_df = read_data(path=path, file_name=file_name_inp, dtype_dict=lending_club_dtype_dict())
 all_data_df = prepare_data(df=all_data_df, x_features=x_features, y_features=y_features)
 all_data_df = all_data_df.dropna() # here only deletes 29 data points - 122578 remain
+
+all_data_noenc_df = all_data_df.copy()
 
 all_data_df = apply_one_hot_encoding(df=all_data_df)
 x_features_enc = [cn for cn in all_data_df.columns.to_list() if cn not in y_features]
@@ -201,3 +217,40 @@ false_positives, false_negatives = false_positives_false_negatives(X=X_val,
                                                                    Y=Y_val,
                                                                    model=model_5)
 print(f"false_positives {false_positives} false_negatives {false_negatives}")
+
+#Point 16
+print("Point 16")
+
+cost_model_5 = (10000.0 * false_negatives) + (20000.0 * false_positives)
+print_with_tms(f"cost_model_5 {cost_model_5}")
+
+#Point 17-18-19
+print("Point 17-18-19")
+Y_prob_val = model_5.predict_proba(X=X_val)
+val_data_noenc_df = all_data_noenc_df.iloc[val_idx]
+grade_probabilities_df = pd.DataFrame({
+    "grade": val_data_noenc_df["grade"].to_numpy(),
+    "probability_-1": Y_prob_val[:, 0],
+    "probability_1": Y_prob_val[:, 1],
+})
+grade_probabilities_df = grade_probabilities_df.sort_values(
+    by="probability_1",
+    ascending=False
+).reset_index(drop=True)
+print(f"top 5\n{grade_probabilities_df.iloc[:5]}")
+print(f"bottom 5\n{grade_probabilities_df.iloc[-5:]}")
+
+n_estimators_grid = [10, 50, 100, 200, 500]
+model_grid = []
+accuracy_grid = []
+classification_error_grid = []
+
+for n in n_estimators_grid:
+    mymodel, accuracy, classification_error = iteration(X_train=X_train,
+                                                        Y_train=Y_train,
+                                                        X_val=X_val,
+                                                        Y_val=Y_val,
+                                                        n_estimators=n)
+    model_grid.append(mymodel)
+    accuracy_grid.append(accuracy)
+    classification_error_grid.append(classification_error)
