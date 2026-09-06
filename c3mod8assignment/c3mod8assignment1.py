@@ -4,6 +4,7 @@ import numpy as np
 import os
 import json
 from sklearn.ensemble import GradientBoostingClassifier
+import matplotlib.pyplot as plt
 
 def print_with_tms(message):
     mytimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -138,16 +139,59 @@ def iteration(X_train, Y_train, X_val, Y_val, n_estimators):
                                          random_state=0
                                          )
     mymodel.fit(X=X_train,y=Y_train)
-    accuracy = mymodel.score(X=X_val,
-                             y=Y_val)
-    classification_error = 1 - accuracy
+    accrcy_train = mymodel.score(X=X_train,
+                               y=Y_train)
+    accrcy_val = mymodel.score(X=X_val,
+                               y=Y_val)
+    cl_err_train = 1 - accrcy_train
+    cl_err_val = 1 - accrcy_val
     print_with_tms(f"Finished training model with n_estimators={n_estimators}")
-    return mymodel, accuracy, classification_error
+    return mymodel, cl_err_train, cl_err_val
+
+def assess_results(n_estimators_grid,
+                   cl_err_train_grid,
+                   cl_err_val_grid,
+                   output_dir):
+
+    for i in range(len(n_estimators_grid)):
+        print(f"i {i} n_est {n_estimators_grid[i]} err train {cl_err_train_grid[i]} error val {cl_err_val_grid[i]}")
+
+    plt.figure(figsize=(9, 6))
+    plt.plot(
+        n_estimators_grid,
+        cl_err_train_grid,
+        marker="o",
+        linewidth=2,
+        label="error_train"
+    )
+    plt.plot(
+        n_estimators_grid,
+        cl_err_val_grid,
+        marker="s",
+        linewidth=2,
+        label="error_val"
+    )
+
+    plt.title("Gradient Boosting Performance")
+    plt.xlabel("Number of estimators")
+    plt.ylabel("Score")
+    plt.xticks(n_estimators_grid)
+    plt.ylim(0, 1)
+    plt.grid(True, linestyle="--", alpha=0.5)
+    plt.legend()
+    plt.tight_layout()
+
+    plot_path = os.path.join(output_dir, "gradient_boosting_performance.png")
+    plt.savefig(plot_path, dpi=300)
+    plt.close()
+
+    print_with_tms(f"Plot saved to {plot_path}")    
 
 PRINTSTUFF = False
 print_with_tms("Start script")
 path = os.path.join("C:\\", "Users", "Evert Jan", "courseradatascience",
                        "course03", "module08", "data")
+output_dir = os.path.join(".", "output")
 
 x_features = define_x_features()
 y_features = ['safe_loans']
@@ -242,15 +286,20 @@ print(f"bottom 5\n{grade_probabilities_df.iloc[-5:]}")
 
 n_estimators_grid = [10, 50, 100, 200, 500]
 model_grid = []
-accuracy_grid = []
-classification_error_grid = []
+cl_err_train_grid = []
+cl_err_val_grid = []
 
 for n in n_estimators_grid:
-    mymodel, accuracy, classification_error = iteration(X_train=X_train,
-                                                        Y_train=Y_train,
-                                                        X_val=X_val,
-                                                        Y_val=Y_val,
-                                                        n_estimators=n)
+    mymodel, cl_err_train, cl_err_val = iteration(X_train=X_train,
+                                                  Y_train=Y_train,
+                                                  X_val=X_val,
+                                                  Y_val=Y_val,
+                                                  n_estimators=n)
     model_grid.append(mymodel)
-    accuracy_grid.append(accuracy)
-    classification_error_grid.append(classification_error)
+    cl_err_train_grid.append(cl_err_train)
+    cl_err_val_grid.append(cl_err_val)
+
+assess_results(n_estimators_grid=n_estimators_grid,
+               cl_err_train_grid=cl_err_train_grid,
+               cl_err_val_grid=cl_err_val_grid,
+               output_dir=output_dir)
