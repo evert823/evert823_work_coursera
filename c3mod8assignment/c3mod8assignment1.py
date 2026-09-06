@@ -1,5 +1,6 @@
 from datetime import datetime
 import pandas as pd
+import numpy as np
 import os
 import json
 from sklearn.ensemble import GradientBoostingClassifier
@@ -107,6 +108,28 @@ def create_np_matrix(df, columnnames):
     print_with_tms(f"Created feature matrix with shape {feature_matrix.shape}")
     return feature_matrix
 
+def sample_from_validation_data(val_df):
+    safe_loans = val_df.loc[val_df["safe_loans"] == 1].head(2)
+    unsafe_loans = val_df.loc[val_df["safe_loans"] == -1].head(2)
+    return pd.concat([safe_loans, unsafe_loans], axis=0)
+
+def false_positives_false_negatives(X, Y, model):
+    Y_pred = model.predict(X)
+    Y_flat = np.asarray(Y).reshape(-1)
+    Y_pred_flat = np.asarray(Y_pred).reshape(-1)
+    false_positives = 0
+    false_negatives = 0
+
+    assert len(Y_flat) == len(Y_pred_flat)
+
+    for i in range(len(Y_flat)):
+        if Y_flat[i] == 1 and Y_pred_flat[i] == -1:
+            false_negatives += 1
+        if Y_flat[i] == -1 and Y_pred_flat[i] == 1:
+            false_positives += 1
+
+    return false_positives, false_negatives
+
 PRINTSTUFF = False
 print_with_tms("Start script")
 path = os.path.join("C:\\", "Users", "Evert Jan", "courseradatascience",
@@ -144,6 +167,37 @@ Y_val = create_np_matrix(df=val_data_df, columnnames=y_features)
 
 model_5 = GradientBoostingClassifier(max_depth=6,
                                      n_estimators=5,
+                                     #learning_rate=0.3,
                                     )
 model_5.fit(X=X_train,y=Y_train)
 
+#Point 10 and 11
+print("Point 10 and 11")
+sample_df = sample_from_validation_data(val_df=val_data_df)
+X_sample = create_np_matrix(df=sample_df, columnnames=x_features_enc)
+Y_sample = create_np_matrix(df=sample_df, columnnames=y_features)
+Y_pred_sample = model_5.predict(X=X_sample)
+print_with_tms(f"Y_sample\n{Y_sample}")
+print_with_tms(f"Y_pred_sample\n{Y_pred_sample}")
+
+#Point 12
+print("Point 12")
+Y_prob_sample = model_5.predict_proba(X=X_sample)
+print_with_tms(f"Y_prob_sample\n{Y_prob_sample}")
+
+score_sample = model_5.score(X=X_sample,
+                        y=Y_sample)
+print(f"score on sample {score_sample}")
+
+#Point 13
+print("Point 13")
+score_val = model_5.score(X=X_val,
+                        y=Y_val)
+print(f"score on validation {score_val}")
+
+#Point 14 & 15
+print("Point 14 & 15")
+false_positives, false_negatives = false_positives_false_negatives(X=X_val,
+                                                                   Y=Y_val,
+                                                                   model=model_5)
+print(f"false_positives {false_positives} false_negatives {false_negatives}")
