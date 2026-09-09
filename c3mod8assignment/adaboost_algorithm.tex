@@ -1,0 +1,62 @@
+\documentclass[12pt, letterpaper]{article}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{dsfont}
+\usepackage{float}
+\setlength{\parindent}{0pt}
+\graphicspath{{images/}}
+\title{AdaBoost algorithm}
+\author{Evert Jan Karman}
+\date{January 1900}
+\begin{document}
+\maketitle
+
+AdaBoost algorithm
+
+\section{The algorithm}
+0. We have \(N\) data points, assign each data point the same weight \( \alpha_i = 1 / N\)
+
+{\par\medskip}
+
+We have T weak learners (decision stumps)
+{\par\medskip}
+For t = 0, 1, ..., T-1
+{\par\medskip}
+\hspace*{6pt}1. Learn weak learner \(f_t\)
+{\par\medskip}
+\hspace*{6pt}2. Compute weighted error \( \varepsilon_t \)
+{\par\medskip}
+\hspace*{6pt}3. Compute weight \(w_t\)
+{\par\medskip}
+\hspace*{6pt}4. Recompute \(\alpha_i\) for i = 0...\(N-1\)
+{\par\medskip}
+\hspace*{6pt}4a. Normalize \( \alpha \) so that
+\[
+\sum_{i=0}^{N-1} \alpha_i = 1
+\]
+
+\section{Formula for 2. weighted error}
+\[
+\varepsilon_t =
+\sum_{i=0}^{N-1} \alpha_i \cdot \mathds{1}[\hat{y}_i \ne y_i]
+\]
+
+
+\section{Formula for 3. weight}
+\[
+w_t =  \frac{1}{2} \ln \frac{1 - \varepsilon_t(f_t)}{\varepsilon_t(f_t)}
+\]
+
+
+\section{Formula for 4. new \(\alpha\)}
+\[
+\alpha_i^{\text{new}} =
+\begin{cases}
+\alpha_i \cdot \mathrm{e}^{-w_t} & \text{if } \hat{y}_i = y_i\\
+\alpha_i \cdot \mathrm{e}^{w_t} & \text{if } \hat{y}_i \ne y_i
+\end{cases}
+\]
+
+
+\end{document}
