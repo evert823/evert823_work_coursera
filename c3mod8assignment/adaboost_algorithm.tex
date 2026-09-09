@@ -47,6 +47,7 @@ For t = 0, 1, ..., T-1
 \[
 w_t =  \frac{1}{2} \ln \frac{1 - \varepsilon_t(f_t)}{\varepsilon_t(f_t)}
 \]
+Intuition: This is increasing the weight for data points that have been predicted wrong previously.
 
 
 \section{Formula for 4. new \(\alpha\)}
@@ -57,6 +58,6 @@ w_t =  \frac{1}{2} \ln \frac{1 - \varepsilon_t(f_t)}{\varepsilon_t(f_t)}
 \alpha_i \cdot \mathrm{e}^{w_t} & \text{if } \hat{y}_i \ne y_i
 \end{cases}
 \]
-
+Intuition: This is increasing the weight for data points that have been misclassified by current learner.
 
 \end{document}
