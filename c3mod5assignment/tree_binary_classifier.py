@@ -25,17 +25,34 @@ class TreeBinaryClassifier:
         - feature_value (should be 0 or 1 and indicates the branch of the child_node)
         '''
 
+        #define weights for the data points
+        self.alpha = None
+
     def initialize_tree(self, X, Y):
         '''
         We create the root node and calculate its values
         '''
+        N = X.shape[0]
+
+        #define weights for the data points with default all ones
+        self.alpha = np.ones(N, dtype=float)
+
         self.nodes.clear()
         self.relations.clear()
         self.nodes.append(TreeNode())
-        N = X.shape[0]
         self.nodes[0].i = [idx for idx in range(N)]
-        self.nodes[0].calculate_node_values(Y=Y)
+        self.nodes[0].calculate_node_values(Y=Y, alpha=self.alpha)
         self.nodes[0].current_depth = 0
+
+    def set_alpha(self, new_alpha):
+        #allow update of alpha (weights for the data points) from outside this class
+        alpha2 = np.asarray(new_alpha).reshape(-1)
+        self.alpha = alpha2.copy()
+
+    def normalize_alpha(self):
+        #normalize alpha to add up to total of 1.0
+        total = np.sum(self.alpha)
+        self.alpha = self.alpha / total
 
     def help_split(self, X, pn, cn1, cn2, j):
         for row_idx in pn.i:
@@ -65,8 +82,8 @@ class TreeBinaryClassifier:
         c2 = self.nodes[child_2_idx]
         self.help_split(X=X, pn=pn, cn1=c1, cn2=c2, j=selected_j)
 
-        c1.calculate_node_values(Y=Y)
-        c2.calculate_node_values(Y=Y)
+        c1.calculate_node_values(Y=Y, alpha=self.alpha)
+        c2.calculate_node_values(Y=Y, alpha=self.alpha)
         c1.used_features_current_path = pn.used_features_current_path.copy()
         c2.used_features_current_path = pn.used_features_current_path.copy()
         c1.used_features_current_path.append(selected_j)
@@ -94,8 +111,8 @@ class TreeBinaryClassifier:
 
         self.help_split(X=X, pn=tn, cn1=next_tn_0, cn2=next_tn_1, j=j)
 
-        next_tn_0.calculate_node_values(Y=Y)
-        next_tn_1.calculate_node_values(Y=Y)
+        next_tn_0.calculate_node_values(Y=Y, alpha=self.alpha)
+        next_tn_1.calculate_node_values(Y=Y, alpha=self.alpha)
         agg_correctcount = next_tn_0.correctcount + next_tn_1.correctcount
         agg_errorcount = next_tn_0.errorcount + next_tn_1.errorcount
         agg_accuracy = agg_correctcount / (agg_correctcount + agg_errorcount)
@@ -200,6 +217,7 @@ class TreeBinaryClassifier:
     def accuracy_on_dataset(self, X, Y):
         '''
         Here we produce predictions based on X and then compare the predictions to know output values Y
+        Since we don't look at alpha, this method works UNweighted
         '''
         N = X.shape[0]
         if N == 0:
@@ -210,6 +228,25 @@ class TreeBinaryClassifier:
             if predictions[i, 0] == Y[i]:
                 correctcount += 1
         return correctcount / N
+
+    def verify_alpha_normalized(self):
+        #This is for the weighted data points
+        total = np.sum(self.alpha)
+        if not np.isclose(total, 1.0):
+            raise ValueError(f"alpha is not normalized; sum is {total}")
+
+    def compute_weighted_error(self, X, Y):
+        #This is for the weighted data points
+        self.verify_alpha_normalized()
+        N = X.shape[0]
+        if N == 0:
+            return None
+        predictions = self.predict(X=X)
+        weighted_error = 0.0
+        for i in range(N):
+            if predictions[i, 0] != Y[i]:
+                weighted_error += self.alpha[i]
+        return weighted_error
 
     def number_of_leaves(self):
         leafcount = 0

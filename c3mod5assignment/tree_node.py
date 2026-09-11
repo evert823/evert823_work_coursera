@@ -21,7 +21,17 @@ class TreeNode:
         self.used_features_current_path = []
         self.current_depth = -1
 
-    def calculate_node_values(self, Y):
+    def get_values_weighted_counts(self, Y, alpha):
+        values = np.unique(Y[self.i, 0])
+        weighted_counts = np.zeros(values.shape)
+        for dpi in self.i:
+            for k in range(values.shape[0]):
+                if Y[dpi, 0] == values[k]:
+                    weighted_counts[k] += alpha[dpi]
+        return values, weighted_counts
+
+
+    def calculate_node_values(self, Y, alpha):
         self.majority_class = None
         self.majority_probability = None
         self.correctcount = 0
@@ -30,24 +40,24 @@ class TreeNode:
             self.is_leaf = True
             return
 
-        values, counts = np.unique(
-            Y[self.i, 0],
-            return_counts=True
-        )
+        values, weighted_counts_per_value = self.get_values_weighted_counts(Y=Y, alpha=alpha)
 
-        majority_index = np.argmax(counts)
+        majority_index = np.argmax(weighted_counts_per_value)
         self.majority_class = values[majority_index]
-        self.correctcount = int(counts[majority_index])
-        self.errorcount = len(self.i) - self.correctcount
-        if self.errorcount == 0:
+        self.correctcount = weighted_counts_per_value[majority_index]
+        totalweight_current_node = np.sum(alpha[self.i])
+        self.errorcount = totalweight_current_node - self.correctcount
+        if self.errorcount == 0.0:
             self.is_leaf = True
-        self.majority_probability = self.correctcount / len(self.i)
+        self.majority_probability = self.correctcount / totalweight_current_node
 
     def apply_stopping_conditions_1_2(self, max_depth, min_node_size):
         #Stopping condition 1 For the deepest leafs current_depth eq. max_depth and we split no futher
         if self.current_depth >= max_depth:
             self.is_leaf = True
+
         #Stopping condition 2 If <= min_node_size data points in this node then we split no futher
+        #Explicit choice: here we do NOT use totalweight_current_node
         if len(self.i) <= min_node_size:
             self.is_leaf = True
 
