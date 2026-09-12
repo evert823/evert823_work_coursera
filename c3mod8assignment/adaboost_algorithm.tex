@@ -47,8 +47,7 @@ For t = 0, 1, ..., T-1
 \[
 w_t =  \frac{1}{2} \ln \frac{1 - \varepsilon_t(f_t)}{\varepsilon_t(f_t)}
 \]
-Intuition: This is increasing the weight for data points that have been predicted wrong previously.
-
+Intuition: \(w_t\) measures the importance of the current weak learner. A lower weighted error gives it a larger weight.
 
 \section{Formula for 4. new \(\alpha\)}
 \[

@@ -35,7 +35,8 @@ class TreeBinaryClassifier:
         N = X.shape[0]
 
         #define weights for the data points with default all ones
-        self.alpha = np.ones(N, dtype=float)
+        if self.alpha is None:
+            self.alpha = np.ones(N, dtype=float)
 
         self.nodes.clear()
         self.relations.clear()
@@ -48,11 +49,6 @@ class TreeBinaryClassifier:
         #allow update of alpha (weights for the data points) from outside this class
         alpha2 = np.asarray(new_alpha).reshape(-1)
         self.alpha = alpha2.copy()
-
-    def normalize_alpha(self):
-        #normalize alpha to add up to total of 1.0
-        total = np.sum(self.alpha)
-        self.alpha = self.alpha / total
 
     def help_split(self, X, pn, cn1, cn2, j):
         for row_idx in pn.i:
