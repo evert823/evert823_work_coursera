@@ -59,4 +59,29 @@ Intuition: \(w_t\) measures the importance of the current weak learner. A lower 
 \]
 Intuition: This is increasing the weight for data points that have been misclassified by current learner.
 
+\section{Prediction function}
+For a given feature matrix \(X_{\text{test}}\) and data point i
+{\par\medskip}
+For each weak learner
+{\par\medskip}
+\hspace*{6pt}predict using the learner
+{\par\medskip}
+\hspace*{6pt}multiply outcome by the weight of the learner
+{\par\medskip}
+Sum that over all learners
+{\par\medskip}
+Get the sign of the outcome: + then +1 - then -1
+
+\section{Prediction formula}
+\[
+\text{total}_i = \sum_{t=0}^{T-1} w_t \cdot f_t(X_{\text{test},i})
+\]
+\[
+\text{outcome}_i = 
+\begin{cases}
+-1 & \text{if total}_i < 0\\
++1 & \text{if total}_i \geq 0
+\end{cases}
+\]
+
 \end{document}
