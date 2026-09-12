@@ -124,8 +124,20 @@ if PRINTSTUFF == True:
 X_train = create_np_matrix(df=train_data_df, columnnames=x_features_enc)
 Y_train = create_np_matrix(df=train_data_df, columnnames=y_features)
 X_test = create_np_matrix(df=test_data_df, columnnames=x_features_enc)
+Y_test = create_np_matrix(df=test_data_df, columnnames=y_features)
 
 bst.fit(X=X_train, Y=Y_train)
 Y_test_pred = bst.predict(X=X_test)
 print(f"Y_test_pred.shape {Y_test_pred.shape} Y_test_pred\n{Y_test_pred}")
 print(f"bst.weight_per_learner {bst.weight_per_learner}")
+
+print("for point 22")
+
+T = 30
+bst.set_n_estimators(n_estimators=T)
+bst.fit(X=X_train, Y=Y_train)
+
+for t in range(T):
+    err_train = bst.classification_error(X=X_train, Y=Y_train, use_n_estimators=t+1)
+    err_test = bst.classification_error(X=X_test, Y=Y_test, use_n_estimators=t+1)
+    print_with_tms(f"Error using {t+1} esimators train {err_train} test {err_test}")

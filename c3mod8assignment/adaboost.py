@@ -85,15 +85,44 @@ class AdaBoost:
         y_pred = self.clf[t].predict(X=X)
         return y_pred[:,0]
 
-    def predict(self, X):
+    def predict(self, X, use_n_estimators=None):
+        if use_n_estimators is None:
+            use_n_estimators = self.n_estimators
+
+        if use_n_estimators > self.n_estimators:
+            raise ValueError("use_n_estimators should not exceed the number of estimators currently defined")
+
         N = X.shape[0]
-        predictions_per_learner = np.zeros((N, self.n_estimators))
-        for t in range(len(self.clf)):
+        predictions_per_learner = np.zeros((N, use_n_estimators))
+        for t in range(use_n_estimators):
             y_pred_val = self.predict_iteration(X=X, t=t)
             predictions_per_learner[:, t] = y_pred_val
-        weights_per_learner_matrix = np.asarray(self.weight_per_learner).reshape(-1, 1) #Tx1 matrix
+        weights_per_learner_matrix = np.asarray(self.weight_per_learner[:use_n_estimators]).reshape(-1, 1) #Tx1 matrix
         total_per_datapoint = np.matmul(predictions_per_learner, weights_per_learner_matrix)
         outcome_per_datapoint = np.where(
             total_per_datapoint >= 0, 1, -1
         )
         return outcome_per_datapoint
+
+    def classification_error(self, X, Y, use_n_estimators=None):
+        '''
+        Compute final classification error for the AdaBoost class on data X with true values Y
+        '''
+        if use_n_estimators is None:
+            use_n_estimators = self.n_estimators
+
+        N = X.shape[0]
+        assert Y.shape[0] == N
+        if N == 0:
+            return None
+
+        Y_pred = self.predict(X=X, use_n_estimators=use_n_estimators)
+        Y_pred_flat = np.asarray(Y_pred).reshape(-1)
+        Y_flat = np.asarray(Y).reshape(-1)
+
+        errorcount = 0
+        for i in range(N):
+            if Y_pred_flat[i] != Y_flat[i]:
+                errorcount += 1
+
+        return errorcount / N
