@@ -2,6 +2,11 @@ import pandas as pd
 from datetime import datetime
 import os
 import json
+graphviz_path = r"C:\Program Files\Graphviz\bin"
+if graphviz_path not in os.environ["PATH"]:
+    os.environ["PATH"] += os.pathsep + graphviz_path
+import graphviz
+import matplotlib.pyplot as plt
 
 from adaboost import AdaBoost
 
@@ -88,6 +93,24 @@ def create_np_matrix(df, columnnames):
     print_with_tms(f"Created feature matrix with shape {feature_matrix.shape}")
     return feature_matrix
 
+def plot_errors(T, err_train_array, err_test_array):
+    estimators = range(1, T + 1)
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(estimators, err_train_array, marker="o", label="Train error")
+    plt.plot(estimators, err_test_array, marker="o", label="Test error")
+
+    plt.xlabel("Number of estimators")
+    plt.ylabel("Classification error")
+    plt.title("AdaBoost classification error")
+    plt.xticks(estimators)
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+
+    output_folder = os.path.join(os.path.dirname(__file__), "output")
+    plt.savefig(os.path.join(output_folder, "classification_error.png"), dpi=150)
+
 PRINTSTUFF = False
 
 print_with_tms("Start script")
@@ -137,7 +160,15 @@ T = 30
 bst.set_n_estimators(n_estimators=T)
 bst.fit(X=X_train, Y=Y_train)
 
+err_train_array = []
+err_test_array = []
 for t in range(T):
     err_train = bst.classification_error(X=X_train, Y=Y_train, use_n_estimators=t+1)
+    err_train_array.append(err_train)
     err_test = bst.classification_error(X=X_test, Y=Y_test, use_n_estimators=t+1)
+    err_test_array.append(err_test)
     print_with_tms(f"Error using {t+1} esimators train {err_train} test {err_test}")
+
+plot_errors(T=T,
+            err_train_array=err_train_array,
+            err_test_array=err_test_array)
