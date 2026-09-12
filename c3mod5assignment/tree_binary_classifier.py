@@ -141,7 +141,8 @@ class TreeBinaryClassifier:
         if tn.is_leaf == False:
             current_error = tn.errorcount / (tn.correctcount + tn.errorcount)
             new_error = 1 - best_new_accuracy
-            print(f"current_error {current_error} new_error {new_error}")
+            if self.verbose == True:
+                print(f"current_error {current_error} new_error {new_error}")
 
             #Logically current_error >= new_error
             #Only numerical issues can cause that current_error < new_error

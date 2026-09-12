@@ -5,6 +5,7 @@ import sys
 sys.path.append("../c3mod5assignment")
 from tree_binary_classifier import TreeBinaryClassifier
 import numpy as np
+from datetime import datetime
 
 class AdaBoost:
     def __init__(self):
@@ -23,7 +24,7 @@ class AdaBoost:
         self.weight_per_learner = [0.0 for tw in range(n_estimators)]
         for t in range(n_estimators):
             oneclf = TreeBinaryClassifier()
-            oneclf.max_depth = 2
+            oneclf.max_depth = 1
             oneclf.min_node_size = 0
             oneclf.error_reduction_threshold = -1.0
             self.clf.append(oneclf)
@@ -52,10 +53,15 @@ class AdaBoost:
                 new_alpha_i = self.alpha[i] * np.exp(self.weight_per_learner[t])
             self.alpha[i] = new_alpha_i
 
+    def print_with_tms(self, message):
+        mytimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(f"{mytimestamp}|{message}")
+
     def boost_iteration(self, X, Y, t):
         #The alpha is already also stored as property of each learner
         #So we'll often propagate alpha from AdaBoost to each of its individual learners
         #e.g. self.clf[t].set_alpha(new_alpha=self.alpha)
+        self.print_with_tms(f"boost_iteration t {t}")
         oneclf = self.clf[t]
         oneclf.set_alpha(new_alpha=self.alpha)
         oneclf.fit(X=X, Y=Y)

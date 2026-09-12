@@ -95,7 +95,7 @@ print_with_tms("Start script")
 bst = AdaBoost()
 if PRINTSTUFF == True:
     bst.IsVerbose = True
-bst.set_n_estimators(n_estimators=8)
+bst.set_n_estimators(n_estimators=10)
 
 path = os.path.join("C:\\", "Users", "Evert Jan", "courseradatascience",
                        "course03", "module08", "data")
@@ -128,3 +128,4 @@ X_test = create_np_matrix(df=test_data_df, columnnames=x_features_enc)
 bst.fit(X=X_train, Y=Y_train)
 Y_test_pred = bst.predict(X=X_test)
 print(f"Y_test_pred.shape {Y_test_pred.shape} Y_test_pred\n{Y_test_pred}")
+print(f"bst.weight_per_learner {bst.weight_per_learner}")
