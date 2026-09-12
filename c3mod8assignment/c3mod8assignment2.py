@@ -123,5 +123,8 @@ if PRINTSTUFF == True:
 
 X_train = create_np_matrix(df=train_data_df, columnnames=x_features_enc)
 Y_train = create_np_matrix(df=train_data_df, columnnames=y_features)
+X_test = create_np_matrix(df=test_data_df, columnnames=x_features_enc)
 
 bst.fit(X=X_train, Y=Y_train)
+Y_test_pred = bst.predict(X=X_test)
+print(f"Y_test_pred.shape {Y_test_pred.shape} Y_test_pred\n{Y_test_pred}")
