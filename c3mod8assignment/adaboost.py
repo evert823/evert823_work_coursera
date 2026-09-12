@@ -74,3 +74,20 @@ class AdaBoost:
 
         for t in range(len(self.clf)):
             self.boost_iteration(X=X, Y=Y, t=t)
+
+    def predict_iteration(self, X, t):
+        y_pred = self.clf[t].predict(X=X)
+        return y_pred[:,0]
+
+    def predict(self, X):
+        N = X.shape[0]
+        predictions_per_learner = np.zeros((N, self.n_estimators))
+        for t in range(len(self.clf)):
+            y_pred_val = self.predict_iteration(X=X, t=t)
+            predictions_per_learner[:, t] = y_pred_val
+        weights_per_learner_matrix = np.asarray(self.weight_per_learner).reshape(-1, 1) #Tx1 matrix
+        total_per_datapoint = np.matmul(predictions_per_learner, weights_per_learner_matrix)
+        outcome_per_datapoint = np.where(
+            total_per_datapoint >= 0, 1, -1
+        )
+        return outcome_per_datapoint

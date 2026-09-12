@@ -84,4 +84,28 @@ Get the sign of the outcome: + then +1 - then -1
 \end{cases}
 \]
 
+\section{Prediction matrix-wise}
+This can be implemented using matrix operations:
+
+\begin{itemize}
+    \item Predict all data points with each weak learner, producing an
+    \(N \times T\) matrix \(Y_{\text{combined}}\).
+    \item Store all learner weights in a \(T \times 1\) matrix
+    \(\mathbf{W}\).
+    \item Compute the totals:
+    \[
+    \mathbf{total} =
+    Y_{\text{combined}}\mathbf{W}
+    \]
+    where \(\mathbf{total}\) is an \(N \times 1\) matrix.
+    \item Convert each total to \(-1\) or \(+1\):
+    \[
+    \mathbf{outcome}_i =
+    \begin{cases}
+        -1 & \text{if } \mathbf{total}_i < 0,\\
+        +1 & \text{if } \mathbf{total}_i \geq 0.
+    \end{cases}
+    \]
+\end{itemize}
+
 \end{document}
