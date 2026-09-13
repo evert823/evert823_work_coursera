@@ -1,6 +1,7 @@
 '''
 Re-use of c3mod2assignment.py possible
 '''
+import numpy as np
 import pandas as pd
 import os
 import string
@@ -14,6 +15,7 @@ from sklearn.metrics import (
       precision_score,
       recall_score
      )
+import matplotlib.pyplot as plt
 
 def print_with_tms(message):
     mytimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -52,6 +54,68 @@ def nice_print_confusion_matrix(logreg, confmatrix):
     for i, target_label in enumerate(logreg.classes_):
         for j, predicted_label in enumerate(logreg.classes_):
             print('{0:^13} | {1:^15} | {2:5d}'.format(target_label, predicted_label, confmatrix[i,j]))
+
+def predict_using_threshold(model: LogisticRegression, p_threshold, X):
+    '''
+    y_pred2 will have 3 columns:
+    - probability -1 per data point
+    - probability 1 per data point
+    - predicted label based on threshold
+    '''
+    i_1 = list(model.classes_).index(1) #probably i_1==1
+    y_pred = model.predict_proba(X=X)
+
+    predicted_label = np.where(
+        y_pred[:, i_1]  >= p_threshold,
+        1,
+        -1
+    )
+    y_pred2 = np.hstack((y_pred, predicted_label.reshape(-1, 1)))
+
+    if PRINTSTUFF == True:
+        print_with_tms(f"type(y_pred2) {type(y_pred2)}")
+        print_with_tms(f"y_pred2.shape {y_pred2.shape}")
+        with np.printoptions(suppress=True, precision=8):
+            print_with_tms(f"y_pred2[:6,:]\n{y_pred2[:6,:]}")
+
+    return y_pred2
+
+def plot_pr_curve(precision_all, recall_all, png_file_name):
+    plt.figure(figsize=(8, 6))
+    plt.plot(precision_all, recall_all, '-o', markersize=3)
+
+    plt.xlabel("Precision")
+    plt.ylabel("Recall")
+    plt.title("Precision-Recall Curve")
+    plt.grid(True)
+    plt.tight_layout()
+
+    output_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "output",
+        png_file_name
+    )
+
+    plt.savefig(output_path, dpi=300)
+    plt.close()
+
+    print_with_tms(f"Saved plot to {output_path}")
+
+def try_threshold(p_threshold, logreg, test_matrix, test_df):
+    y_pred_wt = predict_using_threshold(model=logreg, p_threshold=p_threshold, X=test_matrix)
+
+    cmat_wt = confusion_matrix(y_true=test_df['sentiment'],
+                            y_pred=y_pred_wt[:, 2].astype(int),
+                            labels=logreg.classes_)
+    precision_wt = precision_score(y_true=test_df['sentiment'],
+                                y_pred=y_pred_wt[:, 2].astype(int))
+    recall_wt = recall_score(y_true=test_df['sentiment'],
+                            y_pred=y_pred_wt[:, 2].astype(int))
+    if PRINTSTUFF == True:
+        print(f"cmat_wt\n{cmat_wt}")
+        print_with_tms(f"with threshold {p_threshold} precision_wt {precision_wt} recall_wt {recall_wt}")
+    return precision_wt, recall_wt
+
 
 print_with_tms("Script started")
 path = os.path.join("C:\\", "Users", "Evert Jan", "courseradatascience",
@@ -94,7 +158,7 @@ logreg = LogisticRegression(max_iter=1000)
 logreg.fit(train_matrix, train_df['sentiment'])
 print_with_tms("logreg.fit done")
 
-test_predictions = logreg.predict(test_matrix)
+test_predictions = logreg.predict(X=test_matrix)
 test_accuracy = accuracy_score(y_true=test_df['sentiment'], y_pred=test_predictions)
 print_with_tms(f"test_accuracy: {test_accuracy}")
 
@@ -115,3 +179,53 @@ recall = recall_score(y_true=test_df['sentiment'],
                       y_pred=test_predictions)
 print_with_tms(f"Precision on test data {precision}")
 print_with_tms(f"Recall on test data {recall}")
+
+for p in [0.5, 0.9]:
+    precision_wt, recall_wt = try_threshold(p_threshold=p,
+                                            logreg=logreg,
+                                            test_matrix=test_matrix,
+                                            test_df=test_df)
+
+threshold_values = np.linspace(0.5, 1, num=100)
+precision_all = []
+recall_all = []
+for p in threshold_values:
+    precision_wt, recall_wt = try_threshold(p_threshold=p,
+                                            logreg=logreg,
+                                            test_matrix=test_matrix,
+                                            test_df=test_df)
+    precision_all.append(precision_wt)
+    recall_all.append(recall_wt)
+
+plot_pr_curve(
+    precision_all=precision_all,
+    recall_all=recall_all,
+    png_file_name="precision_recall_curve.png"
+)
+
+
+'''
+Below we repeat the assessment of the model on testdata for only baby related products
+'''
+test_baby_only_df = test_df[
+    test_df['name'].str.contains('baby', case=False, na=False)
+].copy()
+print_with_tms(f"Subset baby related only {len(test_baby_only_df)}")
+test_baby_only_matrix = vectorizer.transform(test_baby_only_df['review_clean'])
+
+
+precision_all = []
+recall_all = []
+for p in threshold_values:
+    precision_wt, recall_wt = try_threshold(p_threshold=p,
+                                            logreg=logreg,
+                                            test_matrix=test_baby_only_matrix,
+                                            test_df=test_baby_only_df)
+    precision_all.append(precision_wt)
+    recall_all.append(recall_wt)
+
+plot_pr_curve(
+    precision_all=precision_all,
+    recall_all=recall_all,
+    png_file_name="precision_recall_curve_baby_only.png"
+)
