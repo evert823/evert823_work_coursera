@@ -8,6 +8,12 @@ import json
 from datetime import datetime
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import (
+      accuracy_score,
+      confusion_matrix,
+      precision_score,
+      recall_score
+     )
 
 def print_with_tms(message):
     mytimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -34,6 +40,18 @@ def remove_punctuation(text):
         return ''
     translator = str.maketrans('', '', string.punctuation)
     return text.translate(translator)
+
+def cost_mistakes(confmatrix):
+    cost_false_positive = 100
+    cost_false_negative = 1
+    false_positive_count = confmatrix[0, 1] #true negative predicted positive
+    false_negative_count = confmatrix[1, 0] #true positive predicted negative
+    return (cost_false_positive * false_positive_count) + (cost_false_negative * false_negative_count)
+
+def nice_print_confusion_matrix(logreg, confmatrix):
+    for i, target_label in enumerate(logreg.classes_):
+        for j, predicted_label in enumerate(logreg.classes_):
+            print('{0:^13} | {1:^15} | {2:5d}'.format(target_label, predicted_label, confmatrix[i,j]))
 
 print_with_tms("Script started")
 path = os.path.join("C:\\", "Users", "Evert Jan", "courseradatascience",
@@ -75,3 +93,25 @@ print_with_tms("Created test_matrix")
 logreg = LogisticRegression(max_iter=1000)
 logreg.fit(train_matrix, train_df['sentiment'])
 print_with_tms("logreg.fit done")
+
+test_predictions = logreg.predict(test_matrix)
+test_accuracy = accuracy_score(y_true=test_df['sentiment'], y_pred=test_predictions)
+print_with_tms(f"test_accuracy: {test_accuracy}")
+
+majority_clf_accuracy = len(test_df[test_df['sentiment'] == 1])/len(test_df)
+print_with_tms(f"majority_clf_accuracy: {majority_clf_accuracy}")
+
+cmat = confusion_matrix(y_true=test_df['sentiment'],
+                        y_pred=test_predictions,
+                        labels=logreg.classes_)
+print_with_tms(f"cmat \n{cmat}")
+nice_print_confusion_matrix(logreg=logreg, confmatrix=cmat)
+cost = cost_mistakes(confmatrix=cmat)
+print(f"cost {cost}")
+
+precision = precision_score(y_true=test_df['sentiment'],
+                            y_pred=test_predictions)
+recall = recall_score(y_true=test_df['sentiment'],
+                      y_pred=test_predictions)
+print_with_tms(f"Precision on test data {precision}")
+print_with_tms(f"Recall on test data {recall}")
