@@ -111,9 +111,9 @@ def try_threshold(p_threshold, logreg, test_matrix, test_df):
                                 y_pred=y_pred_wt[:, 2].astype(int))
     recall_wt = recall_score(y_true=test_df['sentiment'],
                             y_pred=y_pred_wt[:, 2].astype(int))
-    if PRINTSTUFF == True:
+    if PRINTSTUFF == True or p_threshold == 0.98:
         print(f"cmat_wt\n{cmat_wt}")
-        print_with_tms(f"with threshold {p_threshold} precision_wt {precision_wt} recall_wt {recall_wt}")
+    print_with_tms(f"with threshold {p_threshold} precision_wt {precision_wt} recall_wt {recall_wt}")
     return precision_wt, recall_wt
 
 
@@ -202,6 +202,13 @@ plot_pr_curve(
     recall_all=recall_all,
     png_file_name="precision_recall_curve.png"
 )
+
+
+
+precision_wt, recall_wt = try_threshold(p_threshold=0.98,
+                                        logreg=logreg,
+                                        test_matrix=test_matrix,
+                                        test_df=test_df)
 
 
 '''
