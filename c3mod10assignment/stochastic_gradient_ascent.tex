@@ -1,0 +1,82 @@
+\documentclass[12pt, letterpaper]{article}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{dsfont}
+\usepackage{float}
+\setlength{\parindent}{0pt}
+\graphicspath{{images/}}
+\title{Changes to gradient ascent with L2 for Stochastic Gradient Ascent algorithm}
+\author{Evert Jan Karman}
+\date{January 1900}
+\begin{document}
+\maketitle
+
+Changes to gradient ascent with L2 for Stochastic Gradient Ascent algorithm
+
+\section{The changes}
+
+Recall the final formula for derivative of the log likelihood function with L2
+
+\[
+\frac{\partial \ell(w)}{\partial w_j} = \sum_{i=0}^{n-1} h_j(x_i) ( \mathds{1}[y_i=+1] - P(y_i=+1 | x_i,w)) - 2 \lambda w_{j}
+\]
+if j \(>\) 0
+\[
+\frac{\partial \ell(w)}{\partial w_j} = \sum_{i=0}^{n-1} h_j(x_i) ( \mathds{1}[y_i=+1] - P(y_i=+1 | x_i,w))
+\]
+if j \(=\) 0
+
+\medskip
+For stochastic gradient ascent we will no longer sum over all data points.
+\medskip
+But we will do this for one data point. Or for a batch of data points of batch size B:
+
+\[
+\frac{\partial \ell(w)}{\partial w_j} = \sum_{i\in\mathcal B_t} h_j(x_i) ( \mathds{1}[y_i=+1] - P(y_i=+1 | x_i,w)) - ( \frac{2 \cdot B}{N} ) \lambda w_{j}
+\]
+if j \(>\) 0
+\[
+\frac{\partial \ell(w)}{\partial w_j} = \sum_{i\in\mathcal B_t} h_j(x_i) ( \mathds{1}[y_i=+1] - P(y_i=+1 | x_i,w))
+\]
+if j \(=\) 0
+
+\medskip
+
+The coefficient update will be:
+\[
+w_j^{t+1}
+=
+w_j^t
++
+\eta
+\left(
+\frac{\partial \ell(w^t)}{\partial w_j}
+\right)
+\]
+
+\medskip
+
+On beforehand data must be shuffled, to avoid that the algorithm is pushed in a biased direction by implicit ordering of data points.
+
+\section{Log likelihood, objective function and measure convergence}
+
+Recall the log likelihood function, which is essentially our objective function.
+
+\[
+\ell(w)
+= \sum_{i=0}^{n-1} ( ( \mathds{1}[y_i=+1] - 1) w^\top h(x_i) - \ln ( 1 + \mathrm{e}^{-w^\top h(x_i)} ) ) - \lambda \lVert w \rVert_2^2
+\]
+
+For stochastic gradient ascent we will now compute:
+\[
+\ell(w)
+= \sum_{i\in\mathcal B_t} ( ( \mathds{1}[y_i=+1] - 1) w^\top h(x_i) - \ln ( 1 + \mathrm{e}^{-w^\top h(x_i)} ) ) - ( \frac{B}{N} ) \lambda \lVert w \rVert_2^2
+\qquad \text{(i)}
+\]
+And (i) will be averaged for the last k minibatches.
+\medskip
+This is used for assessing convergence.
+
+
+\end{document}
