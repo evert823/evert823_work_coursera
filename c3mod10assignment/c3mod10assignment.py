@@ -8,6 +8,7 @@ import pandas as pd
 import string
 import json
 from datetime import datetime
+import matplotlib.pyplot as plt
 
 def print_with_tms(message):
     mytimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -163,14 +164,18 @@ def check_values(k, batch_size, N, epsilon):
         raise ValueError("batch_size must be positive")
     if batch_size > N:
         raise ValueError("batch_size cannot exceed N")
-    if epsilon < 0 or epsilon >= 100.0:
+    if epsilon < -1.0 or epsilon >= 100.0:
         raise ValueError("pls choose a proper value for epsilon")
 
 def gradient_ascent_algorithm_stochastic(w_init,
                                          H, Y,
                                          batch_size,
                                          epsilon, stepsize,
-                                         max_iter, k):
+                                         max_iter, k,
+                                         dummy_run=False):
+    if dummy_run == True:
+        return w_init, []
+
     '''
     Stochastic Gradient Ascent algorithm without L2 regularization
     '''
@@ -217,7 +222,7 @@ def gradient_ascent_algorithm_stochastic(w_init,
             batchnr += 1
 
         iteration_nr += 1
-    return w_current
+    return w_current, log_l_batch_outcomes
 
 
 def gradient_ascent_upd_w(D, gradient,
@@ -258,6 +263,29 @@ def compute_accuracy(Y, Y_predicted):
 
     return correctcount / N
 
+def plot_log_l_batch_outcomes(log_l_batch_outcomes,
+                             output_dir=".\\output",
+                             filename="log_likelihood.png"):
+    if not log_l_batch_outcomes:
+        raise ValueError("log_l_batch_outcomes is empty")
+
+    os.makedirs(output_dir, exist_ok=True)
+
+    x = np.arange(1, len(log_l_batch_outcomes) + 1)
+    y = np.asarray(log_l_batch_outcomes, dtype=float)
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(x, y, color="tab:blue", linewidth=1.5)
+    plt.title("Log-likelihood over batches")
+    plt.xlabel("Batch index")
+    plt.ylabel("Log-likelihood")
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+
+    out_path = os.path.join(output_dir, filename)
+    plt.savefig(out_path, dpi=200)
+    plt.close()
+
 
 PRINTSTUFF = False
 print_with_tms("script started")
@@ -290,10 +318,32 @@ H_val = create_np_matrix(df=val_data_df, columnnames=columnnames)
 Y_val = create_np_matrix(df=val_data_df, columnnames=['sentiment'])
 
 w_init = np.zeros(H_train.shape[1], dtype=float)
-w_optimized = gradient_ascent_algorithm_stochastic(w_init=w_init,
+w_optimized, _ = gradient_ascent_algorithm_stochastic(w_init=w_init,
                         H=H_train, Y=Y_train,
                         batch_size=1,
                         epsilon=0.0, stepsize=5e-1,
-                        max_iter = 10, k=1)
+                        max_iter = 10, k=1,
+                        dummy_run=True)
 print_with_tms(f"w_optimized \n{w_optimized}")
 
+print("Going to point 17")
+w_init = np.zeros(H_train.shape[1], dtype=float)
+N = H_train.shape[0]
+w_optimized, _ = gradient_ascent_algorithm_stochastic(w_init=w_init,
+                        H=H_train, Y=Y_train,
+                        batch_size=N,
+                        epsilon=-1.0, stepsize=5e-1,
+                        max_iter = 200, k=1000,
+                        dummy_run=True)
+print_with_tms(f"w_optimized \n{w_optimized}")
+
+print("Going to point 19")
+w_init = np.zeros(H_train.shape[1], dtype=float)
+w_optimized, log_l_batch_outcomes = gradient_ascent_algorithm_stochastic(w_init=w_init,
+                        H=H_train, Y=Y_train,
+                        batch_size=100,
+                        epsilon=-1.0, stepsize=1e-1,
+                        max_iter = 200, k=1,
+                        dummy_run=False)
+print_with_tms(f"w_optimized \n{w_optimized}")
+plot_log_l_batch_outcomes(log_l_batch_outcomes=log_l_batch_outcomes)
