@@ -356,7 +356,7 @@ w_optimized, log_l_batch_outcomes = gradient_ascent_algorithm_stochastic(w_init=
                         batch_size=N,
                         stepsize=0.5,
                         max_iter = 200,
-                        dummy_run=False)
+                        dummy_run=True)
 print_with_tms(f"w_optimized \n{w_optimized}")
 plot_log_l_batch_outcomes(log_l_batch_outcomes=log_l_batch_outcomes,
                           smoothing_window=30, filename='log_likelihood_point21_N.png')
@@ -367,7 +367,26 @@ w_optimized, log_l_batch_outcomes = gradient_ascent_algorithm_stochastic(w_init=
                         batch_size=100,
                         stepsize=0.1,
                         max_iter = 200,
-                        dummy_run=False)
+                        dummy_run=True)
 print_with_tms(f"w_optimized \n{w_optimized}")
 plot_log_l_batch_outcomes(log_l_batch_outcomes=log_l_batch_outcomes,
                           smoothing_window=30, filename='log_likelihood_point21_100.png')
+
+print("Going to point 23")
+
+N = H_train.shape[0]
+w_init = np.zeros(H_train.shape[1], dtype=float)
+
+step_sizes = [1e-4, 1e-3, 1e-2, 1e-1, 1e0, 1e1, 1e2]
+suffixes = ['a_1em4', 'b_1em3', 'c_1em2', 'd_1em1', 'e_1e0', 'f_1e1', 'g_1e2']
+
+for i in range(len(step_sizes)):
+    w_optimized, log_l_batch_outcomes = gradient_ascent_algorithm_stochastic(w_init=w_init,
+                            H=H_train, Y=Y_train,
+                            batch_size=100,
+                            stepsize=step_sizes[i],
+                            max_iter = 10,
+                            dummy_run=False)
+    print_with_tms(f"w_optimized \n{w_optimized}")
+    plot_log_l_batch_outcomes(log_l_batch_outcomes=log_l_batch_outcomes,
+                    smoothing_window=30, filename=f'log_likelihood_point23_{suffixes[i]}.png')
