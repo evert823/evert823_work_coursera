@@ -146,32 +146,19 @@ def gradient_ascent_algorithm_stochastic_batch(w_current,
 
     return gradient, log_l_batch
 
-def avg_log_l_batch(log_l_batch_outcomes, k):
-    last_k = log_l_batch_outcomes[-k:]
-    return sum(last_k) / len(last_k)
-
-def check_values(k, batch_size, N, epsilon):
-    if not isinstance(k, int):
-        raise TypeError("k must be an integer")
+def check_values(batch_size, N):
     if not isinstance(batch_size, int):
         raise TypeError("batch_size must be an integer")
-    if not isinstance(epsilon, float):
-        raise TypeError("epsilon must be a float")
-
-    if k <= 0:
-        raise ValueError("k must be positive")
     if batch_size <= 0:
         raise ValueError("batch_size must be positive")
     if batch_size > N:
         raise ValueError("batch_size cannot exceed N")
-    if epsilon < -1.0 or epsilon >= 100.0:
-        raise ValueError("pls choose a proper value for epsilon")
 
 def gradient_ascent_algorithm_stochastic(w_init,
                                          H, Y,
                                          batch_size,
-                                         epsilon, stepsize,
-                                         max_iter, k,
+                                         stepsize,
+                                         max_iter,
                                          dummy_run=False):
     if dummy_run == True:
         return w_init, []
@@ -182,16 +169,13 @@ def gradient_ascent_algorithm_stochastic(w_init,
     N = H.shape[0]
     D = H.shape[1]
 
-    check_values(k=k, batch_size=batch_size, N=N, epsilon=epsilon)
-
-    avg_log_l = 100.0
-    prev_avg_log_l = 0.0
+    check_values(batch_size=batch_size, N=N)
 
     w_current = np.copy(w_init)
     log_l_batch_outcomes = []
 
     iteration_nr = 0
-    while iteration_nr < max_iter and np.abs(avg_log_l - prev_avg_log_l) >= epsilon:
+    while iteration_nr < max_iter:
         print_with_tms(f"iteration_nr {iteration_nr}")
         #Here, an iteration is a whole data pass (N rows) and usually we do one or few
         #While a batch is a subset of the data
@@ -208,9 +192,6 @@ def gradient_ascent_algorithm_stochastic(w_init,
                                                 batchnr=batchnr)
 
             log_l_batch_outcomes.append(log_l_batch)
-            prev_avg_log_l = avg_log_l
-            avg_log_l = avg_log_l_batch(log_l_batch_outcomes=log_l_batch_outcomes,
-                                        k=k)
 
             w_new = gradient_ascent_upd_w(D=D, gradient=gradient,
                                 w_current=w_current,
@@ -218,7 +199,7 @@ def gradient_ascent_algorithm_stochastic(w_init,
             w_current = np.copy(w_new)
 
             if batch_size >= 2000 or batchnr % 2000 == 0 or PRINTSTUFF == True:
-                print_with_tms(f"batchnr {batchnr} avg_log_l {avg_log_l}")
+                print_with_tms(f"batchnr {batchnr} log_l_batch {log_l_batch}")
             batchnr += 1
 
         iteration_nr += 1
@@ -265,18 +246,31 @@ def compute_accuracy(Y, Y_predicted):
 
 def plot_log_l_batch_outcomes(log_l_batch_outcomes,
                              output_dir=".\\output",
-                             filename="log_likelihood.png"):
+                             filename="log_likelihood.png",
+                             smoothing_window=1):
     if not log_l_batch_outcomes:
         raise ValueError("log_l_batch_outcomes is empty")
 
+    if smoothing_window <= 0:
+        raise ValueError("smoothing_window must be positive")
+
     os.makedirs(output_dir, exist_ok=True)
 
-    x = np.arange(1, len(log_l_batch_outcomes) + 1)
     y = np.asarray(log_l_batch_outcomes, dtype=float)
 
+    if smoothing_window == 1:
+        y_plot = y
+        x = np.arange(1, len(y_plot) + 1)
+        title = "Log-likelihood over batches"
+    else:
+        window = min(int(smoothing_window), len(y))
+        y_plot = np.convolve(y, np.ones(window) / window, mode="valid")
+        x = np.arange(window, len(y) + 1)
+        title = f"Average log-likelihood over last {window} batches"
+
     plt.figure(figsize=(10, 6))
-    plt.plot(x, y, color="tab:blue", linewidth=1.5)
-    plt.title("Log-likelihood over batches")
+    plt.plot(x, y_plot, color="tab:blue", linewidth=1.5)
+    plt.title(title)
     plt.xlabel("Batch index")
     plt.ylabel("Log-likelihood")
     plt.grid(True, alpha=0.3)
@@ -321,8 +315,8 @@ w_init = np.zeros(H_train.shape[1], dtype=float)
 w_optimized, _ = gradient_ascent_algorithm_stochastic(w_init=w_init,
                         H=H_train, Y=Y_train,
                         batch_size=1,
-                        epsilon=0.0, stepsize=5e-1,
-                        max_iter = 10, k=1,
+                        stepsize=5e-1,
+                        max_iter = 10,
                         dummy_run=True)
 print_with_tms(f"w_optimized \n{w_optimized}")
 
@@ -332,8 +326,8 @@ N = H_train.shape[0]
 w_optimized, _ = gradient_ascent_algorithm_stochastic(w_init=w_init,
                         H=H_train, Y=Y_train,
                         batch_size=N,
-                        epsilon=-1.0, stepsize=5e-1,
-                        max_iter = 200, k=1000,
+                        stepsize=5e-1,
+                        max_iter = 200,
                         dummy_run=True)
 print_with_tms(f"w_optimized \n{w_optimized}")
 
@@ -342,8 +336,9 @@ w_init = np.zeros(H_train.shape[1], dtype=float)
 w_optimized, log_l_batch_outcomes = gradient_ascent_algorithm_stochastic(w_init=w_init,
                         H=H_train, Y=Y_train,
                         batch_size=100,
-                        epsilon=-1.0, stepsize=1e-1,
-                        max_iter = 200, k=1,
+                        stepsize=1e-1,
+                        max_iter = 200,
                         dummy_run=False)
 print_with_tms(f"w_optimized \n{w_optimized}")
-plot_log_l_batch_outcomes(log_l_batch_outcomes=log_l_batch_outcomes)
+plot_log_l_batch_outcomes(log_l_batch_outcomes=log_l_batch_outcomes,
+                          smoothing_window=100)
