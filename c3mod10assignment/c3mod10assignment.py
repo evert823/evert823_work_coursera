@@ -110,7 +110,7 @@ def compute_log_likelyhood(Y, score_matrix):
 
 def compute_log_likelyhood_term(i, Y, score_matrix):
     my_y = Y[i, 0]
-    my_indicator = 1.0 if my_y == 1 else 0
+    my_indicator = 1.0 if my_y == 1 else 0.0
     myscore = score_matrix[i]
     term_l = np.log(1 + np.exp(myscore * -1)) * -1
 
@@ -187,6 +187,7 @@ def gradient_ascent_algorithm_stochastic(w_init,
 
     iteration_nr = 0
     while iteration_nr < max_iter and np.abs(avg_log_l - prev_avg_log_l) >= epsilon:
+        print_with_tms(f"iteration_nr {iteration_nr}")
         #Here, an iteration is a whole data pass (N rows) and usually we do one or few
         #While a batch is a subset of the data
 
@@ -208,48 +209,27 @@ def gradient_ascent_algorithm_stochastic(w_init,
 
             w_new = gradient_ascent_upd_w(D=D, gradient=gradient,
                                 w_current=w_current,
-                                stepsize=stepsize)
+                                stepsize=stepsize, batch_size=batch_size)
             w_current = np.copy(w_new)
 
+            if batch_size >= 2000 or batchnr % 2000 == 0 or PRINTSTUFF == True:
+                print_with_tms(f"batchnr {batchnr} avg_log_l {avg_log_l}")
             batchnr += 1
 
         iteration_nr += 1
     return w_current
 
 
-
-
-
-def gradient_ascent_algorithm(w_init,
-                              H, Y,
-                              epsilon, stepsize,
-                              max_iter):
-    D = H.shape[1]
-    iteration_nr = 0
-    w_current = np.copy(w_init)
-    gradient_norm = 100.0 #dummy large value to have it defined 1st iteration
-    while iteration_nr < max_iter and gradient_norm > epsilon:
-        score_matrix = np.matmul(H, w_current)
-        P_class_1_by_data_point = probabilities_from_score_matrix(score_matrix=score_matrix)
-        error = compute_error(Y=Y, P=P_class_1_by_data_point)
-        gradient = np.matmul(H.T, error)
-        gradient_norm = np.linalg.norm(gradient)
-        log_l = compute_log_likelyhood(Y=Y, score_matrix=score_matrix)
-        if iteration_nr % 10 == 0:
-            print_stuff(iteration_nr, gradient_norm, log_l)
-        w_new = gradient_ascent_upd_w(D=D, gradient=gradient,
-                            w_current=w_current,
-                            stepsize=stepsize)
-        w_current = np.copy(w_new)
-        iteration_nr += 1
-    return w_current
-
 def gradient_ascent_upd_w(D, gradient,
-                          w_current, stepsize):
+                          w_current, stepsize, batch_size):
+    '''
+    Here we divide the term by batch_size before adding the term
+    to the previous coefficient value
+    '''
     w_new = np.copy(w_current)
     for j in range(D):
         partial_j = gradient[j]
-        w_new[j] = w_new[j] + ( partial_j * stepsize )
+        w_new[j] = w_new[j] + ( partial_j * stepsize / batch_size)
 
     return w_new
 
@@ -309,4 +289,11 @@ Y_train = create_np_matrix(df=train_data_df, columnnames=['sentiment'])
 H_val = create_np_matrix(df=val_data_df, columnnames=columnnames)
 Y_val = create_np_matrix(df=val_data_df, columnnames=['sentiment'])
 
+w_init = np.zeros(H_train.shape[1], dtype=float)
+w_optimized = gradient_ascent_algorithm_stochastic(w_init=w_init,
+                        H=H_train, Y=Y_train,
+                        batch_size=1,
+                        epsilon=0.0, stepsize=5e-1,
+                        max_iter = 10, k=1)
+print_with_tms(f"w_optimized \n{w_optimized}")
 
