@@ -249,7 +249,9 @@ def plot_log_l_batch_outcomes(log_l_batch_outcomes,
                              filename="log_likelihood.png",
                              smoothing_window=1):
     if not log_l_batch_outcomes:
-        raise ValueError("log_l_batch_outcomes is empty")
+        return
+    if len(log_l_batch_outcomes) == 0:
+        return
 
     if smoothing_window <= 0:
         raise ValueError("smoothing_window must be positive")
@@ -338,7 +340,33 @@ w_optimized, log_l_batch_outcomes = gradient_ascent_algorithm_stochastic(w_init=
                         batch_size=100,
                         stepsize=1e-1,
                         max_iter = 200,
-                        dummy_run=False)
+                        dummy_run=True)
 print_with_tms(f"w_optimized \n{w_optimized}")
 plot_log_l_batch_outcomes(log_l_batch_outcomes=log_l_batch_outcomes,
                           smoothing_window=100)
+
+
+print("Going to point 21")
+#normal - batch size = N
+N = H_train.shape[0]
+w_init = np.zeros(H_train.shape[1], dtype=float)
+w_optimized, log_l_batch_outcomes = gradient_ascent_algorithm_stochastic(w_init=w_init,
+                        H=H_train, Y=Y_train,
+                        batch_size=N,
+                        stepsize=0.5,
+                        max_iter = 200,
+                        dummy_run=False)
+print_with_tms(f"w_optimized \n{w_optimized}")
+plot_log_l_batch_outcomes(log_l_batch_outcomes=log_l_batch_outcomes,
+                          smoothing_window=30, filename='log_likelihood_point21_N.png')
+#stochastic
+w_init = np.zeros(H_train.shape[1], dtype=float)
+w_optimized, log_l_batch_outcomes = gradient_ascent_algorithm_stochastic(w_init=w_init,
+                        H=H_train, Y=Y_train,
+                        batch_size=100,
+                        stepsize=0.1,
+                        max_iter = 200,
+                        dummy_run=False)
+print_with_tms(f"w_optimized \n{w_optimized}")
+plot_log_l_batch_outcomes(log_l_batch_outcomes=log_l_batch_outcomes,
+                          smoothing_window=30, filename='log_likelihood_point21_100.png')
