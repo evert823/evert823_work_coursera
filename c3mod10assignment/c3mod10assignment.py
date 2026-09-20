@@ -143,8 +143,9 @@ def gradient_ascent_algorithm_stochastic_batch(w_current,
     error = compute_error(Y=Y_batch, P=P_class_1_by_data_point)
     gradient = np.matmul(H_batch.T, error)
     log_l_batch = compute_log_likelyhood(Y=Y_batch, score_matrix=score_matrix)
+    scaled_log_l_batch = log_l_batch / batch_size
 
-    return gradient, log_l_batch
+    return gradient, scaled_log_l_batch
 
 def check_values(batch_size, N):
     if not isinstance(batch_size, int):
