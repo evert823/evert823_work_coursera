@@ -4,6 +4,7 @@ import numpy as np
 from datetime import datetime
 import json
 from scipy import sparse
+from sklearn.neighbors import NearestNeighbors
 
 def print_with_tms(message):
     mytimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -66,6 +67,33 @@ def assess_sparse_matrix(word_map, sparse_matrix):
         for word_index, count in zip(first_row.indices, first_row.data):
             print(index_to_word[word_index], count)
 
+def find_index_by_name(df, name):
+    i = all_data_df.index[df["name"] == name][0]
+    return i
+
+def find_and_print_neighbours(df, model, word_count, i, n_neighbors):
+    distances, indices = model.kneighbors(word_count[i], n_neighbors=n_neighbors)
+    '''
+    distances.shape == (1, 10)
+    indices.shape   == (1, 10)
+    '''
+
+    neighbors = pd.DataFrame({
+        "id": indices[0],
+        "distance": distances[0]
+    })
+
+    result = (
+        df.reset_index()
+        .rename(columns={"index": "id"})
+        .loc[neighbors["id"]]
+        .reset_index(drop=True)
+        .merge(neighbors, on="id")
+        .sort_values("distance")
+    )
+
+    print(result[["id", "name", "distance"]])
+
 
 PRINTSTUFF = False
 
@@ -94,3 +122,16 @@ assess_sparse_matrix(word_map=word_map, sparse_matrix=word_count)
 tf_idf = read_sparse_npz(path=path, file_name=file_name_tf_idf)
 assess_sparse_matrix(word_map=word_map, sparse_matrix=tf_idf)
 #For this we should have used TfidfVectorizer but we need assessment compatibility
+
+print_with_tms("start fit model")
+model = NearestNeighbors(metric='euclidean', algorithm='brute')
+model.fit(word_count)
+print_with_tms("finished fit model")
+
+i_obama = find_index_by_name(df=all_data_df, name='Barack Obama')
+print(f"i_obama {i_obama}")
+find_and_print_neighbours(df=all_data_df,
+                          model=model,
+                          word_count=word_count,
+                          i=i_obama,
+                          n_neighbors=10)
