@@ -68,7 +68,7 @@ def assess_sparse_matrix(word_map, sparse_matrix):
             print(index_to_word[word_index], count)
 
 def find_index_by_name(df, name):
-    i = all_data_df.index[df["name"] == name][0]
+    i = df.index[df["name"] == name][0]
     return i
 
 def find_and_print_neighbours(df, model, word_count, i, n_neighbors):
@@ -93,6 +93,26 @@ def find_and_print_neighbours(df, model, word_count, i, n_neighbors):
     )
 
     print(result[["id", "name", "distance"]])
+
+
+def top_words(df, name, word_count, word_map):
+    i = find_index_by_name(df, name)
+    row = word_count.getrow(i)
+
+    index_to_word = {
+        index: word
+        for word, index in word_map.items()
+    }
+
+    result = pd.DataFrame({
+        "word": [index_to_word[index] for index in row.indices],
+        "count": row.data
+    })
+
+    return result.sort_values(
+        "count",
+        ascending=False
+    ).reset_index(drop=True)
 
 
 PRINTSTUFF = False
@@ -135,3 +155,40 @@ find_and_print_neighbours(df=all_data_df,
                           word_count=word_count,
                           i=i_obama,
                           n_neighbors=10)
+
+#Test top_words:
+print_with_tms("\nTest top_words\n")
+obama_words = top_words(
+    df=all_data_df,
+    name="Barack Obama",
+    word_count=word_count,
+    word_map=word_map
+)
+print(obama_words.head(10))
+barrio_words = top_words(
+    df=all_data_df,
+    name="Francisco Barrio",
+    word_count=word_count,
+    word_map=word_map
+)
+print(barrio_words.head(10))
+print(f"type(obama_words) {type(obama_words)}")
+
+combined_words = (
+    obama_words.merge(
+        barrio_words,
+        on="word",
+        how="inner",
+        suffixes=("_Obama", "_Barrio")
+    )
+    .rename(columns={
+        "count_Obama": "Obama",
+        "count_Barrio": "Barrio"
+    })
+    .sort_values("Obama", ascending=False)
+    .reset_index(drop=True)
+)
+
+print(combined_words.head(10))
+
+
