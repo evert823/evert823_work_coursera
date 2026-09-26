@@ -115,6 +115,24 @@ def top_words(df, name, word_count, word_map):
     ).reset_index(drop=True)
 
 
+def number_of_articles_that_contain_all_from(df, input_list, word_count, word_map):
+    number_of_articles = 0
+
+    input_word_indices = {
+        word_map[word]
+        for word in input_list
+        if word in word_map
+    }
+
+    for article_index in range(word_count.shape[0]):
+        row = word_count.getrow(article_index)
+        article_word_indices = set(row.indices)
+
+        if input_word_indices.issubset(article_word_indices):
+            number_of_articles += 1
+
+    return number_of_articles
+
 PRINTSTUFF = False
 
 print_with_tms("script started")
@@ -191,4 +209,9 @@ combined_words = (
 
 print(combined_words.head(10))
 
+mynumber = number_of_articles_that_contain_all_from(df=all_data_df,
+                                    input_list=['the', 'in', 'and', 'of', 'to'],
+                                    word_count=word_count,
+                                    word_map=word_map)
 
+print(f"mynumber {mynumber}")
