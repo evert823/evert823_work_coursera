@@ -5,6 +5,7 @@ from datetime import datetime
 import json
 from scipy import sparse
 from sklearn.neighbors import NearestNeighbors
+from sklearn.metrics.pairwise import euclidean_distances
 
 def print_with_tms(message):
     mytimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -114,6 +115,24 @@ def top_words(df, name, word_count, word_map):
         ascending=False
     ).reset_index(drop=True)
 
+def top_words_tf_idf(df, name, tf_idf, word_map):
+    i = find_index_by_name(df, name)
+    row = tf_idf.getrow(i)
+
+    index_to_word = {
+        index: word
+        for word, index in word_map.items()
+    }
+
+    result = pd.DataFrame({
+        "word": [index_to_word[index] for index in row.indices],
+        "weight": row.data
+    })
+
+    return result.sort_values(
+        "weight",
+        ascending=False
+    ).reset_index(drop=True)
 
 def number_of_articles_that_contain_all_from(df, input_list, word_count, word_map):
     number_of_articles = 0
@@ -215,3 +234,104 @@ mynumber = number_of_articles_that_contain_all_from(df=all_data_df,
                                     word_map=word_map)
 
 print(f"mynumber {mynumber}")
+
+
+i_obama = find_index_by_name(df=all_data_df, name='Barack Obama')
+i_biden = find_index_by_name(df=all_data_df, name='Joe Biden')
+i_bush = find_index_by_name(df=all_data_df, name='George W. Bush')
+print(f"i_obama {i_obama} i_biden {i_biden} i_bush {i_bush}")
+
+d_obama_biden = euclidean_distances(
+    word_count[i_obama],
+    word_count[i_biden]
+)
+
+d_obama_bush = euclidean_distances(
+    word_count[i_obama],
+    word_count[i_bush]
+)
+
+d_biden_bush = euclidean_distances(
+    word_count[i_biden],
+    word_count[i_bush]
+)
+
+print(f"Obama-Biden distance: {d_obama_biden[0, 0]}")
+print(f"Obama-Bush distance: {d_obama_bush[0, 0]}")
+print(f"Biden-Bush distance: {d_biden_bush[0, 0]}")
+
+bush_words = top_words(
+    df=all_data_df,
+    name="George W. Bush",
+    word_count=word_count,
+    word_map=word_map
+)
+combined_words = (
+    obama_words.merge(
+        bush_words,
+        on="word",
+        how="inner",
+        suffixes=("_Obama", "_Bush")
+    )
+    .rename(columns={
+        "count_Obama": "Obama",
+        "count_Bush": "Bush"
+    })
+    .sort_values("Obama", ascending=False)
+    .reset_index(drop=True)
+)
+print(combined_words.head(10))
+
+print_with_tms("start fit model_tf_ids")
+model_tf_idf = NearestNeighbors(metric='euclidean', algorithm='brute')
+model_tf_idf.fit(tf_idf)
+print_with_tms("finished fit model_tf_idf")
+
+find_and_print_neighbours(df=all_data_df,
+                          model=model_tf_idf,
+                          word_count=tf_idf,
+                          i=i_obama,
+                          n_neighbors=10)
+
+obama_tf_idf_words = top_words_tf_idf(
+    df=all_data_df,
+    name="Barack Obama",
+    tf_idf=tf_idf,
+    word_map=word_map
+)
+
+print(obama_tf_idf_words.head(10))
+
+schilirio_tf_idf_words = top_words_tf_idf(
+    df=all_data_df,
+    name="Phil Schiliro",
+    tf_idf=tf_idf,
+    word_map=word_map
+)
+
+print(schilirio_tf_idf_words.head(10))
+
+combined_words = (
+    obama_tf_idf_words.merge(
+        schilirio_tf_idf_words,
+        on="word",
+        how="inner",
+        suffixes=("_Obama", "_Schilirio")
+    )
+    .rename(columns={
+        "weight_Obama": "Obama",
+        "weight_Schilirio": "Schilirio"
+    })
+    .sort_values("Obama", ascending=False)
+    .reset_index(drop=True)
+)
+print(combined_words.head(10))
+
+mynumber_tf_idf = number_of_articles_that_contain_all_from(df=all_data_df,
+                                            input_list=['obama', 'law', 'democratic', 'senate', 'presidential'],
+                                            word_count=word_count,#or tf_idf but here it won't make a difference
+                                            word_map=word_map)
+print(f"mynumber_tf_idf {mynumber_tf_idf}")
+
+print("\nGoing to Choosing metrics\n")
+
