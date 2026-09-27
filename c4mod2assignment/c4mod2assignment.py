@@ -93,8 +93,12 @@ def find_and_print_neighbours(df, model, word_count, i, n_neighbors):
         .sort_values("distance")
     )
 
-    print(result[["id", "name", "distance"]])
+    columns_to_print = ["id", "name", "distance"]
 
+    if "article_length" in result.columns:
+        columns_to_print.append("article_length")
+
+    print(result[columns_to_print])
 
 def top_words(df, name, word_count, word_map):
     i = find_index_by_name(df, name)
@@ -282,7 +286,7 @@ combined_words = (
 )
 print(combined_words.head(10))
 
-print_with_tms("start fit model_tf_ids")
+print_with_tms("start fit model_tf_idf")
 model_tf_idf = NearestNeighbors(metric='euclidean', algorithm='brute')
 model_tf_idf.fit(tf_idf)
 print_with_tms("finished fit model_tf_idf")
@@ -335,3 +339,28 @@ print(f"mynumber_tf_idf {mynumber_tf_idf}")
 
 print("\nGoing to Choosing metrics\n")
 
+d_obama_biden_tf_idf = euclidean_distances(
+    tf_idf[i_obama],
+    tf_idf[i_biden]
+)
+print(f"d_obama_biden {d_obama_biden} d_obama_biden_tf_idf {d_obama_biden_tf_idf}")
+
+#Add a column article_length
+all_data_df['article_length'] = all_data_df['text'].apply(lambda text: len(text.split(' ')))
+
+find_and_print_neighbours(df=all_data_df,
+                          model=model_tf_idf,
+                          i=i_obama,
+                          word_count=tf_idf,
+                          n_neighbors=100)
+
+print_with_tms("start fit model_tf_idf_c")
+model_tf_idf_c = NearestNeighbors(metric='cosine', algorithm='brute')
+model_tf_idf_c.fit(tf_idf)
+print_with_tms("finished fit model_tf_idf_c")
+
+find_and_print_neighbours(df=all_data_df,
+                          model=model_tf_idf_c,
+                          i=i_obama,
+                          word_count=tf_idf,
+                          n_neighbors=10)
