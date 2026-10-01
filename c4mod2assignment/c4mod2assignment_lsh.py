@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import json
 from scipy import sparse
+from lsh_model import LSHModel
 
 def print_with_tms(message):
     mytimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -88,3 +89,13 @@ word_map = read_word_map(path=path, file_name=file_name_word_map)
 tf_idf = read_sparse_npz(path=path, file_name=file_name_tf_idf)
 assess_sparse_matrix(word_map=word_map, sparse_matrix=tf_idf)
 #For this we should have used TfidfVectorizer but we need assessment compatibility
+
+h = 3
+r = 1
+L = 1
+model = LSHModel(h=h, r=r, L=L)
+
+random_vectors = model.generate_random_vectors(num_vector=3, dim=5)
+print(f"type(random_vectors) {type(random_vectors)}")
+print(f"random_vectors.shape {random_vectors.shape}")
+print(f"random_vectors\n{random_vectors}")
