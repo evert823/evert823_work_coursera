@@ -2,9 +2,9 @@ import numpy as np
 from scipy import sparse
 
 class LSHModel:
-    def __init__(self, h, r, L):
+    def __init__(self, h, r, L, random_seed=0):
         self.IsVerbose = False
-        np.random.seed(0)
+        self.random_seed = random_seed
         self.h = h
         self.r = r
         self.L = L
@@ -28,6 +28,9 @@ class LSHModel:
     def fit(self, X):
         if not sparse.issparse(X):
             raise TypeError("X must be a SciPy sparse matrix")
+
+        np.random.seed(self.random_seed)
+
         N = X.shape[0]
         D = X.shape[1]
         vectorset = self.generate_random_vectors(dim=D)
