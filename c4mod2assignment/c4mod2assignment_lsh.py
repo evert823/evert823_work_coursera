@@ -147,10 +147,14 @@ for i2 in model.table[bin_obama]:
         a = model.cosine_distance(x=obama_tf_idf, y=doc_tf_idf)
         print(f"distance Obama other doc {a}")
 
-min_d, best_i = model.search(X=tf_idf, i=i_obama, r=2)
+min_d, best_i = model.search(X=tf_idf, i=i_obama, r=3)
 print(f"min_d {min_d} best_i {best_i}")
 print(f"model.searched_bins {len(model.searched_bins)}")
 print(f"model.searched_d_i2 {len(model.searched_d_i2)}")
 
 k_neighbour_list = model.report_searched_d_i2(k=10)
-print(k_neighbour_list)
+
+for i in range(len(k_neighbour_list)):
+    thename = all_data_df.iloc[k_neighbour_list[i][0]]["name"]
+    print(f"i {k_neighbour_list[i][0]} d {k_neighbour_list[i][1]} name {thename}")
+

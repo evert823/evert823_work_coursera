@@ -16,6 +16,7 @@ class LSHModel:
         self.index_numbers = None
         self.searched_bins = []
         self.searched_d_i2 = []
+        self.include_identical = True
 
     def print_with_tms(self, message):
         mytimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -85,7 +86,7 @@ class LSHModel:
         if idx_number_diff in self.table:
             self.searched_bins.append(idx_number_diff)
             for i2 in self.table[idx_number_diff]:
-                if i2 != i:
+                if i2 != i or self.include_identical == True:
                     x = X[i,:]
                     y = X[i2,:]
                     d = self.cosine_distance(x=x, y=y)
