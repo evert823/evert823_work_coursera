@@ -9,11 +9,18 @@ class LSHModel:
         self.r = r
         self.L = L
         self.table = {}
+        self.index_bits = None
+        self.index_numbers = None
 
     def norm(self, x):
         sum_sq=x.dot(x.T)
         norm=np.sqrt(sum_sq)
         return(norm)
+
+    def cosine_distance(self, x, y):
+        xy = x.dot(y.T)
+        dist = xy/(self.norm(x)*self.norm(y))
+        return 1-dist[0,0]
 
     def generate_random_vectors(self, dim):
         #These define the hyperplanes and a split into bins
@@ -36,18 +43,18 @@ class LSHModel:
         vectorset = self.generate_random_vectors(dim=D)
         if self.IsVerbose == True:
             print(f"N {N} D {D} h {self.h} vectorset.shape {vectorset.shape}")
-        index_bits = ((X.dot(vectorset)) >= 0).astype(np.int8)
+        self.index_bits = ((X.dot(vectorset)) >= 0).astype(np.int8)
         if self.IsVerbose == True:
-            print(f"index_bits.shape {index_bits.shape}")
-            print(index_bits)
+            print(f"self.index_bits.shape {self.index_bits.shape}")
+            print(self.index_bits)
         powers_of_two = (1 << np.arange(self.h - 1, -1, -1))
-        index_numbers = np.matmul(index_bits, powers_of_two)
+        self.index_numbers = np.matmul(self.index_bits, powers_of_two)
         if self.IsVerbose == True:
-            print(f"powers_of_two.shape {powers_of_two.shape} index_numbers.shape {index_numbers.shape}")
+            print(f"powers_of_two.shape {powers_of_two.shape} self.index_numbers.shape {self.index_numbers.shape}")
 
         self.table = {}
         for i in range(N):
-            idx = int(index_numbers[i])
+            idx = int(self.index_numbers[i])
             if idx not in self.table:
                 self.table[idx] = []
             self.table[idx].append(i)

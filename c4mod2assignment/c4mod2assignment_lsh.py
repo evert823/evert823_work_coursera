@@ -67,6 +67,10 @@ def assess_sparse_matrix(word_map, sparse_matrix):
         for word_index, count in zip(first_row.indices, first_row.data):
             print(index_to_word[word_index], count)
 
+def find_index_by_name(df, name):
+    i = df.index[df["name"] == name][0]
+    return i
+
 PRINTSTUFF = False
 
 print_with_tms("script started")
@@ -106,3 +110,39 @@ for i in [0, 143]:
         print(f"model.table[{i}] {model.table[i]}")
     except:
         pass
+
+
+i_obama = find_index_by_name(df=all_data_df, name='Barack Obama')
+print(all_data_df.iloc[i_obama])
+print(f"model.index_bits[i_obama] {model.index_bits[i_obama]}")
+print(f"model.index_numbers[i_obama] {model.index_numbers[i_obama]}")
+
+i_biden = find_index_by_name(df=all_data_df, name='Joe Biden')
+print(all_data_df.iloc[i_biden])
+print(f"model.index_bits[i_biden] {model.index_bits[i_biden]}")
+print(f"model.index_numbers[i_biden] {model.index_numbers[i_biden]}")
+
+i_hughjones = find_index_by_name(df=all_data_df, name='Wynn Normington Hugh-Jones')
+print(all_data_df.iloc[i_hughjones])
+print(f"model.index_bits[i_hughjones] {model.index_bits[i_hughjones]}")
+print(f"model.index_numbers[i_hughjones] {model.index_numbers[i_hughjones]}")
+
+
+print_with_tms("\n\n")
+
+bin_obama = model.index_numbers[i_obama]
+print(f"model.table[bin_obama] {model.table[bin_obama]}")
+for i2 in model.table[bin_obama]:
+    print(all_data_df.iloc[i2])
+    print(f"model.index_bits[{i2}] {model.index_bits[i2]}")
+    print(f"model.index_bits[{i_obama}] {model.index_bits[i_obama]}")
+
+obama_tf_idf = tf_idf[35817,:]
+biden_tf_idf = tf_idf[24478,:]
+a = model.cosine_distance(x=obama_tf_idf, y=biden_tf_idf)
+print(f"distance Obama Biden {a}")
+for i2 in model.table[bin_obama]:
+    if i2 != i_obama:
+        doc_tf_idf = tf_idf[i2,:]
+        a = model.cosine_distance(x=obama_tf_idf, y=doc_tf_idf)
+        print(f"distance Obama other doc {a}")
