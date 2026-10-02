@@ -146,3 +146,6 @@ for i2 in model.table[bin_obama]:
         doc_tf_idf = tf_idf[i2,:]
         a = model.cosine_distance(x=obama_tf_idf, y=doc_tf_idf)
         print(f"distance Obama other doc {a}")
+
+
+model.search(X=tf_idf, i=i_obama)

@@ -1,11 +1,13 @@
 import numpy as np
 from scipy import sparse
+from itertools import combinations
 
 class LSHModel:
     def __init__(self, h, r, L, random_seed=0):
         self.IsVerbose = False
         self.random_seed = random_seed
         self.h = h
+        self.powers_of_two = (1 << np.arange(self.h - 1, -1, -1))
         self.r = r
         self.L = L
         self.table = {}
@@ -47,10 +49,9 @@ class LSHModel:
         if self.IsVerbose == True:
             print(f"self.index_bits.shape {self.index_bits.shape}")
             print(self.index_bits)
-        powers_of_two = (1 << np.arange(self.h - 1, -1, -1))
-        self.index_numbers = np.matmul(self.index_bits, powers_of_two)
+        self.index_numbers = np.matmul(self.index_bits, self.powers_of_two)
         if self.IsVerbose == True:
-            print(f"powers_of_two.shape {powers_of_two.shape} self.index_numbers.shape {self.index_numbers.shape}")
+            print(f"self.powers_of_two.shape {self.powers_of_two.shape} self.index_numbers.shape {self.index_numbers.shape}")
 
         self.table = {}
         for i in range(N):
@@ -58,3 +59,43 @@ class LSHModel:
             if idx not in self.table:
                 self.table[idx] = []
             self.table[idx].append(i)
+
+    def search_by_diff_pattern(self, X, i, idx_bit_i, diff):
+        min_d = -1
+        best_i = -1
+        idx_bit_diff = np.array(
+            [idx_bit_i[j] if j not in diff else 1 - idx_bit_i[j]
+             for j in range(self.h)],
+            dtype=np.int8
+        )
+        idx_number_diff = idx_bit_diff.dot(self.powers_of_two)
+        if idx_number_diff in self.table:
+            for i2 in self.table[idx_number_diff]:
+                x = X[i,:]
+                y = X[i2,:]
+                d = self.cosine_distance(x=x, y=y)
+                if min_d < 0 or d < min_d:
+                    min_d = d
+                    best_i = i2
+        return idx_bit_diff, idx_number_diff, min_d, best_i
+
+    def search_exact_hamming_distance(self, X, i, idx_bit_i, hd):
+        for diff in combinations(range(self.h), hd):
+            idx_bit_diff, idx_number_diff, min_d, best_i = self.search_by_diff_pattern(X=X,
+                                                                                      i=i,
+                                                                                      idx_bit_i=idx_bit_i,
+                                                                                      diff=diff)
+            if best_i > -1:
+                print(f"{idx_bit_diff}, {idx_number_diff}, {min_d}, {best_i}")
+        #TODO Also on this level I need to get the optimal mind_d and best_i
+
+    def search(self, X, i):
+        '''
+        i is the index of a data point from the dataset (sparse matrix) X that was used earlier for fit
+        (so we assume that we search from documents already in our input dataser)
+        '''
+        #First we get the bit representation and the integer representation
+        idx_bit_i = self.index_bits[i]
+        idx_number_i = self.index_numbers[i]
+
+        self.search_exact_hamming_distance(X=X, i=i, idx_bit_i=idx_bit_i, hd=2)
