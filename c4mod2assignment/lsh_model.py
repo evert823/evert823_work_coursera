@@ -1,3 +1,4 @@
+from datetime import datetime
 import numpy as np
 from scipy import sparse
 from itertools import combinations
@@ -13,6 +14,12 @@ class LSHModel:
         self.table = {}
         self.index_bits = None
         self.index_numbers = None
+        self.searched_bins = []
+        self.searched_d_i2 = []
+
+    def print_with_tms(self, message):
+        mytimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(f"{mytimestamp}|{message}")
 
     def norm(self, x):
         sum_sq=x.dot(x.T)
@@ -76,13 +83,16 @@ class LSHModel:
         )
         idx_number_diff = int(idx_bit_diff.dot(self.powers_of_two))
         if idx_number_diff in self.table:
+            self.searched_bins.append(idx_number_diff)
             for i2 in self.table[idx_number_diff]:
-                x = X[i,:]
-                y = X[i2,:]
-                d = self.cosine_distance(x=x, y=y)
-                if (min_d < 0 or d < min_d) and i2 != i:
-                    min_d = d
-                    best_i = i2
+                if i2 != i:
+                    x = X[i,:]
+                    y = X[i2,:]
+                    d = self.cosine_distance(x=x, y=y)
+                    self.searched_d_i2.append((d, i2))
+                    if min_d < 0 or d < min_d:
+                        min_d = d
+                        best_i = i2
         return idx_bit_diff, idx_number_diff, min_d, best_i
 
     def search_exact_hamming_distance(self, X, i, idx_bit_i, hd):
@@ -101,12 +111,28 @@ class LSHModel:
                 best_i_hd = best_i
         return min_d_hd, best_i_hd
 
+    def report_searched_d_i2(self, k=10):
+        '''
+        Return [(i2, d), ...], sorted by distance descending.
+        '''
+        result = [
+            (int(i2), float(d))
+            for d, i2 in sorted(
+                self.searched_d_i2,
+                key=lambda item: item[0],
+                reverse=False
+            )
+        ]
+        return result[:k]
+
     def search(self, X, i, r):
         '''
         i is the index of a data point from the dataset (sparse matrix) X that was used earlier for fit
         (so we assume that we search from documents already in our input dataser)
         '''
         self.r = r
+        self.searched_bins = []
+        self.searched_d_i2 = []
         min_d_overall = -1
         best_i_overall = -1
         #First we get the bit representation and the integer representation
@@ -122,6 +148,6 @@ class LSHModel:
                 min_d_overall = min_d_hd
                 best_i_overall = best_i_hd
 
-            print(f"hd {hd} min_d_overall {min_d_overall} best_i_overall {best_i_overall}")
+            self.print_with_tms(f"hd {hd} min_d_overall {min_d_overall} best_i_overall {best_i_overall}")
 
         return min_d_overall, best_i_overall
