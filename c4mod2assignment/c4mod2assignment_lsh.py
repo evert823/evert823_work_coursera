@@ -94,7 +94,7 @@ tf_idf = read_sparse_npz(path=path, file_name=file_name_tf_idf)
 assess_sparse_matrix(word_map=word_map, sparse_matrix=tf_idf)
 #For this we should have used TfidfVectorizer but we need assessment compatibility
 
-model = LSHModel(h=16, r=1, L=1, random_seed=143)
+model = LSHModel(h=16, L=1, random_seed=143)
 model.IsVerbose = False
 
 #For testing purpose
@@ -147,5 +147,5 @@ for i2 in model.table[bin_obama]:
         a = model.cosine_distance(x=obama_tf_idf, y=doc_tf_idf)
         print(f"distance Obama other doc {a}")
 
-
-model.search(X=tf_idf, i=i_obama)
+min_d, best_i = model.search(X=tf_idf, i=i_obama, r=3)
+print(f"min_d {min_d} best_i {best_i}")
