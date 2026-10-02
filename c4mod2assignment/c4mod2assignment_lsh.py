@@ -100,3 +100,9 @@ print(f"random_vectors.shape {random_vectors.shape}")
 print(f"random_vectors\n{random_vectors}")
 
 model.fit(X=tf_idf)
+
+for i in range(1000):
+    try:
+        print(f"model.table[{i}] {model.table[i]}")
+    except:
+        pass
