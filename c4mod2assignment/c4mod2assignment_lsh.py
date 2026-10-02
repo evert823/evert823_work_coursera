@@ -90,12 +90,13 @@ tf_idf = read_sparse_npz(path=path, file_name=file_name_tf_idf)
 assess_sparse_matrix(word_map=word_map, sparse_matrix=tf_idf)
 #For this we should have used TfidfVectorizer but we need assessment compatibility
 
-h = 3
-r = 1
-L = 1
-model = LSHModel(h=h, r=r, L=L)
+model = LSHModel(h=16, r=1, L=1)
+model.IsVerbose = False
 
-random_vectors = model.generate_random_vectors(num_vector=3, dim=5)
+#For testing purpose
+random_vectors = model.generate_random_vectors(dim=5)
 print(f"type(random_vectors) {type(random_vectors)}")
 print(f"random_vectors.shape {random_vectors.shape}")
 print(f"random_vectors\n{random_vectors}")
+
+model.fit(X=tf_idf)
