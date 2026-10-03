@@ -17,7 +17,17 @@ class LSHModel:
         self.searched_bins = []
         self.searched_d_i2 = []
         self.time_last_search_sec = None
+
+        self.cached_searched_d_i2 = []
+        self.cached_min_d_hd = []
+        self.cached_best_i_hd = []
+
         self.include_identical = True
+
+    def clear_lsh_cache(self):
+        self.cached_searched_d_i2.clear()
+        self.cached_min_d_hd.clear()
+        self.cached_best_i_hd.clear()
 
     def print_with_tms(self, message):
         mytimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -47,6 +57,9 @@ class LSHModel:
         self.table[1] = [13, 14, 15]
 
     def fit(self, X):
+
+        self.clear_lsh_cache()
+
         if not sparse.issparse(X):
             raise TypeError("X must be a SciPy sparse matrix")
 
@@ -101,6 +114,13 @@ class LSHModel:
         '''
         Here we search all neighbour bins that have a specific hamming distance hd to the query point
         '''
+        if len(self.cached_best_i_hd) > hd:
+            self.searched_d_i2.clear()
+            self.searched_d_i2 = self.cached_searched_d_i2[hd].copy()
+            min_d_hd = self.cached_min_d_hd[hd]
+            best_i_hd = self.cached_best_i_hd[hd]
+            return min_d_hd, best_i_hd
+
         min_d_hd = -1
         best_i_hd = -1
         for diff in combinations(range(self.h), hd):
@@ -111,6 +131,16 @@ class LSHModel:
             if min_d_hd < 0 or (min_d > -1 and min_d < min_d_hd):
                 min_d_hd = min_d
                 best_i_hd = best_i
+
+        '''
+        We cache self.searched_d_i2, min_d_hd, best_i_hd
+        For the same search X, i
+        Per hd
+        '''
+        self.cached_searched_d_i2.append(self.searched_d_i2.copy())
+        self.cached_min_d_hd.append(min_d_hd)
+        self.cached_best_i_hd.append(best_i_hd)
+
         return min_d_hd, best_i_hd
 
     def report_searched_d_i2(self, k=10):
@@ -127,11 +157,16 @@ class LSHModel:
         ]
         return result[:k]
 
-    def search(self, X, i, r):
+    def search(self, X, i, r, reuse_cache=False):
         '''
         i is the index of a data point from the dataset (sparse matrix) X that was used earlier for fit
         (so we assume that we search from documents already in our input dataser)
         '''
+        if reuse_cache == False:
+            self.clear_lsh_cache()
+
+        if not sparse.issparse(X):
+            raise TypeError("X must be a SciPy sparse matrix")
         start_search_datetime = datetime.now()
 
         self.r = r
@@ -158,3 +193,30 @@ class LSHModel:
         time_last_search = end_search_datetime - start_search_datetime
         self.time_last_search_sec = time_last_search.total_seconds()
         return min_d_overall, best_i_overall
+
+    def brute_force_search(self, X, i, k):
+        '''
+        Find the k nearest neighbours to data point with index i
+        Return results sorted by distance asc
+        Brute force means one big scan over entire X
+        '''
+        if not sparse.issparse(X):
+            raise TypeError("X must be a SciPy sparse matrix")
+        intm_result = []
+        N = X.shape[0]
+        x = X[i,:]
+        for i2 in range(N):
+            if i2 != i or self.include_identical == True:
+                y = X[i2,:]
+                d = self.cosine_distance(x=x, y=y)
+                intm_result.append((d, i2))
+
+        result = [
+            (int(i2), float(d))
+            for d, i2 in sorted(
+                intm_result,
+                key=lambda item: item[0],
+                reverse=False
+            )
+        ]
+        return result[:k]

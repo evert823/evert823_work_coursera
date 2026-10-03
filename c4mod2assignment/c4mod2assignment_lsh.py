@@ -241,11 +241,11 @@ grid_search_r(model=model, X=tf_idf, i=i_obama,
               min_d_grid=min_d_grid,
               mean_d_grid=mean_d_grid,
               k=10,max_r=17,
-              dummy=True)
+              dummy=False)
 plot_results_grid_search(num_datapoints_grid=num_datapoints_grid,
                          querytime_sec_grid=querytime_sec_grid,
                          max_d_grid=max_d_grid,
                          min_d_grid=min_d_grid,
                          mean_d_grid=mean_d_grid,
                          max_r=17,
-                         dummy=True)
+                         dummy=False)
