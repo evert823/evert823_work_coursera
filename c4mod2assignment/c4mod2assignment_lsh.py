@@ -81,9 +81,10 @@ def grid_search_r(model, X, i,
                   k, max_r, dummy=False):
     if dummy == True:
         return
+    model.clear_lsh_cache()
     for r in range(max_r):
         print_with_tms(f"doing grid search r {r} max_r {max_r}")
-        min_d, best_i = model.search(X=X, i=i, r=r)
+        min_d, best_i = model.search(X=X, i=i, r=r, reuse_cache=True)
         k_neighbour_list_local = model.report_searched_d_i2(k=k)
         k2 = len(k_neighbour_list_local)
         num_datapoints_grid.append(len(model.searched_d_i2))
@@ -215,7 +216,7 @@ for i2 in model.table[bin_obama]:
         a = model.cosine_distance(x=obama_tf_idf, y=doc_tf_idf)
         print(f"distance Obama other doc {a}")
 
-min_d, best_i = model.search(X=tf_idf, i=i_obama, r=2)
+min_d, best_i = model.search(X=tf_idf, i=i_obama, r=2, reuse_cache=False)
 print(f"min_d {min_d} best_i {best_i}")
 print(f"model.searched_bins {len(model.searched_bins)}")
 print(f"model.searched_d_i2 {len(model.searched_d_i2)}")
