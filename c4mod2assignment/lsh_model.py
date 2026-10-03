@@ -16,6 +16,7 @@ class LSHModel:
         self.index_numbers = None
         self.searched_bins = []
         self.searched_d_i2 = []
+        self.time_last_search_sec = None
         self.include_identical = True
 
     def print_with_tms(self, message):
@@ -131,6 +132,8 @@ class LSHModel:
         i is the index of a data point from the dataset (sparse matrix) X that was used earlier for fit
         (so we assume that we search from documents already in our input dataser)
         '''
+        start_search_datetime = datetime.now()
+
         self.r = r
         self.searched_bins = []
         self.searched_d_i2 = []
@@ -151,4 +154,7 @@ class LSHModel:
 
             self.print_with_tms(f"hd {hd} min_d_overall {min_d_overall} best_i_overall {best_i_overall}")
 
+        end_search_datetime = datetime.now()
+        time_last_search = end_search_datetime - start_search_datetime
+        self.time_last_search_sec = time_last_search.total_seconds()
         return min_d_overall, best_i_overall

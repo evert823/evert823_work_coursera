@@ -5,6 +5,7 @@ import numpy as np
 import json
 from scipy import sparse
 from lsh_model import LSHModel
+import matplotlib.pyplot as plt
 
 def print_with_tms(message):
     mytimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -70,6 +71,69 @@ def assess_sparse_matrix(word_map, sparse_matrix):
 def find_index_by_name(df, name):
     i = df.index[df["name"] == name][0]
     return i
+
+def grid_search_r(model, X, i,
+                  num_datapoints_grid,
+                  querytime_sec_grid,
+                  max_d_grid,
+                  min_d_grid,
+                  mean_d_grid,
+                  k, max_r):
+    for r in range(max_r):
+        print_with_tms(f"doing grid search r {r} max_r {max_r}")
+        min_d, best_i = model.search(X=X, i=i, r=r)
+        k_neighbour_list_local = model.report_searched_d_i2(k=k)
+        k2 = len(k_neighbour_list_local)
+        num_datapoints_grid.append(len(model.searched_d_i2))
+        querytime_sec_grid.append(model.time_last_search_sec)
+        min_d_grid.append(k_neighbour_list_local[1][1])
+        max_d_grid.append(k_neighbour_list_local[k2-1][1])
+        mean_d_grid.append(np.mean([d for _, d in k_neighbour_list_local][1:]))
+
+def plot_results_grid_search(num_datapoints_grid,
+                             querytime_sec_grid,
+                             max_d_grid,
+                             min_d_grid,
+                             mean_d_grid,
+                             max_r):
+    r_values = list(range(max_r))
+    output_dir = os.path.join(os.path.dirname(__file__), "output")
+
+    fig, axes = plt.subplots(2, 2, figsize=(12, 8))
+
+    axes[0, 0].plot(r_values, num_datapoints_grid, marker="o")
+    axes[0, 0].set_title("Number of datapoints searched")
+    axes[0, 0].set_xlabel("Hamming distance r")
+    axes[0, 0].set_ylabel("Datapoints")
+
+    axes[0, 1].plot(r_values, querytime_sec_grid, marker="o", color="orange")
+    axes[0, 1].set_title("Query time")
+    axes[0, 1].set_xlabel("Hamming distance r")
+    axes[0, 1].set_ylabel("Seconds")
+
+    axes[1, 0].plot(r_values, min_d_grid, marker="o", label="Minimum")
+    axes[1, 0].plot(r_values, max_d_grid, marker="o", label="Maximum")
+    axes[1, 0].set_title("Distance range")
+    axes[1, 0].set_xlabel("Hamming distance r")
+    axes[1, 0].set_ylabel("Cosine distance")
+    axes[1, 0].legend()
+
+    axes[1, 1].plot(r_values, mean_d_grid, marker="o", color="green")
+    axes[1, 1].set_title("Mean neighbour distance")
+    axes[1, 1].set_xlabel("Hamming distance r")
+    axes[1, 1].set_ylabel("Mean cosine distance")
+
+    for ax in axes.flat:
+        ax.grid(True, alpha=0.3)
+
+    fig.suptitle("LSH Search Results as r Changes")
+    fig.tight_layout()
+
+    output_file = os.path.join(output_dir, "lsh_grid_search.png")
+    fig.savefig(output_file, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+
+    print_with_tms(f"Plot saved to {output_file}")
 
 PRINTSTUFF = False
 
@@ -151,6 +215,7 @@ min_d, best_i = model.search(X=tf_idf, i=i_obama, r=3)
 print(f"min_d {min_d} best_i {best_i}")
 print(f"model.searched_bins {len(model.searched_bins)}")
 print(f"model.searched_d_i2 {len(model.searched_d_i2)}")
+print(f"model.time_last_search_sec {model.time_last_search_sec}")
 
 k_neighbour_list = model.report_searched_d_i2(k=10)
 
@@ -158,3 +223,23 @@ for i in range(len(k_neighbour_list)):
     thename = all_data_df.iloc[k_neighbour_list[i][0]]["name"]
     print(f"i {k_neighbour_list[i][0]} d {k_neighbour_list[i][1]} name {thename}")
 
+#Now a grid search over values of r
+print_with_tms("Now a grid search over values of r")
+num_datapoints_grid = []
+querytime_sec_grid = []
+max_d_grid = []
+min_d_grid = []
+mean_d_grid = []
+grid_search_r(model=model, X=tf_idf, i=i_obama,
+              num_datapoints_grid=num_datapoints_grid,
+              querytime_sec_grid=querytime_sec_grid,
+              max_d_grid=max_d_grid,
+              min_d_grid=min_d_grid,
+              mean_d_grid=mean_d_grid,
+              k=10,max_r=17)
+plot_results_grid_search(num_datapoints_grid=num_datapoints_grid,
+                         querytime_sec_grid=querytime_sec_grid,
+                         max_d_grid=max_d_grid,
+                         min_d_grid=min_d_grid,
+                         mean_d_grid=mean_d_grid,
+                         max_r=17)
