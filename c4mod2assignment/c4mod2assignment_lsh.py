@@ -78,7 +78,9 @@ def grid_search_r(model, X, i,
                   max_d_grid,
                   min_d_grid,
                   mean_d_grid,
-                  k, max_r):
+                  k, max_r, dummy=False):
+    if dummy == True:
+        return
     for r in range(max_r):
         print_with_tms(f"doing grid search r {r} max_r {max_r}")
         min_d, best_i = model.search(X=X, i=i, r=r)
@@ -95,7 +97,9 @@ def plot_results_grid_search(num_datapoints_grid,
                              max_d_grid,
                              min_d_grid,
                              mean_d_grid,
-                             max_r):
+                             max_r, dummy=False):
+    if dummy == True:
+        return
     r_values = list(range(max_r))
     output_dir = os.path.join(os.path.dirname(__file__), "output")
 
@@ -211,7 +215,7 @@ for i2 in model.table[bin_obama]:
         a = model.cosine_distance(x=obama_tf_idf, y=doc_tf_idf)
         print(f"distance Obama other doc {a}")
 
-min_d, best_i = model.search(X=tf_idf, i=i_obama, r=3)
+min_d, best_i = model.search(X=tf_idf, i=i_obama, r=2)
 print(f"min_d {min_d} best_i {best_i}")
 print(f"model.searched_bins {len(model.searched_bins)}")
 print(f"model.searched_d_i2 {len(model.searched_d_i2)}")
@@ -236,10 +240,12 @@ grid_search_r(model=model, X=tf_idf, i=i_obama,
               max_d_grid=max_d_grid,
               min_d_grid=min_d_grid,
               mean_d_grid=mean_d_grid,
-              k=10,max_r=17)
+              k=10,max_r=17,
+              dummy=True)
 plot_results_grid_search(num_datapoints_grid=num_datapoints_grid,
                          querytime_sec_grid=querytime_sec_grid,
                          max_d_grid=max_d_grid,
                          min_d_grid=min_d_grid,
                          mean_d_grid=mean_d_grid,
-                         max_r=17)
+                         max_r=17,
+                         dummy=True)
