@@ -5,6 +5,7 @@ from kmeans_cluster import KMeansCluster
 from datetime import datetime
 import json
 from scipy import sparse
+from sklearn.preprocessing import normalize
 
 def print_with_tms(message):
     mytimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -94,3 +95,12 @@ tf_idf = read_sparse_npz(path=path, file_name=file_name_tf_idf)
 assess_sparse_matrix(word_map=word_map, sparse_matrix=tf_idf)
 #For this we should have used TfidfVectorizer but we need assessment compatibility
 
+tf_idf_norm = normalize(X=tf_idf)
+assess_sparse_matrix(word_map=word_map, sparse_matrix=tf_idf_norm)
+
+model = KMeansCluster()
+centroids = model.fit(X=tf_idf_norm,
+                      k=5,
+                      seed=0)
+print_with_tms(type(centroids))
+print_with_tms(f"centroids\n{centroids}")
