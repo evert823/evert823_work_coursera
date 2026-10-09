@@ -103,7 +103,9 @@ if PRINTSTUFF == True:
     model.IsVerbose = True
 
 centroids = model.fit(X=tf_idf_norm,
-                      k=5,
-                      seed=0)
+                      k=3,
+                      seed=0,
+                      epsilon=1e-8,
+                      max_iterations=100)
 print_with_tms(type(centroids))
 print_with_tms(f"centroids\n{centroids}")
