@@ -99,6 +99,9 @@ tf_idf_norm = normalize(X=tf_idf)
 assess_sparse_matrix(word_map=word_map, sparse_matrix=tf_idf_norm)
 
 model = KMeansCluster()
+if PRINTSTUFF == True:
+    model.IsVerbose = True
+
 centroids = model.fit(X=tf_idf_norm,
                       k=5,
                       seed=0)
