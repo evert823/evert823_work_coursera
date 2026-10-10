@@ -84,14 +84,56 @@ def run_seeds(model, tf_idf_norm, use_kpp_method, default_seed_array, dummy=Fals
         print(labelcounts)
     print(f"heterogeneity {heterogeneity}")
 
+def run_fit_multiple_init_one_k(model, tf_idf_norm, default_seed_array, dummy=False):
+    if dummy == True:
+        return
+    best_centroids, best_heterogeneity, best_seed = model.fit_multiple_init_one_k(X=tf_idf_norm,
+                                                        k=10,
+                                                        seed_array=default_seed_array,
+                                                        epsilon=1e-8,max_iterations=400,
+                                                        use_kpp_method=True)
+    print_with_tms(f"best_centroids {best_centroids} best_heterogeneity {best_heterogeneity}")
+    labelcounts = model.report_label_per_data_point()
+    print_with_tms(f"labelcounts :\n{labelcounts}")
 
-def cluster_visualization(model, tf_idf_norm, centroids):
+def visualize_one_cluster(model, tf_idf_norm, centroids, word_map, all_data_df,
+                          label, representative_indices):
+    original_index = int(representative_indices[label, 0])
+
+    if original_index == -1:
+        print(f"Cluster {label} is empty.")
+        return
+
+    print(f"\nRepresentative data point for cluster {label}:")
+    print(all_data_df.iloc[original_index])
+
+    index_to_word = {
+        column_index: word
+        for word, column_index in word_map.items()
+    }
+
+    centroid = centroids[label]
+    top_indices = np.argsort(centroid)[-5:][::-1]
+
+    print("Top five words in the centroid:")
+    for index in top_indices:
+        print(index_to_word.get(int(index), "<unknown>"), centroid[index])
+
+
+def cluster_visualization(model, tf_idf_norm, centroids, word_map, all_data_df):
     '''
     For each centroid determine the data point nearest to the centroid
     '''
+    k = centroids.shape[0]
+    D = centroids.shape[1]
     representative_datapoints, representative_indices = model.find_representative_data_points(X=tf_idf_norm, centroids=centroids)
     print(f"representative_datapoints.shape {representative_datapoints.shape}")
     print(f"representative_indices.shape {representative_indices.shape}")
+
+    for label in range(k):
+        visualize_one_cluster(model=model, tf_idf_norm=tf_idf_norm, centroids=centroids,
+                              word_map=word_map, all_data_df=all_data_df,
+                              label=label, representative_indices=representative_indices)
 
 PRINTSTUFF = False
 
@@ -145,14 +187,9 @@ run_seeds(model=model, tf_idf_norm=tf_idf_norm, use_kpp_method=True,
           default_seed_array=default_seed_array, dummy=True)
 
 print_with_tms("Now we write and use the method fit_multiple_init_one_k")
-best_centroids, best_heterogeneity, best_seed = model.fit_multiple_init_one_k(X=tf_idf_norm,
-                                                    k=10,
-                                                    seed_array=default_seed_array,
-                                                    epsilon=1e-8,max_iterations=400,
-                                                    use_kpp_method=True)
-print_with_tms(f"best_centroids {best_centroids} best_heterogeneity {best_heterogeneity}")
-labelcounts = model.report_label_per_data_point()
-print_with_tms(f"labelcounts :\n{labelcounts}")
+run_fit_multiple_init_one_k(model=model, tf_idf_norm=tf_idf_norm,
+                            default_seed_array=default_seed_array,
+                            dummy=True)
 
 print_with_tms("k-search")
 output_dir = os.path.join(os.path.dirname(__file__), "output")
@@ -166,4 +203,12 @@ model.k_search(X=tf_idf_norm,
                log_file_path=os.path.join(output_dir, "k_search.log"),
                dummy=True)
 
-cluster_visualization(model=model, tf_idf_norm=tf_idf_norm, centroids=best_centroids)
+
+print("\nNow we inspect the quality of our clusters\n")
+centroids, best_heterogeneity, _ = model.fit_multiple_init_one_k(X=tf_idf_norm,
+                                                    k=10,
+                                                    seed_array=default_seed_array,
+                                                    epsilon=1e-8,max_iterations=400,
+                                                    use_kpp_method=True)
+cluster_visualization(model=model, tf_idf_norm=tf_idf_norm, centroids=centroids,
+                      word_map=word_map, all_data_df=all_data_df)
