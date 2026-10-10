@@ -114,8 +114,29 @@ class KMeansCluster:
             return True
         return False
 
+    def report_label_per_data_point(self):
+        '''
+        Get the number of data points assigned to each label,
+        plus the largest cluster and its label.
+        '''
+        if self.label_per_data_point is None:
+            return {}
+
+        labels, counts = np.unique(
+            self.label_per_data_point,
+            return_counts=True
+        )
+
+        report = dict(zip(labels.tolist(), counts.tolist()))
+
+        largest_index = np.argmax(counts)
+        report["largest_cluster_label"] = int(labels[largest_index])
+        report["largest_cluster_size"] = int(counts[largest_index])
+
+        return report
+
     def fit(self, X, k, seed=None, epsilon=100.0, max_iterations=5):
-        print(f"\nk {k} seed {seed} epsilon {epsilon} max_iterations {max_iterations}\n")
+        self.print_with_tms(f"\nk {k} seed {seed} epsilon {epsilon} max_iterations {max_iterations}\n")
         if not sparse.issparse(X):
             raise TypeError("X must be a SciPy sparse matrix")
 
@@ -131,7 +152,8 @@ class KMeansCluster:
             centroids = self.revise_centroids(X=X, k=k, centroids=centroids)
             heterogeneity_prev = heterogeneity
             heterogeneity = self.compute_heterogeneity(X=X, k=k, centroids=centroids)
-            print(f"iternr {iternr} reassigned_count {reassigned_count} heterogeneity {heterogeneity}")
+            if iternr % 20 == 0:
+                print(f"iternr {iternr} reassigned_count {reassigned_count} heterogeneity {heterogeneity}")
             stop = self.stopcondition(reassigned_count=reassigned_count,
                                       iternr=iternr,
                                       max_iterations=max_iterations,
@@ -139,5 +161,6 @@ class KMeansCluster:
                                       heterogeneity_prev=heterogeneity_prev,
                                       epsilon=epsilon)
             iternr += 1
+        self.print_with_tms(f"\nk {k} seed {seed} epsilon {epsilon} true_iterations {iternr - 1}\n")
 
-        return centroids
+        return centroids, heterogeneity

@@ -102,10 +102,23 @@ model = KMeansCluster()
 if PRINTSTUFF == True:
     model.IsVerbose = True
 
-centroids = model.fit(X=tf_idf_norm,
+centroids, htgn = model.fit(X=tf_idf_norm,
                       k=3,
                       seed=0,
                       epsilon=1e-8,
-                      max_iterations=100)
+                      max_iterations=400)
 print_with_tms(type(centroids))
 print_with_tms(f"centroids\n{centroids}")
+
+labelcounts = model.report_label_per_data_point()
+print_with_tms(f"labelcounts :\n{labelcounts}")
+
+print_with_tms("Going to Beware of local minima")
+heterogeneity = {}
+for seed in [0, 20000, 40000, 60000, 80000, 100000, 120000]:
+    centroids, htgn = model.fit(X=tf_idf_norm, k=10, seed=seed,
+                          epsilon=1e-8,max_iterations=400)
+    heterogeneity[seed] = htgn
+    labelcounts = model.report_label_per_data_point()
+    print(labelcounts)
+print(f"heterogeneity {heterogeneity}")
