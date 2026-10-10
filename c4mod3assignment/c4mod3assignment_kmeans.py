@@ -85,6 +85,14 @@ def run_seeds(model, tf_idf_norm, use_kpp_method, default_seed_array, dummy=Fals
     print(f"heterogeneity {heterogeneity}")
 
 
+def cluster_visualization(model, tf_idf_norm, centroids):
+    '''
+    For each centroid determine the data point nearest to the centroid
+    '''
+    representative_datapoints, representative_indices = model.find_representative_data_points(X=tf_idf_norm, centroids=centroids)
+    print(f"representative_datapoints.shape {representative_datapoints.shape}")
+    print(f"representative_indices.shape {representative_indices.shape}")
+
 PRINTSTUFF = False
 
 print_with_tms("script started")
@@ -155,4 +163,7 @@ model.k_search(X=tf_idf_norm,
                epsilon=1e-8,max_iterations=400,
                use_kpp_method=True,
                png_file_path=os.path.join(output_dir, "k_search.png"),
-               log_file_path=os.path.join(output_dir, "k_search.log"))
+               log_file_path=os.path.join(output_dir, "k_search.log"),
+               dummy=True)
+
+cluster_visualization(model=model, tf_idf_norm=tf_idf_norm, centroids=best_centroids)

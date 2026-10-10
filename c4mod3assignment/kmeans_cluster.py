@@ -255,7 +255,10 @@ class KMeansCluster:
                  epsilon=100.0, max_iterations=5,
                  use_kpp_method=False,
                  png_file_path="a.png",
-                 log_file_path="a.log"):
+                 log_file_path="a.log",
+                 dummy=False):
+        if dummy == True:
+            return []
         '''
         Rerun fit_multiple_init_one_k for several values of k
         Use a fixed seed_array for each of these reruns
@@ -286,3 +289,37 @@ class KMeansCluster:
         plt.close()
 
         return heterogeneity_results
+
+    def find_representative_data_points(self, X, centroids):
+        '''
+        Given clusters and centroids,
+        find the data point nearest to each centroid
+        '''
+        if not sparse.issparse(X):
+            raise TypeError("X must be a SciPy sparse matrix")
+        if self.label_per_data_point is None:
+            raise ValueError("label_per_data_point must be set to meaningful values")
+        k = centroids.shape[0]
+        D = centroids.shape[1]
+        representative_datapoints = np.zeros((k, D), dtype=float)
+        representative_indices = np.full((k, 1), -1, dtype=int)
+
+        for label in range(k):
+            mask = self.label_per_data_point == label
+            cluster = X[mask]
+            pair_wise_distances = pairwise_distances(
+                cluster,
+                centroids[label, :].reshape(1, -1),
+                metric="euclidean"
+            )
+            local_index = int(np.argmin(pair_wise_distances[:, 0]))
+            original_indices = np.flatnonzero(mask)
+            if original_indices.size == 0:
+                continue
+            original_index = original_indices[local_index]
+            representative_indices[label, 0] = original_index
+            representative_datapoints[label, :] = (
+                X[original_index].toarray().ravel()
+            )
+
+        return representative_datapoints, representative_indices
