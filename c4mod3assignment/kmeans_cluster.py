@@ -12,6 +12,56 @@ class KMeansCluster:
         mytimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print(f"{mytimestamp}|{message}")
 
+    def pick_proportional(self, weights):
+        probabilities = weights / np.sum(weights)
+        i = int(np.random.choice(
+            weights.shape[0],
+            p=probabilities
+        ))
+        return i
+
+    def init_centroids_kpp(self, X, k, seed=None):
+        '''
+        Initialize the centroids using the k-means++ method
+        '''
+        N = X.shape[0]
+        D = X.shape[1]
+
+        if seed is not None:
+            np.random.seed(seed)
+
+        rand_indices = np.zeros(k, dtype=int)
+        centroids = np.zeros((k, D), dtype=float)
+
+        #Choose the first centroid uniformly random
+        rand_indices[0] = np.random.randint(0, N)
+        centroids[0, :] = X[rand_indices[0], :].toarray().ravel()
+
+        k_chosen = 1
+        while k_chosen < k:
+            #Compute pair_wise_distances all data points all chosen centroids
+            pair_wise_distances = pairwise_distances(
+                X,
+                centroids[:k_chosen, :],
+                metric="euclidean"
+            )
+
+            #For each data point the distance to the nearest centroid
+            distances_nearest_centroids = np.min(a=pair_wise_distances, axis=1)
+
+            #Pick next centroid from data points
+            #with probability proportional to squared distance to nearest centroid
+            squared_distances = (distances_nearest_centroids ** 2).ravel()
+            rand_indices[k_chosen] = self.pick_proportional(weights=squared_distances)
+            centroids[k_chosen, :] = X[rand_indices[k_chosen], :].toarray().ravel()
+            k_chosen += 1
+
+        if len(np.unique(rand_indices)) != k:
+            raise ValueError("rand_indices contains duplicate values")
+
+        return centroids
+
+
     def init_centroids_simple(self, X, k, seed=None):
         '''
         Randomly pick k data points which will be the centroids going forward
@@ -135,13 +185,17 @@ class KMeansCluster:
 
         return report
 
-    def fit(self, X, k, seed=None, epsilon=100.0, max_iterations=5):
+    def fit(self, X, k, seed=None, epsilon=100.0, max_iterations=5, use_kpp_method=False):
         self.print_with_tms(f"\nk {k} seed {seed} epsilon {epsilon} max_iterations {max_iterations}\n")
         if not sparse.issparse(X):
             raise TypeError("X must be a SciPy sparse matrix")
 
         self.label_per_data_point = None
-        centroids =  self.init_centroids_simple(X=X, k=k, seed=seed)
+
+        if use_kpp_method == False:
+            centroids =  self.init_centroids_simple(X=X, k=k, seed=seed)
+        else:
+            centroids =  self.init_centroids_kpp(X=X, k=k, seed=seed)
 
         heterogeneity = -1.0
         heterogeneity_prev = -2.0
