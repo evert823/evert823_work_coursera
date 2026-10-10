@@ -72,6 +72,19 @@ def assess_loaded_numpy_arrays(arrays):
     print(f"type(arrays) {type(arrays)}")
     print(f"arrays.files {arrays.files}")
 
+def run_seeds(model, tf_idf_norm, use_kpp_method, default_seed_array, dummy=False):
+    if dummy == True:
+        return
+    heterogeneity = {}
+    for seed in default_seed_array:
+        centroids, htgn = model.fit(X=tf_idf_norm, k=10, seed=seed,
+                            epsilon=1e-8,max_iterations=400, use_kpp_method=use_kpp_method)
+        heterogeneity[seed] = htgn
+        labelcounts = model.report_label_per_data_point()
+        print(labelcounts)
+    print(f"heterogeneity {heterogeneity}")
+
+
 PRINTSTUFF = False
 
 print_with_tms("script started")
@@ -113,22 +126,22 @@ print_with_tms(f"centroids\n{centroids}")
 labelcounts = model.report_label_per_data_point()
 print_with_tms(f"labelcounts :\n{labelcounts}")
 
+default_seed_array = [0, 20000, 40000, 60000, 80000, 100000, 120000]
+
 print_with_tms("Going to Beware of local minima")
-heterogeneity = {}
-for seed in [0, 20000, 40000, 60000, 80000, 100000, 120000]:
-    centroids, htgn = model.fit(X=tf_idf_norm, k=10, seed=seed,
-                          epsilon=1e-8,max_iterations=400)
-    heterogeneity[seed] = htgn
-    labelcounts = model.report_label_per_data_point()
-    print(labelcounts)
-print(f"heterogeneity {heterogeneity}")
+run_seeds(model=model, tf_idf_norm=tf_idf_norm, use_kpp_method=False,
+          default_seed_array=default_seed_array, dummy=True)
 
 print_with_tms("k-means++ initialization")
-heterogeneity = {}
-for seed in [0, 20000, 40000, 60000, 80000, 100000, 120000]:
-    centroids, htgn = model.fit(X=tf_idf_norm, k=10, seed=seed,
-                          epsilon=1e-8,max_iterations=400, use_kpp_method=True)
-    heterogeneity[seed] = htgn
-    labelcounts = model.report_label_per_data_point()
-    print(labelcounts)
-print(f"heterogeneity {heterogeneity}")
+run_seeds(model=model, tf_idf_norm=tf_idf_norm, use_kpp_method=True,
+          default_seed_array=default_seed_array, dummy=True)
+
+print_with_tms("Now we write and use the method fit_multiple_init_one_k")
+best_centroids, best_heterogeneity, best_seed = model.fit_multiple_init_one_k(X=tf_idf_norm,
+                                                    k=10,
+                                                    seed_array=default_seed_array,
+                                                    epsilon=1e-8,max_iterations=400,
+                                                    use_kpp_method=True)
+print_with_tms(f"best_centroids {best_centroids} best_heterogeneity {best_heterogeneity}")
+labelcounts = model.report_label_per_data_point()
+print_with_tms(f"labelcounts :\n{labelcounts}")

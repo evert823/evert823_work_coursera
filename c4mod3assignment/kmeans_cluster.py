@@ -186,7 +186,7 @@ class KMeansCluster:
         return report
 
     def fit(self, X, k, seed=None, epsilon=100.0, max_iterations=5, use_kpp_method=False):
-        self.print_with_tms(f"\nk {k} seed {seed} epsilon {epsilon} max_iterations {max_iterations}\n")
+        self.print_with_tms(f"\nk {k} seed {seed} epsilon {epsilon} max_iterations {max_iterations} use_kpp_method {use_kpp_method}\n")
         if not sparse.issparse(X):
             raise TypeError("X must be a SciPy sparse matrix")
 
@@ -218,3 +218,34 @@ class KMeansCluster:
         self.print_with_tms(f"\nk {k} seed {seed} epsilon {epsilon} true_iterations {iternr - 1}\n")
 
         return centroids, heterogeneity
+
+    def fit_multiple_init_one_k(self, X, k,
+                                seed_array=[0],
+                                epsilon=100.0, max_iterations=5,
+                                use_kpp_method=False):
+        '''
+        Input k is fixed
+        For each seed in seed_array
+        - retry self.fit - this resets the centroids
+        - capture heterogeneity
+        At the end capture
+        - best found heterogeneity
+        - set self.label_per_data_point to distribution that was found with that best heterogeneity
+        '''
+        best_heterogeneity = -1.0
+        best_seed = -1
+        best_centroids = None
+        best_label_per_data_point = None
+        for seed in seed_array:
+            centroids, heterogeneity = self.fit(X=X, k=k, seed=seed,
+                                                epsilon=epsilon, max_iterations=max_iterations,
+                                                use_kpp_method=use_kpp_method)
+            if best_heterogeneity == -1 or (heterogeneity >= 0.0 and best_heterogeneity > heterogeneity):
+                best_heterogeneity = heterogeneity
+                best_seed = seed
+                best_label_per_data_point = self.label_per_data_point.copy()
+                best_centroids = centroids.copy()
+
+        self.label_per_data_point = best_label_per_data_point.copy()
+
+        return best_centroids, best_heterogeneity, best_seed
