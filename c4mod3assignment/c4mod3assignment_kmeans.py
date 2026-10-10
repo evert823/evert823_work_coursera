@@ -81,7 +81,7 @@ def run_seeds(model, tf_idf_norm, use_kpp_method, default_seed_array, dummy=Fals
                             epsilon=1e-8,max_iterations=400, use_kpp_method=use_kpp_method)
         heterogeneity[seed] = htgn
         labelcounts = model.report_label_per_data_point()
-        print(labelcounts)
+        print_with_tms(f"labelcounts :\n{labelcounts}")
     print(f"heterogeneity {heterogeneity}")
 
 def run_fit_multiple_init_one_k(model, tf_idf_norm, default_seed_array, dummy=False):
@@ -206,9 +206,11 @@ model.k_search(X=tf_idf_norm,
 
 print("\nNow we inspect the quality of our clusters\n")
 centroids, best_heterogeneity, _ = model.fit_multiple_init_one_k(X=tf_idf_norm,
-                                                    k=10,
+                                                    k=25,
                                                     seed_array=default_seed_array,
                                                     epsilon=1e-8,max_iterations=400,
                                                     use_kpp_method=True)
+labelcounts = model.report_label_per_data_point()
+print_with_tms(f"labelcounts :\n{labelcounts}")
 cluster_visualization(model=model, tf_idf_norm=tf_idf_norm, centroids=centroids,
                       word_map=word_map, all_data_df=all_data_df)
