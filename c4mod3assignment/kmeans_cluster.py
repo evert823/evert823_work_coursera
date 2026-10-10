@@ -2,6 +2,7 @@ from datetime import datetime
 from scipy import sparse
 import numpy as np
 from sklearn.metrics import pairwise_distances
+import matplotlib.pyplot as plt
 
 class KMeansCluster:
     def __init__(self):
@@ -249,3 +250,39 @@ class KMeansCluster:
         self.label_per_data_point = best_label_per_data_point.copy()
 
         return best_centroids, best_heterogeneity, best_seed
+
+    def k_search(self, X, k_array=[3], seed_array=[0],
+                 epsilon=100.0, max_iterations=5,
+                 use_kpp_method=False,
+                 png_file_path="a.png",
+                 log_file_path="a.log"):
+        '''
+        Rerun fit_multiple_init_one_k for several values of k
+        Use a fixed seed_array for each of these reruns
+        Capture the found heterogeneity for each k
+        Plot heterogeneity (y-axis) against k (x-axis)
+        '''
+        heterogeneity_results = []
+        for k in k_array:
+            file2 = open(log_file_path, 'a')
+            file2.write(f'k {k} started {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}\n')
+            file2.close()
+            _, heterogeneity, _ = self.fit_multiple_init_one_k(X=X, k=k,
+                                                               seed_array=seed_array,
+                                                               epsilon=epsilon, max_iterations=max_iterations,
+                                                               use_kpp_method=use_kpp_method)
+            heterogeneity_results.append(heterogeneity)
+            file2 = open(log_file_path, 'a')
+            file2.write(f'k {k} completed {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}\n')
+            file2.close()
+
+        plt.figure()
+        plt.plot(k_array, heterogeneity_results, marker="o")
+        plt.xlabel("k")
+        plt.ylabel("Heterogeneity")
+        plt.title("Heterogeneity versus k")
+        plt.grid(True)
+        plt.savefig(png_file_path)
+        plt.close()
+
+        return heterogeneity_results

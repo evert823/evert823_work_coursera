@@ -145,3 +145,14 @@ best_centroids, best_heterogeneity, best_seed = model.fit_multiple_init_one_k(X=
 print_with_tms(f"best_centroids {best_centroids} best_heterogeneity {best_heterogeneity}")
 labelcounts = model.report_label_per_data_point()
 print_with_tms(f"labelcounts :\n{labelcounts}")
+
+print_with_tms("k-search")
+output_dir = os.path.join(os.path.dirname(__file__), "output")
+
+model.k_search(X=tf_idf_norm,
+               k_array=[2, 10, 25, 50, 100],
+               seed_array=default_seed_array,
+               epsilon=1e-8,max_iterations=400,
+               use_kpp_method=True,
+               png_file_path=os.path.join(output_dir, "k_search.png"),
+               log_file_path=os.path.join(output_dir, "k_search.log"))
