@@ -6,6 +6,7 @@ from scipy.stats import multivariate_normal
 import copy
 from PIL import Image
 from io import BytesIO
+import colorsys
 
 from em_model import EMModel
 
@@ -74,6 +75,28 @@ def plot_ll_trace(loglikelihoods, output_dir, file_name):
     plt.xlabel('Iteration')
     plt.ylabel('Log-likelihood')
     plt.rcParams.update({'font.size':16})
+    plt.tight_layout()
+    output_file = os.path.join(output_dir, file_name)
+    plt.savefig(output_file, dpi=150, bbox_inches='tight')
+    plt.close()
+
+def plot_responsibilities_in_RB(img, resp, title, output_dir, file_name):
+    img = np.asarray(img)
+    resp = np.asarray(resp)
+
+    N, K = resp.shape
+    hsv_tuples = [(x / K, 0.5, 0.9) for x in range(K)]
+    rgb_tuples = np.asarray([
+        colorsys.hsv_to_rgb(*value) for value in hsv_tuples
+    ])
+
+    colors = resp @ rgb_tuples
+
+    plt.figure()
+    plt.scatter(img[:, 0], img[:, 2], c=colors)
+    plt.title(title)
+    plt.xlabel("R value")
+    plt.ylabel("B value")
     plt.tight_layout()
     output_file = os.path.join(output_dir, file_name)
     plt.savefig(output_file, dpi=150, bbox_inches='tight')
@@ -218,3 +241,38 @@ print_with_tms(f"results_img['covs'] {results_img['covs']}")
 plot_ll_trace(loglikelihoods=results_img['loglik'],
               output_dir=output_dir,
               file_name="loglikelihoods_images")
+
+plot_responsibilities_in_RB(img=img_data,
+                            resp=results_img['resp'],
+                            title='responsibility after convergence',
+                            output_dir=output_dir,
+                            file_name='responsibilities_999_convergence.png')
+
+N, K = results_img['resp'].shape
+random_resp = np.random.dirichlet(np.ones(K), N)
+plot_responsibilities_in_RB(img=img_data,
+                            resp=random_resp,
+                            title='random responsibilities',
+                            output_dir=output_dir,
+                            file_name='responsibilities_000_random.png')
+
+results_1 = model.EM(data=img_data,
+               init_means=init_means,
+               init_covariances=init_covariances,
+               init_weights=init_weights,
+               maxiter=1)
+plot_responsibilities_in_RB(img=img_data,
+                            resp=results_1['resp'],
+                            title='responsibility after 1 iteration',
+                            output_dir=output_dir,
+                            file_name='responsibilities_001_iterations.png')
+results_20 = model.EM(data=img_data,
+               init_means=init_means,
+               init_covariances=init_covariances,
+               init_weights=init_weights,
+               maxiter=20)
+plot_responsibilities_in_RB(img=img_data,
+                            resp=results_20['resp'],
+                            title='responsibility after 20 iterations',
+                            output_dir=output_dir,
+                            file_name='responsibilities_020_iterations.png')
