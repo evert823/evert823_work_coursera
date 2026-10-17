@@ -276,3 +276,8 @@ plot_responsibilities_in_RB(img=img_data,
                             title='responsibility after 20 iterations',
                             output_dir=output_dir,
                             file_name='responsibilities_020_iterations.png')
+
+#We have results_img['resp']
+#We have labels
+
+print(f"results_20['resp'][0] {results_20['resp'][0]}")
