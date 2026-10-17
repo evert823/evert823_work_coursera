@@ -1,5 +1,7 @@
+from datetime import datetime
 import numpy as np
 from scipy.stats import multivariate_normal
+import matplotlib.pyplot as plt
 
 '''
 Student code for EM algorithm
@@ -7,6 +9,10 @@ Student code for EM algorithm
 class EMModel:
     def __init__(self):
         self.IsVerbose = False
+
+    def print_with_tms(self, message):
+        mytimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(f"{mytimestamp}|{message}")
 
     def log_sum_exp(self, Z):
         """
@@ -122,7 +128,8 @@ class EMModel:
         return covariances
 
 
-    def EM(self, data, init_means, init_covariances, init_weights, maxiter=1000, thresh=1e-4):
+    def EM(self, data, init_means, init_covariances, init_weights,
+           maxiter=1000, thresh=1e-4, png_file_path="", plot_iterations=[]):
         data = np.asarray(data, dtype=float)
 
         means = init_means[:]
@@ -186,6 +193,14 @@ class EMModel:
                                     covs=covariances)
 
             ll_trace.append(ll_latest)
+
+            if png_file_path.endswith(".png") and it in plot_iterations:
+                self.plot_contours(data=data,
+                                means=means,
+                                covs=covariances,
+                                title=f"plot after {it} iterations",
+                                png_file_path=png_file_path,
+                                iternr=it)
             
             # Check for convergence in log-likelihood and store
             if np.abs(ll_latest - ll) < thresh and ll_latest > -np.inf:
@@ -193,9 +208,39 @@ class EMModel:
             ll = ll_latest
         
         if it % 5 != 0:
-            print("Iteration %s" % it)
+            self.print_with_tms("Iteration %s" % it)
 
         #GHCP suggestion: recompute resp before returning out
         out = {'weights': weights, 'means': means, 'covs': covariances, 'loglik': ll_trace, 'resp': resp}
 
         return out
+
+
+    def plot_contours(self, data, means, covs, title, png_file_path, iternr):
+        final_png_file_path = png_file_path.replace(".png", f"_{iternr}.png")
+        plt.figure()
+        plt.plot([x[0] for x in data], [y[1] for y in data],'ko') # data
+
+        delta = 0.025
+        k = len(means)
+        x = np.arange(-2.0, 7.0, delta)
+        y = np.arange(-2.0, 7.0, delta)
+        X, Y = np.meshgrid(x, y)
+        col = ['green', 'red', 'indigo']
+        for i in range(k):
+            mean = means[i]
+            cov = covs[i]
+            sigmax = np.sqrt(cov[0][0])
+            sigmay = np.sqrt(cov[1][1])
+            sigmaxy = cov[0][1]/(sigmax*sigmay)
+            Z = multivariate_normal.pdf(
+                np.dstack((X, Y)),
+                mean=mean,
+                cov=cov
+            )
+            plt.contour(X, Y, Z, colors = col[i])
+            plt.title(title)
+        plt.rcParams.update({'font.size':16})
+        plt.tight_layout()
+        plt.savefig(final_png_file_path, dpi=150, bbox_inches='tight')
+        plt.close()

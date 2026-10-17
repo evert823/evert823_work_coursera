@@ -42,6 +42,16 @@ def plot_to_png(data, output_dir, file_name):
     plt.savefig(output_file, dpi=150, bbox_inches='tight')
     plt.close()
 
+def plot_ll_trace(loglikelihoods, output_dir, file_name):
+    plt.plot(range(len(loglikelihoods)), loglikelihoods, linewidth=4)
+    plt.xlabel('Iteration')
+    plt.ylabel('Log-likelihood')
+    plt.rcParams.update({'font.size':16})
+    plt.tight_layout()
+    output_file = os.path.join(output_dir, file_name)
+    plt.savefig(output_file, dpi=150, bbox_inches='tight')
+    plt.close()
+
 PRINTSTUFF = False
 
 model = EMModel()
@@ -136,8 +146,16 @@ initial_covs = [np.cov(data, rowvar=0)] * 3
 initial_weights = [1/3.] * 3
 
 # Run EM 
+png_file_path = os.path.join(output_dir, "plot_by_iteration.png")
 results = model.EM(data=data,
                    init_means=initial_means,
                    init_covariances=initial_covs,
-                   init_weights=initial_weights)
-print(results)
+                   init_weights=initial_weights,
+                   png_file_path=png_file_path,
+                   plot_iterations=[0, 11, 22])
+print_with_tms(f"results['weights'] {results['weights']}")
+print_with_tms(f"results['means'] {results['means']}")
+print_with_tms(f"results['covs'] {results['covs']}")
+plot_ll_trace(loglikelihoods=results['loglik'],
+              output_dir=output_dir,
+              file_name="loglikelihoods")
