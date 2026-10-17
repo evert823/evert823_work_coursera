@@ -17,6 +17,33 @@ def print_with_tms(message):
     mytimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"{mytimestamp}|{message}")
 
+def load_image_features(imagepath):
+    data = []
+    labels = []
+    labels_agg = []
+
+    for category in os.listdir(imagepath):
+        category_path = os.path.join(imagepath, category)
+
+        if not os.path.isdir(category_path):
+            continue
+
+        for filename in os.listdir(category_path):
+            filepath = os.path.join(category_path, filename)
+
+            try:
+                with Image.open(filepath) as image:
+                    arr = np.asarray(image.convert("RGB"), dtype=float)
+
+                features = np.mean(arr, axis=(0, 1)) / 256.0
+                data.append(features)
+                labels.append(category)
+
+            except Exception as error:
+                print(f"Skipping {filepath}: {error}")
+
+    labels_agg = list(set(labels))
+    return np.asarray(data), labels, labels_agg
 
 def generate_MoG_data(num_data, means, covariances, weights):
     """ Creates a list of data points """
@@ -133,21 +160,21 @@ init_weights = [1/4., 1/2., 1/4.]  # weights of each cluster
 
 # Generate data
 np.random.seed(4)
-data = generate_MoG_data(100, init_means, init_covariances, init_weights)
+img_data = generate_MoG_data(100, init_means, init_covariances, init_weights)
 
-plot_to_png(data=data, output_dir=output_dir, file_name="MoG_data")
+plot_to_png(data=img_data, output_dir=output_dir, file_name="MoG_data")
 
 np.random.seed(4)
 
 # Initialization of parameters
-chosen = np.random.choice(len(data), 3, replace=False)
-initial_means = [data[x] for x in chosen]
-initial_covs = [np.cov(data, rowvar=0)] * 3
+chosen = np.random.choice(len(img_data), 3, replace=False)
+initial_means = [img_data[x] for x in chosen]
+initial_covs = [np.cov(img_data, rowvar=0)] * 3
 initial_weights = [1/3.] * 3
 
 # Run EM 
 png_file_path = os.path.join(output_dir, "plot_by_iteration.png")
-results = model.EM(data=data,
+results = model.EM(data=img_data,
                    init_means=initial_means,
                    init_covariances=initial_covs,
                    init_weights=initial_weights,
@@ -159,3 +186,35 @@ print_with_tms(f"results['covs'] {results['covs']}")
 plot_ll_trace(loglikelihoods=results['loglik'],
               output_dir=output_dir,
               file_name="loglikelihoods")
+
+print("\nNow we are going to use this for the images\n")
+
+img_data, labels, labels_agg = load_image_features(imagepath=imagepath)
+
+print(f"labels_agg {labels_agg}")
+print(f"type(data) {type(img_data)}")
+print(f"data.shape {img_data.shape}")
+
+np.random.seed(1)
+
+# Initalize parameters
+init_means = [
+    img_data[x] for x in np.random.choice(len(img_data), 4, replace=False)
+]
+cov = np.diag(np.var(img_data, axis=0))
+
+init_covariances = [cov, cov, cov, cov]
+init_weights = [1/4., 1/4., 1/4., 1/4.]
+
+# Run our EM algorithm on the image data using the above initializations. 
+# This should converge in about 125 iterations
+results_img = model.EM(data=img_data,
+               init_means=init_means,
+               init_covariances=init_covariances,
+               init_weights=init_weights)
+print_with_tms(f"results_img['weights'] {results_img['weights']}")
+print_with_tms(f"results_img['means'] {results_img['means']}")
+print_with_tms(f"results_img['covs'] {results_img['covs']}")
+plot_ll_trace(loglikelihoods=results_img['loglik'],
+              output_dir=output_dir,
+              file_name="loglikelihoods_images")

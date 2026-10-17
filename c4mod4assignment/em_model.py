@@ -152,7 +152,7 @@ class EMModel:
         
         for it in range(maxiter):
             if it % 5 == 0:
-                print("Iteration %s" % it)
+                self.print_with_tms("Iteration %s" % it)
             
             # E-step: compute responsibilities
             resp = self.compute_responsibilities(data=data,
