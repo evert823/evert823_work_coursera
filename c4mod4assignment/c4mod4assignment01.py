@@ -37,7 +37,7 @@ resp = model.compute_responsibilities(data=np.array([[1.,2.],[-1.,-2.]]), weight
                                 covariances=[np.array([[1.5, 0.],[0.,2.5]]), np.array([[1.,1.],[1.,2.]])])
 
 if resp.shape==(2,2) and np.allclose(resp, np.array([[0.10512733, 0.89487267], [0.46468164, 0.53531836]])):
-    print('Checkpoint passed!')
+    print('Checkpoint 1 passed!')
 else:
     raise Exception('Check your code again.')
 
@@ -51,7 +51,7 @@ print(counts)
 print(weights)
 
 if np.allclose(weights, [0.27904865942515705, 0.720951340574843]):
-    print('Checkpoint passed!')
+    print('Checkpoint 2 passed!')
 else:
     raise Exception('Check your code again.')
 
@@ -63,6 +63,20 @@ counts = model.compute_soft_counts(resp)
 means = model.compute_means(data_tmp, resp, counts)
 
 if np.allclose(means, np.array([[-0.6310085, -1.262017], [0.25140299, 0.50280599]])):
-    print('Checkpoint passed!')
+    print('Checkpoint 3 passed!')
+else:
+    raise Exception('Check your code again.')
+
+data_tmp = np.array([[1.,2.],[-1.,-2.]])
+resp = model.compute_responsibilities(data=data_tmp, weights=np.array([0.3, 0.7]),
+                                means=[np.array([0.,0.]), np.array([1.,1.])],
+                                covariances=[np.array([[1.5, 0.],[0.,2.5]]), np.array([[1.,1.],[1.,2.]])])
+counts = model.compute_soft_counts(resp)
+means = model.compute_means(data_tmp, resp, counts)
+covariances = model.compute_covariances(data_tmp, resp, counts, means)
+
+if np.allclose(covariances[0], np.array([[0.60182827, 1.20365655], [1.20365655, 2.4073131]])) and \
+    np.allclose(covariances[1], np.array([[ 0.93679654, 1.87359307], [1.87359307, 3.74718614]])):
+    print('Checkpoint 4 passed!')
 else:
     raise Exception('Check your code again.')

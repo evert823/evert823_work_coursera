@@ -67,3 +67,22 @@ class EMModel:
                 raise ValueError("soft_count for a cluster should not be zero")
             means[k] = weighted_sum / soft_counts[k]
         return means
+
+    def compute_covariances(self, data, resp, soft_counts, means):
+        num_clusters = len(soft_counts)
+        #D = len(data[0])
+        D = data.shape[1]
+        num_data = len(data)
+        covariances = [np.zeros((D,D))] * num_clusters
+        
+        for k in range(num_clusters):
+            weighted_sum = np.zeros((D, D), dtype=float)
+            for i in range(num_data):
+                v = data[i] - means[k]
+                term = np.outer(v, v.T)
+                weighted_sum += term * resp[i,k]
+            if soft_counts[k] == 0.0:
+                raise ValueError("soft_count for a cluster should not be zero")
+            covariances[k] = weighted_sum / soft_counts[k]
+
+        return covariances
