@@ -6,6 +6,8 @@ import json
 from scipy import sparse
 from sklearn.preprocessing import normalize
 from em_model_hd import EMModelHD
+from sklearn.cluster import KMeans
+from em_utilities import diag
 
 def print_with_tms(message):
     mytimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -68,6 +70,44 @@ def assess_sparse_matrix(word_map, sparse_matrix):
         for word_index, count in zip(first_row.indices, first_row.data):
             print(index_to_word[word_index], count)
 
+def initialize_by_kmeans(tf_idf):
+    np.random.seed(5)
+    num_clusters = 25
+
+    # Use scikit-learn's k-means to simplify workflow
+    kmeans_model = KMeans(n_clusters=num_clusters, n_init=5, max_iter=400, random_state=1)
+    kmeans_model.fit(tf_idf)
+    centroids, cluster_assignment = kmeans_model.cluster_centers_, kmeans_model.labels_
+    print_with_tms(f"cluster_assignment.shape {cluster_assignment.shape}")
+    #cluster_assignment.shape (5000,)
+
+    means = [centroid for centroid in centroids]
+
+    num_docs = tf_idf.shape[0]
+    weights = []
+
+    cluster_counts = np.bincount(
+        cluster_assignment,
+        minlength=num_clusters
+    )
+
+    for i in range(num_clusters):
+        # Compute the number of data points assigned to cluster i:
+        num_assigned = cluster_counts[i]
+        w = float(num_assigned) / num_docs
+        weights.append(w)
+
+    covs = []
+    for i in range(num_clusters):
+        member_rows = tf_idf[cluster_assignment==i]
+        cov = (member_rows.multiply(member_rows) - 2*member_rows.dot(diag(means[i]))).sum(axis=0).A1 / member_rows.shape[0] \
+            + means[i]**2
+        cov[cov < 1e-8] = 1e-8
+        covs.append(cov)
+
+    return means, covs, weights
+
+
 PRINTSTUFF = False
 
 print_with_tms("script started")
@@ -89,6 +129,7 @@ word_map = read_word_map(path=path, file_name=file_name_word_map)
 tf_idf = read_sparse_npz(path=path, file_name=file_name_tf_idf)
 assess_sparse_matrix(word_map=word_map, sparse_matrix=tf_idf)
 #For this we should have used TfidfVectorizer but we need assessment compatibility
+#Apparently the course topped number of obeservations at 5000 in this tf idf matrix
 
 tf_idf_norm = normalize(X=tf_idf)
 assess_sparse_matrix(word_map=word_map, sparse_matrix=tf_idf_norm)
@@ -96,3 +137,18 @@ assess_sparse_matrix(word_map=word_map, sparse_matrix=tf_idf_norm)
 model = EMModelHD()
 if PRINTSTUFF == True:
     model.IsVerbose = True
+
+print_with_tms("initialize_by_kmeans BEGIN (THERE MAY BE A FEW WARNINGS NOW)")
+means, covs, weights = initialize_by_kmeans(tf_idf=tf_idf_norm)
+print_with_tms("initialize_by_kmeans DONE")
+
+print(f"len(means) {len(means)} type(means) {type(means)}")
+print(f"len(covs) {len(covs)} type(covs) {type(covs)}")
+print(f"len(weights) {len(weights)} type(weights) {type(weights)}")
+
+print_with_tms("EM_for_high_dimension BEGIN")
+out = model.EM_for_high_dimension(data=tf_idf_norm,
+                                  means=means, covs=covs, weights=weights,
+                                  cov_smoothing=1e-10)
+print_with_tms("EM_for_high_dimension DONE")
+print(out['loglik']) # print history of log-likelihood over time
