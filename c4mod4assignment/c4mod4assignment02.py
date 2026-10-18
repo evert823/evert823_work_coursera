@@ -5,6 +5,7 @@ import numpy as np
 import json
 from scipy import sparse
 from sklearn.preprocessing import normalize
+from em_model_hd import EMModelHD
 
 def print_with_tms(message):
     mytimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -91,3 +92,7 @@ assess_sparse_matrix(word_map=word_map, sparse_matrix=tf_idf)
 
 tf_idf_norm = normalize(X=tf_idf)
 assess_sparse_matrix(word_map=word_map, sparse_matrix=tf_idf_norm)
+
+model = EMModelHD()
+if PRINTSTUFF == True:
+    model.IsVerbose = True
