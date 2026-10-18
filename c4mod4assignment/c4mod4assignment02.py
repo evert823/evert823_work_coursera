@@ -107,11 +107,11 @@ def initialize_by_kmeans(tf_idf):
 
     return means, covs, weights
 
-def visualize_EM_clusters(tf_idf, means, covs, map_index_to_word, output_dir):
+def visualize_EM_clusters(tf_idf, means, covs, map_index_to_word, output_dir, reportname="EM_clusters_report.txt"):
     index_to_word = {
         index: word for word, index in map_index_to_word.items()
     }
-    outputpath = os.path.join(output_dir, "EM_clusters_report.txt")
+    outputpath = os.path.join(output_dir, reportname)
     file2 = open(outputpath, "w")
 
     file2.write('\n==========================================================\n')
@@ -134,6 +134,47 @@ def visualize_EM_clusters(tf_idf, means, covs, map_index_to_word, output_dir):
     file2.write('\n===Quiz Question. Select all the topics that have a cluster in the model created above. [multiple choice]===\n')
     file2.close()
     print_with_tms(f"Report of EM clusters written to {outputpath}")
+
+
+def random_initialization(means, tf_idf):
+    np.random.seed(5)
+    num_clusters = len(means)
+    num_docs, num_words = tf_idf.shape
+
+    random_means = []
+    random_covs = []
+    random_weights = []
+
+    for k in range(num_clusters):
+        
+        # Create a numpy array of length num_words with random normally distributed values.
+        # Use the standard univariate normal distribution (mean 0, variance 1).
+        # YOUR CODE HERE
+        mean = np.random.normal(
+            loc=0.0,
+            scale=1.0,
+            size=num_words
+        )
+        
+        # Create a numpy array of length num_words with random values uniformly distributed between 1 and 5.
+        # YOUR CODE HERE
+        cov = np.random.uniform(
+            low=1.0,
+            high=5.0,
+            size=num_words
+        )
+
+        # Initially give each cluster equal weight.
+        # YOUR CODE HERE
+        weight = 1.0 / num_clusters
+        
+        random_means.append(mean)
+        random_covs.append(cov)
+        random_weights.append(weight)
+
+    return random_means, random_covs, random_weights
+
+
 
 
 PRINTSTUFF = False
@@ -188,3 +229,20 @@ visualize_EM_clusters(tf_idf=tf_idf_norm,
                       covs=out['covs'],
                       map_index_to_word=word_map,
                       output_dir=output_dir)
+
+print_with_tms("\nNow we try the same procedure with random initialization\n")
+random_means, random_covs, random_weights = random_initialization(means=means, tf_idf=tf_idf_norm)
+
+print_with_tms("EM_for_high_dimension BEGIN")
+out_poor = model.EM_for_high_dimension(data=tf_idf_norm,
+                                  means=random_means, covs=random_covs, weights=random_weights,
+                                  cov_smoothing=1e-5)
+print_with_tms("EM_for_high_dimension DONE")
+print(out_poor['loglik']) # print history of log-likelihood over time
+
+visualize_EM_clusters(tf_idf=tf_idf_norm,
+                      means=out_poor['means'],
+                      covs=out_poor['covs'],
+                      map_index_to_word=word_map,
+                      output_dir=output_dir,
+                      reportname="EM_clusters_report_random_initialization.txt")
