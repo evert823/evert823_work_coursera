@@ -1,0 +1,204 @@
+
+==========================================================
+
+Cluster 0: Largest mean parameters in cluster 
+Word        Mean        Variance    
+baseball    1.15e-01    5.54e-03
+league      1.03e-01    3.63e-03
+major       5.08e-02    1.16e-03
+games       4.69e-02    1.93e-03
+sox         4.54e-02    6.23e-03
+
+Cluster 1: Largest mean parameters in cluster 
+Word        Mean        Variance    
+church      1.24e-01    1.00e-02
+bishop      9.03e-02    1.08e-02
+archbishop  4.84e-02    7.14e-03
+diocese     4.71e-02    5.70e-03
+lds         4.64e-02    1.06e-02
+
+Cluster 2: Largest mean parameters in cluster 
+Word        Mean        Variance    
+theatre     4.45e-02    6.13e-03
+television  3.94e-02    1.90e-03
+series      3.48e-02    1.69e-03
+show        3.29e-02    2.43e-03
+comedy      3.27e-02    4.14e-03
+
+Cluster 3: Largest mean parameters in cluster 
+Word        Mean        Variance    
+republican  5.86e-02    4.68e-03
+senate      4.52e-02    5.22e-03
+district    4.14e-02    1.94e-03
+democratic  3.92e-02    2.55e-03
+state       3.84e-02    1.20e-03
+
+Cluster 4: Largest mean parameters in cluster 
+Word        Mean        Variance    
+business    3.68e-02    2.58e-03
+board       2.79e-02    1.41e-03
+company     2.57e-02    1.24e-03
+chairman    2.40e-02    2.02e-03
+president   2.27e-02    1.30e-03
+
+Cluster 5: Largest mean parameters in cluster 
+Word        Mean        Variance    
+album       6.28e-02    4.64e-03
+band        5.29e-02    4.32e-03
+music       4.40e-02    2.09e-03
+released    2.82e-02    1.03e-03
+records     2.28e-02    1.27e-03
+
+Cluster 6: Largest mean parameters in cluster 
+Word        Mean        Variance    
+she         1.63e-01    4.45e-03
+her         1.00e-01    3.03e-03
+miss        2.09e-02    7.04e-03
+actress     1.54e-02    1.26e-03
+music       1.28e-02    8.15e-04
+
+Cluster 7: Largest mean parameters in cluster 
+Word        Mean        Variance    
+art         1.37e-01    6.90e-03
+museum      6.37e-02    7.90e-03
+artist      4.12e-02    1.65e-03
+gallery     4.06e-02    3.72e-03
+work        3.25e-02    8.11e-04
+
+Cluster 8: Largest mean parameters in cluster 
+Word        Mean        Variance    
+chess       9.95e-02    2.86e-02
+hong        9.89e-02    1.97e-02
+kong        9.32e-02    1.70e-02
+wrestling   4.66e-02    1.99e-02
+champion    3.77e-02    3.24e-03
+
+Cluster 9: Largest mean parameters in cluster 
+Word        Mean        Variance    
+football    6.90e-02    4.59e-03
+club        5.75e-02    2.50e-03
+league      5.73e-02    2.83e-03
+season      5.10e-02    2.32e-03
+played      3.93e-02    9.63e-04
+
+Cluster 10: Largest mean parameters in cluster 
+Word        Mean        Variance    
+minister    1.19e-01    9.17e-03
+prime       4.61e-02    5.15e-03
+foreign     3.68e-02    3.43e-03
+government  3.41e-02    2.06e-03
+affairs     2.96e-02    2.28e-03
+
+Cluster 11: Largest mean parameters in cluster 
+Word        Mean        Variance    
+basketball  1.85e-01    8.04e-03
+nba         1.02e-01    1.24e-02
+points      6.44e-02    5.97e-03
+player      4.82e-02    1.25e-03
+team        4.75e-02    1.27e-03
+
+Cluster 12: Largest mean parameters in cluster 
+Word        Mean        Variance    
+book        4.35e-02    2.04e-03
+novel       4.19e-02    4.60e-03
+published   3.70e-02    1.34e-03
+poetry      3.35e-02    6.23e-03
+books       3.19e-02    1.45e-03
+
+Cluster 13: Largest mean parameters in cluster 
+Word        Mean        Variance    
+air         5.13e-02    1.67e-02
+force       3.22e-02    5.52e-03
+command     3.10e-02    4.50e-03
+commander   2.76e-02    3.37e-03
+rabbi       2.67e-02    1.19e-02
+
+Cluster 14: Largest mean parameters in cluster 
+Word        Mean        Variance    
+law         1.13e-01    1.03e-02
+court       9.65e-02    5.57e-03
+judge       6.69e-02    5.65e-03
+district    5.37e-02    5.74e-03
+attorney    4.70e-02    5.80e-03
+
+Cluster 15: Largest mean parameters in cluster 
+Word        Mean        Variance    
+research    6.63e-02    2.80e-03
+science     4.20e-02    3.57e-03
+professor   4.08e-02    1.54e-03
+university  3.96e-02    8.36e-04
+physics     3.30e-02    6.77e-03
+
+Cluster 16: Largest mean parameters in cluster 
+Word        Mean        Variance    
+film        1.77e-01    5.76e-03
+films       5.90e-02    3.10e-03
+festival    4.28e-02    3.57e-03
+feature     3.43e-02    1.74e-03
+actor       3.37e-02    3.99e-03
+
+Cluster 17: Largest mean parameters in cluster 
+Word        Mean        Variance    
+hockey      2.45e-01    1.62e-02
+nhl         1.56e-01    1.64e-02
+ice         6.53e-02    2.88e-03
+season      5.01e-02    2.49e-03
+league      4.34e-02    1.51e-03
+
+Cluster 18: Largest mean parameters in cluster 
+Word        Mean        Variance    
+party       3.54e-02    2.15e-03
+secretary   2.54e-02    2.67e-03
+india       2.31e-02    2.46e-03
+committee   2.10e-02    2.24e-03
+indian      1.80e-02    1.77e-03
+
+Cluster 19: Largest mean parameters in cluster 
+Word        Mean        Variance    
+tour        4.11e-02    8.29e-03
+championships3.72e-02    3.57e-03
+pga         3.10e-02    9.97e-03
+championship3.05e-02    2.57e-03
+won         2.92e-02    7.48e-04
+
+Cluster 20: Largest mean parameters in cluster 
+Word        Mean        Variance    
+news        1.21e-02    1.63e-03
+that        1.13e-02    1.86e-04
+he          1.08e-02    6.97e-05
+radio       1.01e-02    9.95e-04
+were        9.01e-03    2.42e-04
+
+Cluster 21: Largest mean parameters in cluster 
+Word        Mean        Variance    
+philosophy  8.05e-02    1.24e-02
+university  3.67e-02    9.24e-04
+islamic     3.60e-02    1.46e-02
+studies     3.60e-02    3.95e-03
+professor   3.42e-02    1.06e-03
+
+Cluster 22: Largest mean parameters in cluster 
+Word        Mean        Variance    
+election    8.43e-02    3.50e-03
+party       6.38e-02    2.93e-03
+liberal     4.49e-02    6.50e-03
+elected     3.66e-02    1.26e-03
+candidate   3.32e-02    1.64e-03
+
+Cluster 23: Largest mean parameters in cluster 
+Word        Mean        Variance    
+soccer      8.57e-02    2.42e-02
+coach       8.52e-02    9.45e-03
+football    7.11e-02    5.49e-03
+yards       4.44e-02    1.19e-02
+season      4.26e-02    1.46e-03
+
+Cluster 24: Largest mean parameters in cluster 
+Word        Mean        Variance    
+music       1.11e-01    5.35e-03
+orchestra   8.11e-02    9.74e-03
+symphony    5.18e-02    7.83e-03
+opera       4.92e-02    1.30e-02
+conductor   4.85e-02    7.39e-03
+
+===Quiz Question. Select all the topics that have a cluster in the model created above. [multiple choice]===

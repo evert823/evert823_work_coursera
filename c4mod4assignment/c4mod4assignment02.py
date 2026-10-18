@@ -107,6 +107,34 @@ def initialize_by_kmeans(tf_idf):
 
     return means, covs, weights
 
+def visualize_EM_clusters(tf_idf, means, covs, map_index_to_word, output_dir):
+    index_to_word = {
+        index: word for word, index in map_index_to_word.items()
+    }
+    outputpath = os.path.join(output_dir, "EM_clusters_report.txt")
+    file2 = open(outputpath, "w")
+
+    file2.write('\n==========================================================\n')
+    num_clusters = len(means)
+    for c in range(num_clusters):
+        file2.write('\nCluster {0:d}: Largest mean parameters in cluster '.format(c))
+        file2.write('\n')
+        file2.write('{0: <12}{1: <12}{2: <12}'.format('Word', 'Mean', 'Variance'))
+        file2.write('\n')
+        
+        # The k'th element of sorted_word_ids should be the index of the word 
+        # that has the k'th-largest value in the cluster mean. Hint: Use np.argsort().
+        sorted_word_ids = np.argsort(a=means[c],axis=0)[::-1]
+
+        for i in sorted_word_ids[:5]:
+            file2.write('{0: <12}{1:<10.2e}{2:10.2e}'.format(index_to_word[i], 
+                                                       means[c][i],
+                                                       covs[c][i]))
+            file2.write('\n')
+    file2.write('\n===Quiz Question. Select all the topics that have a cluster in the model created above. [multiple choice]===\n')
+    file2.close()
+    print_with_tms(f"Report of EM clusters written to {outputpath}")
+
 
 PRINTSTUFF = False
 
@@ -114,6 +142,8 @@ print_with_tms("script started")
 
 path = os.path.join("C:\\", "Users", "Evert Jan", "courseradatascience",
                        "course04", "module04", "data")
+
+output_dir = os.path.join(os.path.dirname(__file__), "output")
 
 '''
 The input file is comma separated and with text qualifier double quotes
@@ -152,3 +182,9 @@ out = model.EM_for_high_dimension(data=tf_idf_norm,
                                   cov_smoothing=1e-10)
 print_with_tms("EM_for_high_dimension DONE")
 print(out['loglik']) # print history of log-likelihood over time
+
+visualize_EM_clusters(tf_idf=tf_idf_norm,
+                      means=out['means'],
+                      covs=out['covs'],
+                      map_index_to_word=word_map,
+                      output_dir=output_dir)
