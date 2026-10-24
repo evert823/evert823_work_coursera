@@ -1,0 +1,31 @@
+league:0.040
+season:0.036
+team:0.029
+football:0.029
+played:0.028
+
+* Todd Williams                                      0.95468
+  todd michael williams born february 13 1971 in syracuse new york is a former major league 
+  baseball relief pitcher he attended east syracuseminoa high school
+* Gord Sherven                                       0.95622
+  gordon r sherven born august 21 1963 in gravelbourg saskatchewan and raised in mankota sas
+  katchewan is a retired canadian professional ice hockey forward who played
+* Justin Knoedler                                    0.95639
+  justin joseph knoedler born july 17 1980 in springfield illinois is a former major league 
+  baseball catcherknoedler was originally drafted by the st louis cardinals
+* Chris Day                                          0.95648
+  christopher nicholas chris day born 28 july 1975 is an english professional footballer who
+   plays as a goalkeeper for stevenageday started his career at tottenham
+* Tony Smith (footballer, born 1957)                 0.95653
+  anthony tony smith born 20 february 1957 is a former footballer who played as a central de
+  fender in the football league in the 1970s and
+* Ashley Prescott                                    0.95761
+  ashley prescott born 11 september 1972 is a former australian rules footballer he played w
+  ith the richmond and fremantle football clubs in the afl between
+* Leslie Lea                                         0.95802
+  leslie lea born 5 october 1942 in manchester is an english former professional footballer 
+  he played as a midfielderlea began his professional career with blackpool
+* Tommy Anderson (footballer)                        0.95818
+  thomas cowan tommy anderson born 24 september 1934 in haddington is a scottish former prof
+  essional footballer he played as a forward and was noted for
+

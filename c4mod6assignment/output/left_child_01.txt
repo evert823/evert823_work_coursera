@@ -1,0 +1,31 @@
+she:0.025
+her:0.017
+music:0.012
+he:0.011
+university:0.011
+
+* Anita Kunz                                         0.97401
+  anita e kunz oc born 1956 is a canadianborn artist and illustratorkunz has lived in london
+   new york and toronto contributing to magazines and working
+* Janet Jackson                                      0.97472
+  janet damita jo jackson born may 16 1966 is an american singer songwriter and actress know
+  n for a series of sonically innovative socially conscious and
+* Madonna (entertainer)                              0.97475
+  madonna louise ciccone tkoni born august 16 1958 is an american singer songwriter actress 
+  and businesswoman she achieved popularity by pushing the boundaries of lyrical
+* %C3%81ine Hyland                                   0.97536
+  ine hyland ne donlon is emeritus professor of education and former vicepresident of univer
+  sity college cork ireland she was born in 1942 in athboy co
+* Jane Fonda                                         0.97621
+  jane fonda born lady jayne seymour fonda december 21 1937 is an american actress writer po
+  litical activist former fashion model and fitness guru she is
+* Christine Robertson                                0.97643
+  christine mary robertson born 5 october 1948 is an australian politician and former austra
+  lian labor party member of the new south wales legislative council serving
+* Pat Studdy-Clift                                   0.97643
+  pat studdyclift is an australian author specialising in historical fiction and nonfictionb
+  orn in 1925 she lived in gunnedah until she was sent to a boarding
+* Alexandra Potter                                   0.97646
+  alexandra potter born 1970 is a british author of romantic comediesborn in bradford yorksh
+  ire england and educated at liverpool university gaining an honors degree in
+

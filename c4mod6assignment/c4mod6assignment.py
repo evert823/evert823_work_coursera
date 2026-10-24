@@ -6,6 +6,7 @@ import json
 from scipy import sparse
 from sklearn.preprocessing import normalize
 from sklearn.cluster import KMeans
+from sklearn.metrics import pairwise_distances
 
 def print_with_tms(message):
     mytimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -106,12 +107,50 @@ def bipartition(cluster, maxiter=400, num_runs=4, seed=None):
     return (cluster_left_child, cluster_right_child)
 
 
+def display_single_tf_idf_cluster(cluster, map_index_to_word, filepath):
+    '''
+    Method largely provided by course
+    map_index_to_word: SFrame specifying the mapping betweeen words and column indices
+    '''
+    index_to_word = {
+        index: word for word, index in map_index_to_word.items()
+    }
+
+    file2 = open(filepath, 'w')
+    
+    wiki_subset   = cluster['dataframe']
+    tf_idf_subset = cluster['matrix']
+    centroid      = cluster['centroid']
+
+    # Print top 5 words with largest TF-IDF weights in the cluster
+    idx = centroid.argsort()[::-1]
+    for i in range(5):
+        file2.write('{0:s}:{1:.3f}'.format(index_to_word[idx[i]], centroid[idx[i]]))
+        file2.write('\n')
+    file2.write('\n')
+    
+    # Compute distances from the centroid to all data points in the cluster.
+    distances = pairwise_distances(tf_idf_subset, [centroid], metric='euclidean').flatten()
+    # compute nearest neighbors of the centroid within the cluster.
+    nearest_neighbors = distances.argsort()
+    # For 8 nearest neighbors, print the title as well as first 180 characters of text.
+    # Wrap the text at 80-character mark.
+    for i in range(8):
+        text = ' '.join(wiki_subset.iloc[nearest_neighbors[i]]['text'].split(None, 25)[0:25])
+        file2.write('* {0:50s} {1:.5f}\n  {2:s}\n  {3:s}'.format(wiki_subset.iloc[nearest_neighbors[i]]['name'],
+              distances[nearest_neighbors[i]], text[:90], text[90:180] if len(text) > 90 else ''))
+        file2.write('\n')
+    file2.write('\n')
+    file2.close()
+
+
 PRINTSTUFF = False
 
 print_with_tms("script started")
 
 path = os.path.join("C:\\", "Users", "Evert Jan", "courseradatascience",
                        "course04", "module06", "data")
+output_dir = os.path.join(os.path.dirname(__file__), "output")
 
 '''
 The input file is comma separated and with text qualifier double quotes
@@ -138,3 +177,12 @@ left_child, right_child = bipartition(cluster=wiki_data,
                                       seed=1)
 print(f"\nleft_child\n{left_child}")
 print(f"\nright_child\n{right_child}")
+
+display_single_tf_idf_cluster(cluster=left_child,
+                              map_index_to_word=word_map,
+                              filepath=os.path.join(output_dir, "left_child_01.txt"))
+display_single_tf_idf_cluster(cluster=right_child,
+                              map_index_to_word=word_map,
+                              filepath=os.path.join(output_dir, "right_child_01.txt"))
+
+
