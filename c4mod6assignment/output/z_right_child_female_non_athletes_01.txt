@@ -1,0 +1,31 @@
+she:0.121
+her:0.101
+actress:0.031
+film:0.029
+music:0.028
+
+* Janet Jackson                                      0.92363
+  janet damita jo jackson born may 16 1966 is an american singer songwriter and actress know
+  n for a series of sonically innovative socially conscious and
+* Barbara Hershey                                    0.92517
+  barbara hershey born barbara lynn herzstein february 5 1948 once known as barbara seagull 
+  is an american actress in a career spanning nearly 50 years
+* Madonna (entertainer)                              0.92742
+  madonna louise ciccone tkoni born august 16 1958 is an american singer songwriter actress 
+  and businesswoman she achieved popularity by pushing the boundaries of lyrical
+* Cher                                               0.92901
+  cher r born cherilyn sarkisian may 20 1946 is an american singer actress and television ho
+  st described as embodying female autonomy in a maledominated industry
+* Candice Bergen                                     0.93268
+  candice patricia bergen born may 9 1946 is an american actress and former fashion model fo
+  r her role as the title character on the cbs
+* Glenn Close                                        0.93433
+  glenn close born march 19 1947 is an american film television and stage actress throughout
+   her long and varied career she has been consistently acclaimed
+* Jane Fonda                                         0.93508
+  jane fonda born lady jayne seymour fonda december 21 1937 is an american actress writer po
+  litical activist former fashion model and fitness guru she is
+* Judi Dench                                         0.93629
+  dame judith olivia dench ch dbe frsa born 9 december 1934 is an english actress and author
+   dench made her professional debut in 1957 with
+

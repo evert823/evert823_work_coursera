@@ -1,0 +1,31 @@
+university:0.017
+he:0.015
+law:0.013
+served:0.013
+research:0.013
+
+* Barry Sullivan (lawyer)                            0.97076
+  barry sullivan is a chicago lawyer and as of july 1 2009 the cooney conway chair in advoca
+  cy at loyola university chicago school of law
+* James A. Joseph                                    0.97344
+  james a joseph born 1935 is an american former diplomatjoseph is professor of the practice
+   of public policy studies at duke university and founder of
+* David Anderson (British Columbia politician)       0.97384
+  david a anderson pc oc born august 16 1937 in victoria british columbia is a former canadi
+  an cabinet minister educated at victoria college in victoria
+* Sven Erik Holmes                                   0.97469
+  sven erik holmes is a former federal judge and currently the vice chairman legal risk and 
+  regulatory and chief legal officer for kpmg llp a
+* Andrew Fois                                        0.97559
+  andrew fois is an attorney living and working in washington dc as of april 9 2012 he will 
+  be serving as the deputy attorney general
+* William Robert Graham                              0.97564
+  william robert graham born june 15 1937 was chairman of president reagans general advisory
+   committee on arms control from 1982 to 1985 a deputy administrator
+* John C. Eastman                                    0.97585
+  john c eastman born april 21 1960 is a conservative american law professor and constitutio
+  nal law scholar he is the henry salvatori professor of law
+* M. Cherif Bassiouni                                0.97588
+  mahmoud cherif bassiouni was born in cairo egypt in 1937 and immigrated to the united stat
+  es in 1962 he is emeritus professor of law at
+

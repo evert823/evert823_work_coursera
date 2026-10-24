@@ -1,0 +1,31 @@
+she:0.130
+her:0.071
+women:0.014
+miss:0.014
+university:0.013
+
+* %C3%81ine Hyland                                   0.93935
+  ine hyland ne donlon is emeritus professor of education and former vicepresident of univer
+  sity college cork ireland she was born in 1942 in athboy co
+* Lauren Royal                                       0.93947
+  lauren royal born march 3 circa 1965 is a book writer from california royal has written bo
+  th historic and novelistic booksa selfproclaimed angels baseball fan
+* Dorothy E. Smith                                   0.94116
+  dorothy edith smithborn july 6 1926 is a canadian sociologist with research interests besi
+  des in sociology in many disciplines including womens studies psychology and educational
+* Kayee Griffin                                      0.94149
+  kayee frances griffin born 6 february 1950 is an australian politician and former australi
+  an labor party member of the new south wales legislative council serving
+* Janine Shepherd                                    0.94259
+  janine lee shepherd am born 1962 is an australian pilot and former crosscountry skier shep
+  herds career as an athlete ended when she suffered major injuries
+* Bhama Srinivasan                                   0.94285
+  bhama srinivasan april 22 1935 is a mathematician known for her work in the representation
+   theory of finite groups her contributions were honored with the
+* Ellen Christine Christiansen                       0.94388
+  ellen christine christiansen born 10 december 1964 is a norwegian politician representing 
+  the conservative party and formerly the progress partyborn in oslo she finished her
+* Elvira Vinogradova                                 0.94414
+  elvira vinogradova russian born june 16 1934 is a russian tv editorelvira belenina russian
+   was born in 1934 in fergana ussr she went to school
+

@@ -1,0 +1,31 @@
+music:0.023
+film:0.020
+album:0.014
+band:0.014
+art:0.013
+
+* Julian Knowles                                     0.97191
+  julian knowles is an australian composer and performer specialising in new and emerging te
+  chnologies his creative work spans the fields of composition for theatre dance
+* Peter Combe                                        0.97292
+  peter combe born 20 october 1948 is an australian childrens entertainer and musicianmusica
+  l genre childrens musiche has had 22 releases including seven gold albums two
+* Craig Pruess                                       0.97346
+  craig pruess born 1950 is an american composer musician arranger and gold platinum record 
+  producer who has been living in britain since 1973 his career
+* Ceiri Torjussen                                    0.97419
+  ceiri torjussen born 1976 is a composer who has contributed music to dozens of film and te
+  levision productions in the ushis music was described by
+* Wilson McLean                                      0.97455
+  wilson mclean born 1937 is a scottish illustrator and artist he has illustrated primarily 
+  in the field of advertising but has also provided cover art
+* Brenton Broadstock                                 0.97470
+  brenton broadstock ao born 1952 is an australian composerbroadstock was born in melbourne 
+  he studied history politics and music at monash university and later composition
+* Michael Peter Smith                                0.97499
+  michael peter smith born september 7 1941 is a chicagobased singersongwriter rolling stone
+   magazine once called him the greatest songwriter in the english language he
+* Third Hawkins                                      0.97552
+  born maurice hawkins third hawkins is a recognized music producer in and out of the dmv ar
+  ea including his hometown of baltimore maryland he has
+

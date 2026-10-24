@@ -230,5 +230,26 @@ display_single_tf_idf_cluster(cluster=right_child_non_athletes,
 male_non_athletes = left_child_non_athletes
 female_non_athletes = right_child_non_athletes
 
+left_child_male_non_athletes, right_child_male_non_athletes = bipartition(cluster=male_non_athletes,
+                                                        maxiter=100,
+                                                        num_runs=6,
+                                                        seed=1)
+display_single_tf_idf_cluster(cluster=left_child_male_non_athletes,
+                              map_index_to_word=word_map,
+                              filepath=os.path.join(output_dir, "z_left_child_male_non_athletes_01.txt"))
+display_single_tf_idf_cluster(cluster=right_child_male_non_athletes,
+                              map_index_to_word=word_map,
+                              filepath=os.path.join(output_dir, "z_right_child_male_non_athletes_01.txt"))
+left_child_female_non_athletes, right_child_female_non_athletes = bipartition(cluster=female_non_athletes,
+                                                        maxiter=100,
+                                                        num_runs=6,
+                                                        seed=1)
+display_single_tf_idf_cluster(cluster=left_child_female_non_athletes,
+                              map_index_to_word=word_map,
+                              filepath=os.path.join(output_dir, "z_left_child_female_non_athletes_01.txt"))
+display_single_tf_idf_cluster(cluster=right_child_female_non_athletes,
+                              map_index_to_word=word_map,
+                              filepath=os.path.join(output_dir, "z_right_child_female_non_athletes_01.txt"))
+
 
 print_with_tms("script finished")
