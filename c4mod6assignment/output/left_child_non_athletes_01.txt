@@ -1,0 +1,31 @@
+he:0.013
+music:0.012
+university:0.011
+film:0.010
+his:0.009
+
+* Wilson McLean                                      0.97870
+  wilson mclean born 1937 is a scottish illustrator and artist he has illustrated primarily 
+  in the field of advertising but has also provided cover art
+* Julian Knowles                                     0.97937
+  julian knowles is an australian composer and performer specialising in new and emerging te
+  chnologies his creative work spans the fields of composition for theatre dance
+* James A. Joseph                                    0.98042
+  james a joseph born 1935 is an american former diplomatjoseph is professor of the practice
+   of public policy studies at duke university and founder of
+* Barry Sullivan (lawyer)                            0.98054
+  barry sullivan is a chicago lawyer and as of july 1 2009 the cooney conway chair in advoca
+  cy at loyola university chicago school of law
+* Archie Brown                                       0.98081
+  archibald haworth brown cmg fba commonly known as archie brown born 10 may 1938 is a briti
+  sh political scientist and historian in 2005 he became
+* Michael Joseph Smith                               0.98123
+  michael joseph smith is an american jazz and american classical composer and pianist born 
+  in tiline kentucky he has worked extensively in europe and asia
+* Craig Pruess                                       0.98124
+  craig pruess born 1950 is an american composer musician arranger and gold platinum record 
+  producer who has been living in britain since 1973 his career
+* David J. Elliott                                   0.98128
+  david elliott is professor of music and music education at new york universityelliott was 
+  educated at the university of toronto bmus m mus and bed
+

@@ -215,6 +215,20 @@ display_single_tf_idf_cluster(cluster=right_child_ihs,
                               map_index_to_word=word_map,
                               filepath=os.path.join(output_dir, "right_child_ihs_01.txt"))
 
+print("\nNow splitting further of non-athletes\n")
+left_child_non_athletes, right_child_non_athletes = bipartition(cluster=non_athletes,
+                                                        maxiter=100,
+                                                        num_runs=6,
+                                                        seed=1)
+display_single_tf_idf_cluster(cluster=left_child_non_athletes,
+                              map_index_to_word=word_map,
+                              filepath=os.path.join(output_dir, "left_child_non_athletes_01.txt"))
+display_single_tf_idf_cluster(cluster=right_child_non_athletes,
+                              map_index_to_word=word_map,
+                              filepath=os.path.join(output_dir, "right_child_non_athletes_01.txt"))
+
+male_non_athletes = left_child_non_athletes
+female_non_athletes = right_child_non_athletes
 
 
 print_with_tms("script finished")

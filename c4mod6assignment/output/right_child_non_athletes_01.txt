@@ -1,0 +1,31 @@
+she:0.127
+her:0.082
+film:0.013
+actress:0.012
+music:0.012
+
+* Janet Jackson                                      0.93809
+  janet damita jo jackson born may 16 1966 is an american singer songwriter and actress know
+  n for a series of sonically innovative socially conscious and
+* Lauren Royal                                       0.93866
+  lauren royal born march 3 circa 1965 is a book writer from california royal has written bo
+  th historic and novelistic booksa selfproclaimed angels baseball fan
+* Barbara Hershey                                    0.93942
+  barbara hershey born barbara lynn herzstein february 5 1948 once known as barbara seagull 
+  is an american actress in a career spanning nearly 50 years
+* Jane Fonda                                         0.94102
+  jane fonda born lady jayne seymour fonda december 21 1937 is an american actress writer po
+  litical activist former fashion model and fitness guru she is
+* Alexandra Potter                                   0.94191
+  alexandra potter born 1970 is a british author of romantic comediesborn in bradford yorksh
+  ire england and educated at liverpool university gaining an honors degree in
+* Janine Shepherd                                    0.94220
+  janine lee shepherd am born 1962 is an australian pilot and former crosscountry skier shep
+  herds career as an athlete ended when she suffered major injuries
+* Cher                                               0.94232
+  cher r born cherilyn sarkisian may 20 1946 is an american singer actress and television ho
+  st described as embodying female autonomy in a maledominated industry
+* Ellina Graypel                                     0.94233
+  ellina graypel born july 19 1972 is an awardwinning russian singersongwriter she was born 
+  near the volga river in the heart of russia she spent
+
