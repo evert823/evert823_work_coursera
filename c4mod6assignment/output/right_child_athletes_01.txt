@@ -1,0 +1,31 @@
+baseball:0.111
+league:0.103
+major:0.051
+games:0.046
+season:0.045
+
+* Steve Springer                                     0.89344
+  steven michael springer born february 11 1961 is an american former professional baseball 
+  player who appeared in major league baseball as a third baseman and
+* Dave Ford                                          0.89598
+  david alan ford born december 29 1956 is a former major league baseball pitcher for the ba
+  ltimore orioles born in cleveland ohio ford attended lincolnwest
+* Todd Williams                                      0.89823
+  todd michael williams born february 13 1971 in syracuse new york is a former major league 
+  baseball relief pitcher he attended east syracuseminoa high school
+* Justin Knoedler                                    0.90097
+  justin joseph knoedler born july 17 1980 in springfield illinois is a former major league 
+  baseball catcherknoedler was originally drafted by the st louis cardinals
+* Kevin Nicholson (baseball)                         0.90607
+  kevin ronald nicholson born march 29 1976 is a canadian baseball shortstop he played part 
+  of the 2000 season for the san diego padres of
+* Joe Strong                                         0.90638
+  joseph benjamin strong born september 9 1962 in fairfield california is a former major lea
+  gue baseball pitcher who played for the florida marlins from 2000
+* James Baldwin (baseball)                           0.90674
+  james j baldwin jr born july 15 1971 is a former major league baseball pitcher he batted a
+  nd threw righthanded in his 11season career he
+* James Garcia                                       0.90729
+  james robert garcia born february 3 1980 is an american former professional baseball pitch
+  er who played in the san francisco giants minor league system as
+

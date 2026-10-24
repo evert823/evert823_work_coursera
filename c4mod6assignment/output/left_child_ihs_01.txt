@@ -1,0 +1,31 @@
+championships:0.045
+tour:0.043
+championship:0.035
+world:0.031
+won:0.031
+
+* Alessandra Aguilar                                 0.93867
+  alessandra aguilar born 1 july 1978 in lugo is a spanish longdistance runner who specialis
+  es in marathon running she represented her country in the event
+* Heather Samuel                                     0.93983
+  heather barbara samuel born 6 july 1970 is a retired sprinter from antigua and barbuda who
+   specialized in the 100 and 200 metres in 1990
+* Viola Kibiwot                                      0.94026
+  viola jelagat kibiwot born december 22 1983 in keiyo district is a runner from kenya who s
+  pecialises in the 1500 metres kibiwot won her first
+* Ayelech Worku                                      0.94040
+  ayelech worku born june 12 1979 is an ethiopian longdistance runner most known for winning
+   two world championships bronze medals on the 5000 metres she
+* Krisztina Papp                                     0.94089
+  krisztina papp born 17 december 1982 in eger is a hungarian long distance runner she is th
+  e national indoor record holder over 5000 mpapp began
+* Petra Lammert                                      0.94224
+  petra lammert born 3 march 1984 in freudenstadt badenwrttemberg is a former german shot pu
+  tter and current bobsledder she was the 2009 european indoor champion
+* Morhad Amdouni                                     0.94225
+  morhad amdouni born 21 january 1988 in portovecchio is a french middle and longdistance ru
+  nner he was european junior champion in track and cross country
+* Brian Davis (golfer)                               0.94380
+  brian lester davis born 2 august 1974 is an english professional golferdavis was born in l
+  ondon he turned professional in 1994 and became a member
+

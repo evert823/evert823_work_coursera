@@ -1,0 +1,31 @@
+football:0.048
+season:0.043
+league:0.041
+played:0.036
+coach:0.034
+
+* Todd Curley                                        0.94574
+  todd curley born 14 january 1973 is a former australian rules footballer who played for co
+  llingwood and the western bulldogs in the australian football league
+* Tony Smith (footballer, born 1957)                 0.94603
+  anthony tony smith born 20 february 1957 is a former footballer who played as a central de
+  fender in the football league in the 1970s and
+* Chris Day                                          0.94619
+  christopher nicholas chris day born 28 july 1975 is an english professional footballer who
+   plays as a goalkeeper for stevenageday started his career at tottenham
+* Ashley Prescott                                    0.94629
+  ashley prescott born 11 september 1972 is a former australian rules footballer he played w
+  ith the richmond and fremantle football clubs in the afl between
+* Jason Roberts (footballer)                         0.94629
+  jason andre davis roberts mbe born 25 january 1978 is a former professional footballer and
+   now a football punditborn in park royal london roberts was
+* David Hamilton (footballer)                        0.94921
+  david hamilton born 7 november 1960 is an english former professional association football
+   player who played as a midfielder he won caps for the england
+* Richard Ambrose                                    0.94937
+  richard ambrose born 10 june 1972 is a former australian rules footballer who played with 
+  the sydney swans in the australian football league afl he
+* Neil Grayson                                       0.94954
+  neil grayson born 1 november 1964 in york is an english footballer who last played as a st
+  riker for sutton towngraysons first club was local
+

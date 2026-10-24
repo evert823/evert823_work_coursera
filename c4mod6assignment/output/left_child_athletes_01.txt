@@ -1,0 +1,31 @@
+season:0.034
+football:0.033
+team:0.031
+league:0.029
+played:0.027
+
+* Gord Sherven                                       0.95562
+  gordon r sherven born august 21 1963 in gravelbourg saskatchewan and raised in mankota sas
+  katchewan is a retired canadian professional ice hockey forward who played
+* Ashley Prescott                                    0.95656
+  ashley prescott born 11 september 1972 is a former australian rules footballer he played w
+  ith the richmond and fremantle football clubs in the afl between
+* Chris Day                                          0.95656
+  christopher nicholas chris day born 28 july 1975 is an english professional footballer who
+   plays as a goalkeeper for stevenageday started his career at tottenham
+* Jason Roberts (footballer)                         0.95658
+  jason andre davis roberts mbe born 25 january 1978 is a former professional footballer and
+   now a football punditborn in park royal london roberts was
+* Todd Curley                                        0.95743
+  todd curley born 14 january 1973 is a former australian rules footballer who played for co
+  llingwood and the western bulldogs in the australian football league
+* Tony Smith (footballer, born 1957)                 0.95801
+  anthony tony smith born 20 february 1957 is a former footballer who played as a central de
+  fender in the football league in the 1970s and
+* Sol Campbell                                       0.95802
+  sulzeer jeremiah sol campbell born 18 september 1974 is a former england international foo
+  tballer a central defender he had a 19year career playing in the
+* Richard Ambrose                                    0.95924
+  richard ambrose born 10 june 1972 is a former australian rules footballer who played with 
+  the sydney swans in the australian football league afl he
+

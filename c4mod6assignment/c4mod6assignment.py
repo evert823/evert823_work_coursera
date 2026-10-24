@@ -175,9 +175,6 @@ left_child, right_child = bipartition(cluster=wiki_data,
                                       maxiter=100,
                                       num_runs=6,
                                       seed=1)
-print(f"\nleft_child\n{left_child}")
-print(f"\nright_child\n{right_child}")
-
 display_single_tf_idf_cluster(cluster=left_child,
                               map_index_to_word=word_map,
                               filepath=os.path.join(output_dir, "left_child_01.txt"))
@@ -186,3 +183,38 @@ display_single_tf_idf_cluster(cluster=right_child,
                               filepath=os.path.join(output_dir, "right_child_01.txt"))
 
 
+#athletes = left_child
+#non_athletes = right_child
+#By coincidence got swapped compared to course
+athletes = right_child
+non_athletes = left_child
+
+left_child_athletes, right_child_athletes = bipartition(cluster=athletes,
+                                                        maxiter=100,
+                                                        num_runs=6,
+                                                        seed=1)
+
+display_single_tf_idf_cluster(cluster=left_child_athletes,
+                              map_index_to_word=word_map,
+                              filepath=os.path.join(output_dir, "left_child_athletes_01.txt"))
+display_single_tf_idf_cluster(cluster=right_child_athletes,
+                              map_index_to_word=word_map,
+                              filepath=os.path.join(output_dir, "right_child_athletes_01.txt"))
+
+baseball            = right_child_athletes
+ice_hockey_football = left_child_athletes
+
+left_child_ihs, right_child_ihs = bipartition(cluster=ice_hockey_football,
+                                                        maxiter=100,
+                                                        num_runs=6,
+                                                        seed=1)
+display_single_tf_idf_cluster(cluster=left_child_ihs,
+                              map_index_to_word=word_map,
+                              filepath=os.path.join(output_dir, "left_child_ihs_01.txt"))
+display_single_tf_idf_cluster(cluster=right_child_ihs,
+                              map_index_to_word=word_map,
+                              filepath=os.path.join(output_dir, "right_child_ihs_01.txt"))
+
+
+
+print_with_tms("script finished")
