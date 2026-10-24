@@ -5,6 +5,7 @@ import numpy as np
 import json
 from scipy import sparse
 from sklearn.preprocessing import normalize
+from sklearn.cluster import KMeans
 
 def print_with_tms(message):
     mytimestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -67,6 +68,44 @@ def assess_sparse_matrix(word_map, sparse_matrix):
         for word_index, count in zip(first_row.indices, first_row.data):
             print(index_to_word[word_index], count)
 
+
+def bipartition(cluster, maxiter=400, num_runs=4, seed=None):
+    '''
+    Method largely provided by course
+    cluster: should be a dictionary containing the following keys
+                * dataframe: original dataframe
+                * matrix:    same data, in matrix format
+                * centroid:  centroid for this particular cluster
+    '''
+    
+    data_matrix = cluster['matrix']
+    dataframe   = cluster['dataframe']
+    
+    # Run k-means on the data matrix with k=2. We use scikit-learn here to simplify workflow.
+    kmeans_model = KMeans(n_clusters=2, max_iter=maxiter, n_init=num_runs, random_state=seed)    
+    kmeans_model.fit(data_matrix)
+    centroids, cluster_assignment = kmeans_model.cluster_centers_, kmeans_model.labels_
+    
+    # Divide the data matrix into two parts using the cluster assignments.
+    data_matrix_left_child, data_matrix_right_child = data_matrix[cluster_assignment==0], \
+                                                      data_matrix[cluster_assignment==1]
+    
+    # Divide the dataframe into two parts, again using the cluster assignments.
+    # Here we eliminated use of SFrame
+    dataframe_left_child = dataframe.loc[cluster_assignment == 0]
+    dataframe_right_child = dataframe.loc[cluster_assignment == 1]
+    
+    # Package relevant variables for the child clusters
+    cluster_left_child  = {'matrix': data_matrix_left_child,
+                           'dataframe': dataframe_left_child,
+                           'centroid': centroids[0]}
+    cluster_right_child = {'matrix': data_matrix_right_child,
+                           'dataframe': dataframe_right_child,
+                           'centroid': centroids[1]}
+    
+    return (cluster_left_child, cluster_right_child)
+
+
 PRINTSTUFF = False
 
 print_with_tms("script started")
@@ -91,3 +130,11 @@ assess_sparse_matrix(word_map=word_map, sparse_matrix=tf_idf)
 
 tf_idf_norm = normalize(X=tf_idf)
 assess_sparse_matrix(word_map=word_map, sparse_matrix=tf_idf_norm)
+
+wiki_data = {'matrix': tf_idf_norm, 'dataframe': all_data_df} # no 'centroid' for the root cluster
+left_child, right_child = bipartition(cluster=wiki_data,
+                                      maxiter=100,
+                                      num_runs=6,
+                                      seed=1)
+print(f"\nleft_child\n{left_child}")
+print(f"\nright_child\n{right_child}")
